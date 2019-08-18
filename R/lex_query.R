@@ -54,36 +54,36 @@ lex_query <- function(query) {
   pos_order_by <- NULL
   pos_limit <- NULL
 
-  in_quo <- FALSE
-  in_sub <- 0
+  in_quotes <- FALSE
+  in_parens <- 0
   while((pos <- seek(rc, NA)) <= len) {
     char <- readChar(rc, 1L)
 
     if (char %in% quote_chars) {
-      if (!in_quo) {
-        in_quo <- TRUE
+      if (!in_quotes) {
+        in_quotes <- TRUE
         quo_char <- char
       } else if (char == quo_char) {
         seek(rc, -2L, "current")
         esc_quo <- c(quo_char, "\\")
         if (!readChar(rc, 1L) %in% esc_quo) {
-          in_quo <- FALSE
+          in_quotes <- FALSE
           rm(quo_char)
         }
         seek(rc, 1L, "current")
       }
-    } else if (!in_quo && char == "(") {
-      in_sub <- in_sub + 1
-    } else if (!in_quo && char == ")") {
-      in_sub <- in_sub - 1
-    } else if (!in_quo && in_sub > 0) {
+    } else if (!in_quotes && char == "(") {
+      in_parens <- in_parens + 1
+    } else if (!in_quotes && char == ")") {
+      in_parens <- in_parens - 1
+    } else if (!in_quotes && in_parens > 0) {
       if (tolower(char) == "s") {
         if (tolower(readChar(rc, 5L)) == "elect") {
           stop("Subqueries are not supported", call. = FALSE)
         }
         seek(rc, pos + 1)
       }
-    } else if (!in_quo && in_sub <= 0) {
+    } else if (!in_quotes && in_parens <= 0) {
       if (tolower(char) == "u") {
         if (tolower(readChar(rc, 4L)) == "nion") {
           stop("The UNION operator is not supported", call. = FALSE)
@@ -132,10 +132,10 @@ lex_query <- function(query) {
       seek(rc, pos + 1)
     }
   }
-  if (in_quo) {
+  if (in_quotes) {
     stop("Query contains unmatched quotation marks", call. = FALSE)
   }
-  if (in_sub > 0) {
+  if (in_parens > 0) {
     stop("Query contains unmatched parentheses", call. = FALSE)
   }
 
@@ -222,29 +222,29 @@ lex_comma_list <- function(comma_list) {
 
   pos_comma <- NULL
 
-  in_quo <- FALSE
-  in_sub <- 0
+  in_quotes <- FALSE
+  in_parens <- 0
   while((pos <- seek(rc, NA)) <= len) {
     char <- readChar(rc, 1L)
 
     if (char %in% quote_chars) {
-      if (!in_quo) {
-        in_quo <- TRUE
+      if (!in_quotes) {
+        in_quotes <- TRUE
         quo_char <- char
       } else if (char == quo_char) {
         seek(rc, -2L, "current")
         esc_quo <- c(quo_char, "\\")
         if (!readChar(rc, 1L) %in% esc_quo) {
-          in_quo <- FALSE
+          in_quotes <- FALSE
           rm(quo_char)
         }
         seek(rc, 1L, "current")
       }
-    } else if (!in_quo && char == "(") {
-      in_sub <- in_sub + 1
-    } else if (!in_quo && char == ")") {
-      in_sub <- in_sub - 1
-    } else if (!in_quo && in_sub <= 0) {
+    } else if (!in_quotes && char == "(") {
+      in_parens <- in_parens + 1
+    } else if (!in_quotes && char == ")") {
+      in_parens <- in_parens - 1
+    } else if (!in_quotes && in_parens <= 0) {
       if(char == ",") {
         pos_comma <- append(pos_comma, pos)
       }
