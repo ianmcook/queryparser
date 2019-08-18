@@ -16,7 +16,7 @@
 #'
 #' @description Parses a SQL SELECT statement and returns a parse tree
 #'
-#' @param query a SQL SELECT statement
+#' @param query a character string containing a SQL SELECT statement
 #' @return A list object with named elements representing the clauses of the
 #'   query
 #' @examples

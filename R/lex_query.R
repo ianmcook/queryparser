@@ -43,9 +43,11 @@ lex_query <- function(query) {
   on.exit(close(rc))
   writeChar(query, rc)
   len <- seek(rc, 0L) - 1L
-  if (tolower(readChar(rc, 6L)) != "select") {
+
+  if (!keyword_starts_here(rc, "select")) {
     stop("Query must begin with the SELECT keyword", call. = FALSE)
   }
+  seek(rc, 6L)
 
   pos_from <- NULL
   pos_where <- NULL
@@ -56,9 +58,11 @@ lex_query <- function(query) {
 
   in_quotes <- FALSE
   in_parens <- 0
-  while((pos <- seek(rc, NA)) <= len) {
-    char <- readChar(rc, 1L)
 
+  while((pos <- seek(rc, NA)) <= len) {
+
+    # identify when inside strings and parentheses
+    char <- readChar(rc, 1L)
     if (char %in% quote_chars) {
       if (!in_quotes) {
         in_quotes <- TRUE
@@ -76,62 +80,56 @@ lex_query <- function(query) {
       in_parens <- in_parens + 1
     } else if (!in_quotes && char == ")") {
       in_parens <- in_parens - 1
-    } else if (!in_quotes && in_parens > 0) {
-      if (tolower(char) == "s") {
-        if (tolower(readChar(rc, 5L)) == "elect") {
-          stop("Subqueries are not supported", call. = FALSE)
-        }
-        seek(rc, pos + 1)
-      }
-    } else if (!in_quotes && in_parens <= 0) {
-      if (tolower(char) == "u") {
-        if (tolower(readChar(rc, 4L)) == "nion") {
-          stop("The UNION operator is not supported", call. = FALSE)
-        }
-      } else if (tolower(char) == "i") {
-        if (tolower(readChar(rc, 8L)) == "ntersect") {
-          stop("The INTERSECT operator is not supported", call. = FALSE)
-        }
-      } else if (tolower(char) == "e") {
-        if (tolower(readChar(rc, 5L)) == "xcept") {
-          stop("The EXCEPT operator is not supported", call. = FALSE)
-        }
-      } else if (tolower(char) == "f") {
-        if (tolower(readChar(rc, 3L)) == "rom") {
-          pos_from <- append(pos_from, pos)
-        }
-      } else if (tolower(char) == "w") {
-        if (tolower(readChar(rc, 4L)) == "here") {
-          pos_where <- append(pos_where, pos)
-        }
-      } else if (tolower(char) == "g") {
-        if (tolower(readChar(rc, 4L)) == "roup") {
-          while(isTRUE(grepl(ws_regex, readChar(rc, 1L)))) {}
-          seek(rc, -1L, "current")
-          if (tolower(readChar(rc, 2L)) == "by") {
-            pos_group_by <- append(pos_group_by, pos)
-          }
-        }
-      } else if (tolower(char) == "h") {
-        if (tolower(readChar(rc, 5L)) == "aving") {
-          pos_having <- append(pos_having, pos)
-        }
-      } else if (tolower(char) == "o") {
-        if (tolower(readChar(rc, 4L)) == "rder") {
-          while(isTRUE(grepl(ws_regex, readChar(rc, 1L)))) {}
-          seek(rc, -1L, "current")
-          if (tolower(readChar(rc, 2L)) == "by") {
-            pos_order_by <- append(pos_order_by, pos)
-          }
-        }
-      } else if (tolower(char) == "l") {
-        if (tolower(readChar(rc, 4L)) == "imit") {
-          pos_limit <- append(pos_limit, pos)
-        }
-      }
-      seek(rc, pos + 1)
     }
+
+    if (!in_quotes) {
+
+      # identify unsupported syntax
+      if (keyword_starts_here(rc, "case")) {
+        stop("CASE expressions are not supported", call. = FALSE)
+      }
+      if (keyword_starts_here(rc, "select")) {
+        if (in_parens > 0) {
+          stop("Subqueries are not supported", call. = FALSE)
+        } else {
+          stop("The SELECT keyword is used two or more times", call. = FALSE)
+        }
+      }
+    }
+
+    if (!in_quotes && in_parens <= 0) {
+
+      # identify unsupported syntax
+      if (keyword_starts_here(rc, "union")) {
+        stop("The UNION operator is not supported", call. = FALSE)
+      }
+      if (keyword_starts_here(rc, "intersect")) {
+        stop("The INTERSECT operator is not supported", call. = FALSE)
+      }
+      if (keyword_starts_here(rc, "except")) {
+        stop("The EXCEPT operator is not supported", call. = FALSE)
+      }
+
+      # identify beginnings of clauses
+      if (keyword_starts_here(rc, "from")) {
+        pos_from <- append(pos_from, pos)
+      } else if (keyword_starts_here(rc, "where")) {
+        pos_where <- append(pos_where, pos)
+      } else if (keyphrase_starts_here(rc, "group by")) {
+        pos_group_by <- append(pos_group_by, pos)
+      } else if (keyword_starts_here(rc, "having")) {
+        pos_having <- append(pos_having, pos)
+      } else if (keyphrase_starts_here(rc, "order by")) {
+        pos_order_by <- append(pos_order_by, pos)
+      } else if (keyword_starts_here(rc, "limit")) {
+        pos_limit <- append(pos_limit, pos)
+      }
+
+    }
+
+    seek(rc, pos + 1)
   }
+
   if (in_quotes) {
     stop("Query contains unmatched quotation marks", call. = FALSE)
   }
@@ -245,7 +243,7 @@ lex_comma_list <- function(comma_list) {
     } else if (!in_quotes && char == ")") {
       in_parens <- in_parens - 1
     } else if (!in_quotes && in_parens <= 0) {
-      if(char == ",") {
+      if (char == ",") {
         pos_comma <- append(pos_comma, pos)
       }
     }
