@@ -95,12 +95,10 @@ keyphrase_starts_here <- function(rc, keyphrase) {
 collapse_whitespace <- function(expr) {
 
   rc_in <- rawConnection(raw(0L), "r+")
-  on.exit(close(rc_in))
   writeChar(expr, rc_in)
   len <- seek(rc_in, 0L) - 1L
 
   rc_out <- rawConnection(raw(0L), "r+")
-  on.exit(close(rc_out))
 
   in_quotes <- FALSE
   in_ws <- FALSE
@@ -149,6 +147,12 @@ collapse_whitespace <- function(expr) {
 
     writeChar(char, rc_out, eos = NULL)
   }
+
   seek(rc_out, 0L)
-  readChar(rc_out, len) # len might be too long but that's ok
+  out <- readChar(rc_out, len) # len might be too long but that's ok
+
+  close(rc_in)
+  close(rc_out)
+
+  out
 }
