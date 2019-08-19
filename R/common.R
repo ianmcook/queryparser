@@ -58,6 +58,8 @@ keyword_starts_here <- function(rc, keyword) {
 }
 
 keyphrase_starts_here <- function(rc, keyphrase) {
+  # can use keyword_starts_here() instead if you
+  # apply collapse_whitespace() first
   pos <- seek(rc, NA)
   on.exit(seek(rc, pos))
   at_start <- tryCatch({
@@ -86,4 +88,67 @@ keyphrase_starts_here <- function(rc, keyphrase) {
     seek(rc, -1L, "current")
   }
   TRUE
+}
+
+# replaces each unquoted run of whitespace
+# characters with a single space
+collapse_whitespace <- function(expr) {
+
+  rc_in <- rawConnection(raw(0L), "r+")
+  on.exit(close(rc_in))
+  writeChar(expr, rc_in)
+  len <- seek(rc_in, 0L) - 1L
+
+  rc_out <- rawConnection(raw(0L), "r+")
+  on.exit(close(rc_out))
+
+  in_quotes <- FALSE
+  in_ws <- FALSE
+
+  while((pos <- seek(rc_in, NA)) < len) {
+    char <- readChar(rc_in, 1L)
+
+    if (char %in% quote_chars) {
+      if (!in_quotes) {
+        in_quotes <- TRUE
+        quo_char <- char
+      } else if (char == quo_char) {
+        seek(rc_in, -2L, "current")
+        esc_quo <- c(quo_char, "\\")
+        if (!readChar(rc_in, 1L) %in% esc_quo) {
+          in_quotes <- FALSE
+          rm(quo_char)
+        }
+        seek(rc_in, 1L, "current")
+      }
+      writeChar(char, rc_out, eos = NULL)
+      in_ws <- FALSE
+      next;
+    }
+
+    if (!in_quotes) {
+      if (isTRUE(grepl(ws_regex, char))) {
+        # this is a whitespace character
+        if (in_ws) {
+          # was already in whitespace
+          # so write nothing
+          next;
+        } else {
+          # is first whitespace character
+          # so write a space
+          writeChar(" ", rc_out, eos = NULL)
+          in_ws <- TRUE
+          next;
+        }
+      } else {
+        writeChar(char, rc_out, eos = NULL)
+        in_ws <- FALSE
+        next;
+      }
+    }
+
+    writeChar(char, rc_out, eos = NULL)
+  }
+  seek(rc_out, 0L)
+  readChar(rc_out, len) # len might be too long but that's ok
 }
