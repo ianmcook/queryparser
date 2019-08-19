@@ -153,7 +153,7 @@ lex_query <- function(query) {
   if (any(diff(start_pos) < 0)) {
     stop("Clauses are in an incorrect order", call. = FALSE)
   }
-  stop_pos <- c(start_pos[-1] - 2, len)
+  stop_pos <- c(start_pos[-1] - 1, len)
   names(stop_pos) <- names(start_pos)
   clauses <- mapply(
     function(x, y) list(start = x, stop = y),
