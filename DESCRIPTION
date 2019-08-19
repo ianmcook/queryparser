@@ -7,8 +7,8 @@ Authors@R: c(
     person(family = "Cloudera", role = c("cph"))
     )
 Maintainer: Ian Cook <ian@cloudera.com>
-Description: Translates SQL SELECT statements into lists of R expressions
-    ready for tidy evaluation
+Description: Translate SQL SELECT statements into lists of R expressions
+    ready for tidy evaluation.
 URL: https://github.com/ianmcook/queryparser
 BugReports: https://github.com/ianmcook/queryparser/issues
 NeedsCompilation: no
