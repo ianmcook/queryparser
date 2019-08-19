@@ -161,7 +161,15 @@ lex_query <- function(query) {
     stop_pos,
     SIMPLIFY = FALSE
   )
-  clauses <- lapply(clauses, function(x) substr(query, x$start, x$stop))
+  original_encoding <- Encoding(query)
+  Encoding(query) <- "bytes"
+  clauses <- lapply(
+    clauses, function(x) {
+      clause <- substr(query, x$start, x$stop)
+      Encoding(clause) <- original_encoding
+      clause
+    }
+  )
 
   clauses$select <- lex_select(clauses$select)
   clauses$from <- lex_from(clauses$from)
@@ -254,9 +262,13 @@ lex_comma_list <- function(comma_list) {
   if (is.null(pos_comma)) {
     trimws(comma_list, whitespace = ws_regex)
   } else {
-    trimws(
+    original_encoding <- Encoding(query)
+    Encoding(comma_list) <- "bytes"
+    out <- trimws(
       substring(comma_list, c(1, pos_comma + 1), c(pos_comma - 1, len)),
       whitespace = ws_regex
     )
+    Encoding(out) <- original_encoding
+    out
   }
 }
