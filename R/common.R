@@ -60,8 +60,13 @@ keyword_starts_here <- function(rc, keyword) {
 keyphrase_starts_here <- function(rc, keyphrase) {
   pos <- seek(rc, NA)
   on.exit(seek(rc, pos))
-  seek(rc, -1L, "current")
-  if (!grepl(non_word_char_regex, readChar(rc, 1L))) {
+  at_start <- tryCatch({
+    seek(rc, -1L, "current")
+    FALSE
+  }, error = function(e) {
+    TRUE
+  })
+  if (!at_start && !grepl(non_word_char_regex, readChar(rc, 1L))) {
     return(FALSE)
   }
   keywords <- strsplit(keyphrase, ws_regex)[[1]]
@@ -80,6 +85,5 @@ keyphrase_starts_here <- function(rc, keyphrase) {
     while(isTRUE(grepl(ws_regex, readChar(rc, 1L)))) {}
     seek(rc, -1L, "current")
   }
-
   TRUE
 }
