@@ -37,6 +37,7 @@
 #' @export
 lex_query <- function(query) {
   query <- trimws(query, whitespace = ws_regex)
+  query <- collapse_whitespace(query)
   query <- sub(";$", "", query)
 
   rc <- rawConnection(raw(0L), "r+")
@@ -115,11 +116,11 @@ lex_query <- function(query) {
         pos_from <- append(pos_from, pos)
       } else if (keyword_starts_here(rc, "where")) {
         pos_where <- append(pos_where, pos)
-      } else if (keyphrase_starts_here(rc, "group by")) {
+      } else if (keyword_starts_here(rc, "group by")) {
         pos_group_by <- append(pos_group_by, pos)
       } else if (keyword_starts_here(rc, "having")) {
         pos_having <- append(pos_having, pos)
-      } else if (keyphrase_starts_here(rc, "order by")) {
+      } else if (keyword_starts_here(rc, "order by")) {
         pos_order_by <- append(pos_order_by, pos)
       } else if (keyword_starts_here(rc, "limit")) {
         pos_limit <- append(pos_limit, pos)
@@ -195,7 +196,7 @@ lex_where <- function(clause) {
 }
 
 lex_group_by <- function(clause) {
-  lex_comma_list(lex_clause(clause, paste0("group", ws_regex, "+by")))
+  lex_comma_list(lex_clause(clause, "group by"))
 }
 
 lex_having <- function(clause) {
@@ -203,17 +204,17 @@ lex_having <- function(clause) {
 }
 
 lex_order_by <- function(clause) {
-  lex_comma_list(lex_clause(clause, paste0("order", ws_regex, "+by")))
+  lex_comma_list(lex_clause(clause, "order by"))
 }
 
 lex_limit <- function(clause) {
   lex_clause(clause, "limit")
 }
 
-lex_clause <- function(clause, keyword_regex) {
+lex_clause <- function(clause, keyword) {
   if (is.null(clause)) return(NULL)
   clause <- trimws(clause, whitespace = ws_regex)
-  keyword_regex <- paste0("^", keyword_regex, ws_regex, "*")
+  keyword_regex <- paste0("^", keyword, ws_regex, "*")
   clause <- sub(keyword_regex, "", clause, ignore.case = TRUE)
   clause
 }

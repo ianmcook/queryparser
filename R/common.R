@@ -57,39 +57,6 @@ keyword_starts_here <- function(rc, keyword) {
   grepl(keyword_regex,  chars, ignore.case = TRUE)
 }
 
-keyphrase_starts_here <- function(rc, keyphrase) {
-  # can use keyword_starts_here() instead if you
-  # apply collapse_whitespace() first
-  pos <- seek(rc, NA)
-  on.exit(seek(rc, pos))
-  at_start <- tryCatch({
-    seek(rc, -1L, "current")
-    FALSE
-  }, error = function(e) {
-    TRUE
-  })
-  if (!at_start && !grepl(non_word_char_regex, readChar(rc, 1L))) {
-    return(FALSE)
-  }
-  keywords <- strsplit(keyphrase, ws_regex)[[1]]
-  for (keyword in keywords) {
-    nchars <- nchar(keyword) + 1L
-    chars <- readChar(rc, nchars)
-    keyword_regex <- paste0(
-      "^",
-      keyword,
-      non_word_char_regex,
-      "$"
-    )
-    if (!grepl(keyword_regex, chars, ignore.case = TRUE)) {
-      return(FALSE)
-    }
-    while(isTRUE(grepl(ws_regex, readChar(rc, 1L)))) {}
-    seek(rc, -1L, "current")
-  }
-  TRUE
-}
-
 # replaces each unquoted run of whitespace
 # characters with a single space
 collapse_whitespace <- function(expr) {
