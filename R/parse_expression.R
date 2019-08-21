@@ -23,6 +23,7 @@ extract_alias <- function(expr) {
   column_alias <- NULL
   expr_without_alias <- NULL
 
+  found_as_before_alias <- FALSE
   look_for_char_before_alias <- FALSE
   look_for_as_keyword <- FALSE
   quoted_string_at_end <- FALSE
@@ -30,7 +31,6 @@ extract_alias <- function(expr) {
   possible_word_at_end <- FALSE
   was_in_quotes <- FALSE
   in_quotes <- FALSE
-  last_char <- NULL
 
   # go backwards, from end toward beginning
   char_is_quote_escape <- FALSE
@@ -61,34 +61,42 @@ extract_alias <- function(expr) {
     }
 
     if (look_for_char_before_alias) {
-      if (quoted_string_at_end) {
+      if (quoted_string_at_end && !found_as_before_alias) {
         seek(rc, 0)
         expr_without_alias <- trimws(readChar(rc, pos - 1), whitespace = ws_regex)
-        break;
-      }
-      if (grepl(non_word_char_regex, char)) {
+      } else if (grepl(non_word_char_regex, char)) {
         seek(rc, 0)
         expr_without_alias <- trimws(readChar(rc, pos - 1), whitespace = ws_regex)
-        break;
-      } else {
-        look_for_char_before_alias <- FALSE
+      } else if (found_as_before_alias) {
+        seek(rc, 0)
+        expr_without_alias <- trimws(readChar(rc, pos + 1), whitespace = ws_regex)
       }
+      break;
+    }
+
+    if (!in_quotes && !char %in% quote_chars && !grepl(ws_regex, char) && !grepl(word_char_regex, char)) {
+      break;
     }
 
     if (look_for_as_keyword) {
-      while (tolower(char) %in% c(" ","s")) {
+      if (identical(tolower(char), " ")) {
         seek(rc, -2L, "current")
         char <- readChar(rc, 1L)
       }
-      if (tolower(char) == "a") {
-        pos <- seek(rc, NA) + 2L
-        look_for_as_keyword <- FALSE
-        look_for_char_before_alias <- TRUE
+      if (identical(tolower(char), "s")) {
+        seek(rc, -2L, "current")
+        char <- readChar(rc, 1L)
+        if (identical(tolower(char), "a")) {
+          found_as_before_alias <- TRUE
+          pos <- pos + 1
+        } else {
+          seek(rc, pos)
+        }
       } else {
         seek(rc, pos)
-        look_for_as_keyword <- FALSE
-        look_for_char_before_alias <- TRUE
       }
+      look_for_as_keyword <- FALSE
+      look_for_char_before_alias <- TRUE
     }
 
     if (quote_at_end && was_in_quotes && !in_quotes) {
@@ -116,7 +124,6 @@ extract_alias <- function(expr) {
       possible_word_at_end <- TRUE
     }
 
-    last_char <- char
     was_in_quotes <- in_quotes
   }
 
