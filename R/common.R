@@ -16,18 +16,26 @@ quote_chars <- c("\"", "'", "`")
 
 ws_regex <- "[ \t\r\n]"
 
-word_char_regex <- "[A-Za-z0-9_]"
+word_char_regex <- "\\w"
 
-non_word_char_regex <- "[^A-Za-z0-9_]"
+non_word_char_regex <- "\\W"
 
-word_start_regex <- "[A-Za-z_]"
+digit_regex <- "[0-9]"
 
-is_word_start_character <- function(char) {
-  grepl(word_start_regex, char)
+is_whitespace_character <- function(char, useBytes = FALSE) {
+  grepl(ws_regex, char, useBytes = useBytes)
 }
 
-is_word_character <- function(char) {
-  grepl(word_char_regex, char)
+is_word_start_character <- function(char, useBytes = FALSE) {
+  grepl(word_char_regex, char, useBytes = useBytes) && !grepl(digit_regex, char, useBytes = useBytes)
+}
+
+is_word_character <- function(char, useBytes = FALSE) {
+  grepl(word_char_regex, char, useBytes = useBytes)
+}
+
+is_non_word_character <- function(char, useBytes = FALSE) {
+  grepl(non_word_char_regex, char, useBytes = useBytes)
 }
 
 keyword_starts_here <- function(rc, keyword) {

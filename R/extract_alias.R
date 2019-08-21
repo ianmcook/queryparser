@@ -25,6 +25,8 @@
 extract_alias <- function(expr) {
   expr <- trimws(expr, whitespace = ws_regex)
 
+  bytes_in_chars <- nchar(strsplit(expr, "")[[1]], "bytes")
+
   rc <- rawConnection(raw(0L), "r+")
   on.exit(close(rc))
   writeChar(expr, rc)
@@ -43,14 +45,25 @@ extract_alias <- function(expr) {
   in_quotes <- FALSE
 
   # go backwards, from end toward beginning
+  step_number <- 0
+  step_positions <- c(rev(cumsum(bytes_in_chars)),0)[-1]
+  advance_positions <- 1
   char_is_quote_escape <- FALSE
-  seek(rc, len + 1)
-  while((pos <- seek(rc, NA)) > 1) {
-    seek(rc, pos - 2)
+  while(TRUE) {
+    if (advance_positions > 0) {
+      if (step_number + advance_positions > length(step_positions)) {
+        break;
+      }
+      step_number <- step_number + advance_positions
+      pos <- step_positions[step_number]
+    }
+    advance_positions <- 1
+    seek(rc, pos)
     char <- readChar(rc, 1L)
+    NULL
 
     if (char %in% quote_chars) {
-      if (pos == len + 1) {
+      if (pos == step_positions[1]) {
         quote_at_end <- TRUE
       }
       if (!in_quotes) {
@@ -59,7 +72,7 @@ extract_alias <- function(expr) {
       } else if (char == quo_char && !char_is_quote_escape) {
         seek(rc, -2L, "current")
         esc_quo <- c(quo_char, "\\")
-        if (readChar(rc, 1L) %in% esc_quo) {
+        if (readChar(rc, 1L, useBytes = TRUE) %in% esc_quo) {
           char_is_quote_escape <- TRUE
         } else {
           char_is_quote_escape <- FALSE
@@ -73,37 +86,43 @@ extract_alias <- function(expr) {
     if (look_for_char_before_alias) {
       if (quoted_string_at_end && !found_as_before_alias) {
         seek(rc, 0)
-        expr_without_alias <- trimws(readChar(rc, pos - 1), whitespace = ws_regex)
-      } else if (grepl(non_word_char_regex, char)) {
+        expr_without_alias <- trimws(readChar(rc, pos + 1, useBytes = TRUE), whitespace = ws_regex)
+      } else if (is_non_word_character(char)) {
         seek(rc, 0)
-        expr_without_alias <- trimws(readChar(rc, pos - 1), whitespace = ws_regex)
+        expr_without_alias <- trimws(readChar(rc, pos + 1, useBytes = TRUE), whitespace = ws_regex)
       } else if (found_as_before_alias) {
         seek(rc, 0)
-        expr_without_alias <- trimws(readChar(rc, pos + 1), whitespace = ws_regex)
+        expr_without_alias <- trimws(readChar(rc, pos + 3, useBytes = TRUE), whitespace = ws_regex)
       }
       break;
     }
 
-    if (!in_quotes && !char %in% quote_chars && !grepl(ws_regex, char) && !grepl(word_char_regex, char)) {
+    if (
+        !in_quotes && !char %in% quote_chars &&
+        !is_whitespace_character(char) &&
+        !is_word_character(char)) {
       break;
     }
 
     if (look_for_as_keyword) {
-      if (identical(tolower(char), " ")) {
+      advance_positions <- 0
+      prev_char <- char
+      if (identical(prev_char, " ")) {
         seek(rc, -2L, "current")
-        char <- readChar(rc, 1L)
+        prev_char <- readChar(rc, 1L, useBytes = TRUE)
+        advance_positions <- 1
       }
-      if (identical(tolower(char), "s")) {
+      if (prev_char %in% c("s","S")) {
         seek(rc, -2L, "current")
-        char <- readChar(rc, 1L)
-        if (identical(tolower(char), "a")) {
+        prev_char <- readChar(rc, 1L, useBytes = TRUE)
+        if (prev_char %in% c("a","A")) {
           found_as_before_alias <- TRUE
-          pos <- pos + 1
+          advance_positions <- advance_positions + 2
         } else {
-          seek(rc, pos)
+          advance_positions <- 0
         }
       } else {
-        seek(rc, pos)
+        advance_positions <- 0
       }
       look_for_as_keyword <- FALSE
       look_for_char_before_alias <- TRUE
@@ -112,25 +131,25 @@ extract_alias <- function(expr) {
     if (quote_at_end && was_in_quotes && !in_quotes) {
       quoted_string_at_end <- TRUE
       look_for_as_keyword <- TRUE
-      column_alias <- readChar(rc, len - pos)
-      seek(rc, pos - 1L)
+      column_alias <- readChar(rc, len - pos - 2, useBytes = TRUE)
     }
 
-    if (possible_word_at_end && grepl(non_word_char_regex, char)) {
-      if (grepl(word_start_regex, readChar(rc, 1L))) {
-        seek(rc, -1L, "current")
-        column_alias <- readChar(rc, len - pos + 1L)
+    if (possible_word_at_end && is_non_word_character(char)) {
+      next_char <- readChar(rc, 1L)
+      if (is_word_start_character(next_char)) {
+        seek(rc, -1 * nchar(next_char, type = "bytes"), "current")
+        column_alias <- readChar(rc, len - pos - 1L, useBytes = TRUE)
         if (char == " ") {
           look_for_as_keyword <- TRUE
         } else {
           look_for_char_before_alias <- TRUE
         }
       }
-      seek(rc, pos)
+      advance_positions <- 0
       possible_word_at_end <- FALSE
     }
 
-    if (pos == len + 1 && grepl(word_char_regex, char)) {
+    if (pos == step_positions[1] && is_word_character(char)) {
       possible_word_at_end <- TRUE
     }
 

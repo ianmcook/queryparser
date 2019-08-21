@@ -52,7 +52,7 @@ collapse_whitespace <- function(x) {
     }
 
     if (!in_quotes) {
-      if (isTRUE(grepl(ws_regex, char))) {
+      if (isTRUE(is_whitespace_character(char))) {
         # this is a whitespace character
         if (in_ws) {
           # was already in whitespace
