@@ -104,15 +104,6 @@ extract_alias <- function(expr) {
         look_for_as_keyword <- FALSE
         look_for_char_before_alias <- TRUE
       }
-
-      if (tolower(char) %in% c(" ","s","a")) {
-        look_for_as_keyword <- FALSE
-        look_for_char_before_alias <- TRUE
-      } else if (tolower(char) == "a" && tolower(last_char) == "s") {
-
-        look_for_as_keyword <- FALSE
-        look_for_char_before_alias <- TRUE
-      }
       #cat(seek(rc, NA),"\n")
     }
 
