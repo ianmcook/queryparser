@@ -39,44 +39,34 @@ extract_alias <- function(expr) {
     seek(rc, pos - 2)
     char <- readChar(rc, 1L)
 
-    #cat(char,"at",pos,"\n")
-
     if (char %in% quote_chars) {
       if (pos == len + 1) {
-        #cat("Found quote at end\n")
         quote_at_end <- TRUE
       }
       if (!in_quotes) {
-        #cat("START QUOTE\n")
         in_quotes <- TRUE
         quo_char <- char
       } else if (char == quo_char && !char_is_quote_escape) {
-        #cat("---", seek(rc, NA), "\n")
         seek(rc, -2L, "current")
         esc_quo <- c(quo_char, "\\")
         if (readChar(rc, 1L) %in% esc_quo) {
           char_is_quote_escape <- TRUE
         } else {
           char_is_quote_escape <- FALSE
-          #cat("END QUOTE\n")
           in_quotes <- FALSE
           rm(quo_char)
         }
         seek(rc, 1L, "current")
-        #cat("---", seek(rc, NA), "\n")
       }
     }
 
     if (look_for_char_before_alias) {
-      #cat("Looking for character before alias; character is",char,"\n")
       if (quoted_string_at_end) {
-        #cat("Found any character",char,"before the alias at",pos,"\n")
         seek(rc, 0)
         expr_without_alias <- trimws(readChar(rc, pos - 1), whitespace = ws_regex)
         break;
       }
       if (grepl(non_word_char_regex, char)) {
-        #cat("Found non-word character",char,"before the alias at",pos,"\n")
         seek(rc, 0)
         expr_without_alias <- trimws(readChar(rc, pos - 1), whitespace = ws_regex)
         break;
@@ -86,29 +76,22 @@ extract_alias <- function(expr) {
     }
 
     if (look_for_as_keyword) {
-      #cat(seek(rc, NA),"\n")
-      #cat("Looking for AS keyword\n")
       while (tolower(char) %in% c(" ","s")) {
         seek(rc, -2L, "current")
         char <- readChar(rc, 1L)
       }
       if (tolower(char) == "a") {
-        #cat("Found AS keyword\n")
-        pos <- seek(rc, NA) + 2L # minus or plus something ??????????????????
+        pos <- seek(rc, NA) + 2L
         look_for_as_keyword <- FALSE
         look_for_char_before_alias <- TRUE
       } else {
-        #cat("Determined that there is no AS keyword when hit character",char,"\n")
-        seek(rc, pos) # minus or plus something ??????????????????
-        #char <- readChar(rc, 1L)
+        seek(rc, pos)
         look_for_as_keyword <- FALSE
         look_for_char_before_alias <- TRUE
       }
-      #cat(seek(rc, NA),"\n")
     }
 
     if (quote_at_end && was_in_quotes && !in_quotes) {
-      #cat("Found quoted string at end\n")
       quoted_string_at_end <- TRUE
       look_for_as_keyword <- TRUE
       column_alias <- readChar(rc, len - pos)
@@ -117,7 +100,6 @@ extract_alias <- function(expr) {
 
     if (possible_word_at_end && grepl(non_word_char_regex, char)) {
       if (grepl(word_start_regex, readChar(rc, 1L))) {
-        #cat("Found word at end at position",seek(rc, NA),"\n")
         seek(rc, -1L, "current")
         column_alias <- readChar(rc, len - pos + 1L)
         if (char == " ") {
@@ -126,12 +108,11 @@ extract_alias <- function(expr) {
           look_for_char_before_alias <- TRUE
         }
       }
-      seek(rc, pos) # removed - 1
+      seek(rc, pos)
       possible_word_at_end <- FALSE
     }
 
     if (pos == len + 1 && grepl(word_char_regex, char)) {
-      #cat("Possible word at end\n")
       possible_word_at_end <- TRUE
     }
 
