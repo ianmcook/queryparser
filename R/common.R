@@ -22,6 +22,8 @@ non_word_char_regex <- "\\W"
 
 digit_regex <- "[0-9]"
 
+non_operator_regex <- "[^<>=%!]"
+
 sql_reserved_words <- c(
   "add",
   "aggregate",

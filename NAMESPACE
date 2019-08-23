@@ -2,4 +2,5 @@
 
 export(extract_alias)
 export(lex_query)
+export(parse_expression)
 export(parse_query)
