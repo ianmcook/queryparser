@@ -79,28 +79,18 @@ parse_expression <- function(expr, tidyverse = FALSE) {
   # make the SQL query into a valid R expression
   expr_quotes_masked <- make_function_names_lowercase(expr_quotes_masked)
 
+  expr_quotes_masked <- replace_all_distinct_keyword(expr_quotes_masked) # this must be first
   expr_quotes_masked <- replace_operators_unary_postfix(expr_quotes_masked) # this must be second
   expr_quotes_masked <- replace_operators_binary_symbolic(expr_quotes_masked)
   expr_quotes_masked <- replace_operators_binary_word(expr_quotes_masked)
   expr_quotes_masked <- replace_operators_unary_prefix(expr_quotes_masked)
 
 
+
   # RESUME HERE
 
   # DEAL WITH
   #   * (the star)
-  #   COUNT
-  #   DISTINCT or ALL inside functions (just get rid of all)
-  #     replace
-  #       count followed by whitespace then ( then DISTINCT
-  #     with
-  #       count_distinct
-  #
-
-  # handle functions that have their arguments in a different order
-  # maybe using a method like what's used in unpipe()
-
-  # keep in mind that functions can have a space between the function name and the open paren
 
 
   # unmask text enclosed in quotations
@@ -119,6 +109,7 @@ parse_expression <- function(expr, tidyverse = FALSE) {
     translation_environment_direct <- translation_environment_direct_base
     translation_environment_indirect <- translation_environment_indirect_base
   }
+  call_out <- replace_distinct_functions(call_out) # this must be first
   call_out <- do.call(substitute, list(call_out, translation_environment_direct))
   call_out <- partial_eval(call_out, translation_environment_indirect)
   call_out <- unpipe(call_out)
@@ -184,5 +175,47 @@ replace_operators_unary_postfix <- function(expr_quotes_masked) {
   }
   expr_quotes_masked
 }
+
+replace_all_distinct_keyword <- function(expr_quotes_masked) {
+  agg_funs <- paste(sql_aggregate_functions, collapse = "|")
+  expr_quotes_masked <- gsub(
+    paste0("\\b(",agg_funs,") ?\\( ?all\\b"),
+    "\\1",
+    expr_quotes_masked
+  )
+  expr_quotes_masked <- gsub(
+    paste0("\\b(",agg_funs,") ?\\( ?distinct\\b"),
+    "\\1_distinct(",
+    expr_quotes_masked
+  )
+  expr_quotes_masked
+}
+
+replace_distinct_functions <- function(expr) {
+  for (func in sql_aggregate_functions) {
+    expr <- replace_distinct_function(expr, func)
+  }
+  expr
+}
+
+replace_distinct_function <- function(expr, func) {
+  if (length(expr) == 1) {
+    return(expr)
+  } else {
+    if (expr[[1]] == str2lang(paste0(func, "_distinct"))) {
+      return(as.call(lapply(
+        str2lang(paste0(gsub(
+          paste0("^", func, "_distinct\\("),
+          paste0(func, "(unique("),
+          deparse(expr)
+        ),
+        ")")), replace_distinct_function, func
+      )))
+    } else {
+      return(as.call(lapply(expr, replace_distinct_function, func)))
+    }
+  }
+}
+
 
 

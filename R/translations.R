@@ -12,6 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+#' @include common.R
+NULL
+
 translations_operators_binary_symbolic <- list(
   `%` = "%%",
   `<>` = "!=",
@@ -52,6 +55,7 @@ translations_direct_generic <- list(
 )
 
 translations_direct_base <- list(
+  count = quote(length),
   length = quote(nchar),
   lower = quote(tolower),
   upper = quote(toupper),

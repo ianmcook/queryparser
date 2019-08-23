@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-#' @include translations.R
+#' @include common.R translations.R
 NULL
 
 translation_environment_direct_base <- new.env()
