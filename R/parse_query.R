@@ -48,6 +48,7 @@ parse_query <- function(query, tidyverse = FALSE) {
 
 
 
-  # ...
 
+  # ...
+  tree
 }
