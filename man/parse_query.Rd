@@ -4,17 +4,21 @@
 \alias{parse_query}
 \title{SQL query parser}
 \usage{
-parse_query(query)
+parse_query(query, tidyverse = FALSE)
 }
 \arguments{
 \item{query}{a character string containing a SQL SELECT statement}
+
+\item{tidyverse}{set to \code{TRUE} to use functions from tidyverse packages
+including dplyr, stringr, and lubridate in the R expressions}
 }
 \value{
 A list object with named elements representing the clauses of the
-  query
+  query and containing unevaluated R expressions representing the SQL
+  expressions in the query
 }
 \description{
-Parses a SQL SELECT statement and returns a parse tree
+Parses a SQL SELECT statement into a list of R expressions
 }
 \examples{
 query <- "SELECT origin, dest,

@@ -14,11 +14,14 @@
 
 #' SQL query parser
 #'
-#' @description Parses a SQL SELECT statement and returns a parse tree
+#' @description Parses a SQL SELECT statement into a list of R expressions
 #'
 #' @param query a character string containing a SQL SELECT statement
+#' @param tidyverse set to \code{TRUE} to use functions from tidyverse packages
+#'   including dplyr, stringr, and lubridate in the R expressions
 #' @return A list object with named elements representing the clauses of the
-#'   query
+#'   query and containing unevaluated R expressions representing the SQL
+#'   expressions in the query
 #' @examples
 #' query <- "SELECT origin, dest,
 #'     COUNT(*) AS num_flts,
