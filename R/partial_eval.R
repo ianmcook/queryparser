@@ -15,7 +15,7 @@
 partial_eval <- function(expr, envir) {
   if (length(expr) == 1) {
     return(expr)
-  } else if (as.character(expr[[1]]) %in% ls(envir = envir)) {
+  } else if (deparse(expr[[1]]) %in% ls(envir = envir)) {
     return(as.call(lapply(eval(expr, envir), partial_eval, envir)))
   } else {
     return(as.call(lapply(expr, partial_eval, envir)))
