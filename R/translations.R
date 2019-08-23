@@ -22,6 +22,11 @@ translations_operators_binary_word <- list(
   `and` = "&&",
   `or` = "||",
   `in` = "%in%"
+
+  # maybe do something like this:
+  #`in(` = "%in% c(",
+  #`in (` = "%in% c("
+
 )
 
 translations_operators_unary_prefix <- list(
@@ -62,36 +67,81 @@ translations_direct_tidyverse <- list(
   trim = quote(str_trim)
 )
 
-translation_environment_base <- new.env()
-translation_environment_tidyverse <- new.env()
-translation_environment_unary_postfix <- new.env()
+translations_indirect_generic <- list(
+  ln = function(x) {
+    eval(substitute(quote(log(x, base = exp(1)))))
+  }
+)
 
-translations_for_base <- c(
+translations_indirect_base <- list(
+)
+
+translations_indirect_tidyverse <- list(
+)
+
+################################################################################
+
+translation_environment_direct_base <- new.env()
+translation_environment_direct_tidyverse <- new.env()
+translation_environment_indirect_base <- new.env()
+translation_environment_indirect_tidyverse <- new.env()
+
+translations_direct_for_base <- c(
   translations_direct_generic,
   translations_direct_base
 )
-for (i in seq_along(translations_for_base)) {
+for (i in seq_along(translations_direct_for_base)) {
   do.call(
     delayedAssign,
     list(
-      x = names(translations_for_base)[i],
-      value = translations_for_base[[i]],
-      assign.env = translation_environment_base
+      x = names(translations_direct_for_base)[i],
+      value = translations_direct_for_base[[i]],
+      assign.env = translation_environment_direct_base
     )
   )
 }
 
-translations_for_tidyverse <- c(
+translations_direct_for_tidyverse <- c(
   translations_direct_generic,
   translations_direct_tidyverse
 )
-for (i in seq_along(translations_for_tidyverse)) {
+for (i in seq_along(translations_direct_for_tidyverse)) {
   do.call(
     delayedAssign,
     list(
-      x = names(translations_for_tidyverse)[i],
-      value = translations_for_tidyverse[[i]],
-      assign.env = translation_environment_tidyverse
+      x = names(translations_direct_for_tidyverse)[i],
+      value = translations_direct_for_tidyverse[[i]],
+      assign.env = translation_environment_direct_tidyverse
+    )
+  )
+}
+
+translations_indirect_for_base <- c(
+  translations_indirect_generic,
+  translations_indirect_base
+)
+for (i in seq_along(translations_indirect_for_base)) {
+  do.call(
+    delayedAssign,
+    list(
+      x = names(translations_indirect_for_base)[i],
+      value = translations_indirect_for_base[[i]],
+      assign.env = translation_environment_indirect_base
+    )
+  )
+}
+
+translations_indirect_for_tidyverse <- c(
+  translations_indirect_generic,
+  translations_indirect_tidyverse
+)
+for (i in seq_along(translations_indirect_for_tidyverse)) {
+  do.call(
+    delayedAssign,
+    list(
+      x = names(translations_indirect_for_tidyverse)[i],
+      value = translations_indirect_for_tidyverse[[i]],
+      assign.env = translation_environment_indirect_tidyverse
     )
   )
 }

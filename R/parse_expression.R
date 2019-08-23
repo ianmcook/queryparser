@@ -108,14 +108,20 @@ parse_expression <- function(expr, tidyverse = FALSE) {
   expr_out_split[expr_out_split == "\U001"] <- strsplit(expr, "")[[1]][expr_out_split == "\U001"]
   expr_out <- paste(expr_out_split, collapse = "")
 
+  # convert from string to R expression
+  call_out <- str2lang(expr_out)# most errors will happen on this line! try-catch here?
+
   # replace SQL names with R names
-  call_out <- str2lang(expr_out) # most errors will happen on this line! try-catch here?
   if (tidyverse) {
-    translation_environment <- translation_environment_tidyverse
+    translation_environment_direct <- translation_environment_direct_tidyverse
+    translation_environment_indirect <- translation_environment_indirect_tidyverse
   } else {
-    translation_environment <- translation_environment_base
+    translation_environment_direct <- translation_environment_direct_base
+    translation_environment_indirect <- translation_environment_indirect_base
   }
-  call_out <- unpipe(do.call(substitute, list(call_out, translation_environment)))
+  call_out <- do.call(substitute, list(call_out, translation_environment_direct))
+  call_out <- partial_eval(call_out, translation_environment_indirect)
+  call_out <- unpipe(call_out)
 
   # replace functions that require
 
