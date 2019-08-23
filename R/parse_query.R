@@ -35,9 +35,18 @@
 #'   LIMIT 100;"
 #' parse_query(query)
 #' @export
-parse_query <- function(query) {
+parse_query <- function(query, tidyverse = FALSE) {
 
   tree <- lex_query(query)
+  if (!names(tree)[1] %in% c("select", "distinct")) {
+    stop("Unexpected lexer output", call. = FALSE)
+  }
+  # ALSO HANDLE WHEN IT'S tree$distinct
+  # maybe do it positionally and check the name
+  tree[[1]] <- unlist(lapply(tree[[1]], extract_alias))
+  tree[[1]] <- sapply(tree[[1]], parse_expression, tidyverse = tidyverse, USE.NAMES = !is.null(names(tree[[1]])))
+
+
 
   # ...
 

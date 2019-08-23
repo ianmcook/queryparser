@@ -48,7 +48,17 @@ lex_query <- function(query) {
   if (!keyword_starts_here(rc, "select")) {
     stop("Query must begin with the SELECT keyword", call. = FALSE)
   }
-  seek(rc, 6L)
+
+  seek(rc, 7L)
+  select_distinct <- FALSE
+  if (keyword_starts_here(rc, "all")) {
+    seek(rc, 10L)
+  } else if (keyword_starts_here(rc, "distinct")) {
+    select_distinct <- TRUE
+    seek(rc, 15L)
+  } else {
+    seek(rc, 6L)
+  }
 
   pos_from <- NULL
   pos_where <- NULL
@@ -180,11 +190,15 @@ lex_query <- function(query) {
   clauses$order_by <- lex_order_by(clauses$order_by)
   clauses$limit <- lex_limit(clauses$limit)
 
+  if (select_distinct) {
+    names(clauses)[1] <- "distinct"
+  }
+
   clauses
 }
 
 lex_select <- function(clause) {
-  lex_comma_list(lex_clause(clause, "select"))
+  lex_comma_list(lex_clause(clause, "select( all)?( distinct)?"))
 }
 
 lex_from <- function(clause) {
