@@ -1,2 +1,2 @@
 # queryparser
-Pure R SQL Query Parser
+Parse SQL queries into R expressions
