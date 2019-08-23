@@ -79,7 +79,7 @@ parse_expression <- function(expr, tidyverse = FALSE) {
   # make the SQL query into a valid R expression
   expr_quotes_masked <- make_function_names_lowercase(expr_quotes_masked)
 
-  expr_quotes_masked <- replace_operators_unary_postfix(expr_quotes_masked) # put this before others?
+  expr_quotes_masked <- replace_operators_unary_postfix(expr_quotes_masked) # this must be second
   expr_quotes_masked <- replace_operators_binary_symbolic(expr_quotes_masked)
   expr_quotes_masked <- replace_operators_binary_word(expr_quotes_masked)
   expr_quotes_masked <- replace_operators_unary_prefix(expr_quotes_masked)
@@ -109,9 +109,9 @@ parse_expression <- function(expr, tidyverse = FALSE) {
   expr_out <- paste(expr_out_split, collapse = "")
 
   # convert from string to R expression
-  call_out <- str2lang(expr_out)# most errors will happen on this line! try-catch here?
+  call_out <- str2lang(expr_out) # most errors will happen on this line! try-catch here?
 
-  # replace SQL names with R names
+  # replace SQL functions with R functions
   if (tidyverse) {
     translation_environment_direct <- translation_environment_direct_tidyverse
     translation_environment_indirect <- translation_environment_indirect_tidyverse
@@ -122,8 +122,6 @@ parse_expression <- function(expr, tidyverse = FALSE) {
   call_out <- do.call(substitute, list(call_out, translation_environment_direct))
   call_out <- partial_eval(call_out, translation_environment_indirect)
   call_out <- unpipe(call_out)
-
-  # replace functions that require
 
   call_out
 }

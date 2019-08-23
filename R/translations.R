@@ -52,7 +52,6 @@ translations_direct_generic <- list(
 )
 
 translations_direct_base <- list(
-  #count_distinct = quote(length %>% unique), # handle elsewhere?
   length = quote(nchar),
   lower = quote(tolower),
   upper = quote(toupper),
@@ -60,7 +59,8 @@ translations_direct_base <- list(
 )
 
 translations_direct_tidyverse <- list(
-  #count_distinct = quote(n_distinct), # handle elsewhere?
+  #count = quote(n), # handle elsewhere because it only works with no args
+  #count_distinct = quote(n_distinct), # handle elsewhere because it conflicts with the code for the base R case
   length = quote(str_length),
   lower = quote(str_to_lower),
   upper = quote(str_to_upper),
