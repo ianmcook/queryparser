@@ -19,3 +19,7 @@ a character string containing the inputed SQL expression with the
 Extracts the column alias from an expression used in the SELECT
   list of a SQL query
 }
+\examples{
+expr <- "round(AVG(arr_delay)) AS avg_delay"
+extract_alias(expr)
+}

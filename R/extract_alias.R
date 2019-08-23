@@ -22,6 +22,10 @@
 #' @return a character string containing the inputed SQL expression with the
 #'   column alias assignment removed (if it was present) and with the assigned
 #'   alias as its name
+#' @examples
+#' expr <- "round(AVG(arr_delay)) AS avg_delay"
+#' extract_alias(expr)
+#' @export
 extract_alias <- function(expr) {
   expr <- trimws(expr, whitespace = ws_regex)
 
@@ -60,7 +64,6 @@ extract_alias <- function(expr) {
     advance_positions <- 1
     seek(rc, pos)
     char <- readChar(rc, 1L)
-    NULL
 
     if (char %in% quote_chars) {
       if (pos == step_positions[1]) {
@@ -70,16 +73,20 @@ extract_alias <- function(expr) {
         in_quotes <- TRUE
         quo_char <- char
       } else if (char == quo_char && !char_is_quote_escape) {
-        seek(rc, -2L, "current")
-        esc_quo <- c(quo_char, "\\")
-        if (readChar(rc, 1L, useBytes = TRUE) %in% esc_quo) {
-          char_is_quote_escape <- TRUE
-        } else {
-          char_is_quote_escape <- FALSE
+        if (pos == 0) {
           in_quotes <- FALSE
-          rm(quo_char)
+        } else {
+          seek(rc, -2L, "current")
+          esc_quo <- c(quo_char, "\\")
+          if (readChar(rc, 1L, useBytes = TRUE) %in% esc_quo) {
+            char_is_quote_escape <- TRUE
+          } else {
+            char_is_quote_escape <- FALSE
+            in_quotes <- FALSE
+            rm(quo_char)
+          }
+          seek(rc, 1L, "current")
         }
-        seek(rc, 1L, "current")
       }
     }
 
@@ -157,6 +164,8 @@ extract_alias <- function(expr) {
   }
 
   if (is.null(column_alias) || is.null(expr_without_alias)) {
+    expr
+  } else if (tolower(column_alias) %in% sql_reserved_words && !quoted_string_at_end) {
     expr
   } else {
     names(expr_without_alias) <- column_alias
