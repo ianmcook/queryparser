@@ -15,3 +15,14 @@ NeedsCompilation: no
 License: Apache License 2.0 | file LICENSE
 Encoding: UTF-8
 RoxygenNote: 6.1.1
+Collate: 
+    'collapse_whitespace.R'
+    'common.R'
+    'extract_alias.R'
+    'lex_query.R'
+    'parse_expression.R'
+    'parse_query.R'
+    'partial_eval.R'
+    'translations.R'
+    'process_translations.R'
+    'unpipe.R'
