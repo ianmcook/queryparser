@@ -24,10 +24,17 @@ digit_regex <- "[0-9]"
 
 non_operator_regex <- "[^<>=%!]"
 
-characters_expecting_right_operands <- c(
+sql_characters_expecting_right_operands <- c(
   ">", "<", "=", "&", "|",
   "+", "-", "*", "/", "%",
   "^", "!", "~"
+)
+
+sql_words_expecting_right_operands <- c(
+  "and", "or", "as", "from", "not",
+  "in", "div", "between",
+  "all", "any", "some",
+  "like", "ilike", "regexp", "iregexp", "rlike"
 )
 
 sql_reserved_words <- c(
@@ -287,13 +294,9 @@ ends_with_operator_expecting_right_operand <- function(expr) {
   expr <- trimws(expr, whitespace = ws_regex)
   expr_length <- nchar(expr)
   last_char <- substr(expr, expr_length, expr_length)
-  if (last_char %in% characters_expecting_right_operands) return(TRUE)
+  if (last_char %in% sql_characters_expecting_right_operands) return(TRUE)
 
-  words_expecting_right_operands <- c(
-    names(translations_operators_unary_prefix),
-    names(translations_operators_binary_word)
-  )
-  words_regex <- paste0("(", paste(words_expecting_right_operands, collapse = "|"), ")")
-  if (grepl(paste0(words_regex, "$"), expr, ignore.case = TRUE)) return(TRUE)
+  words_regex <- paste0("(", paste(sql_words_expecting_right_operands, collapse = "|"), ")")
+  if (grepl(paste0("\\b",words_regex, "$"), expr, ignore.case = TRUE)) return(TRUE)
   FALSE
 }
