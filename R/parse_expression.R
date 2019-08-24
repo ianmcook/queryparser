@@ -26,11 +26,17 @@
 #' parse_expression(expr)
 #' @details The expression must not end with a column alias assignment. Use
 #'   \code{\link{extract_alias}} to extract column alias assignments.
+#'
+#'   The expression must not contain any unquoted whitespace characters except
+#'   spaces, and there must be no unquoted runs or two or more spaces. Use
+#'   \code{\link{collapse_whitespace}} to satisfy this whitespace requirement.
 #' @export
 parse_expression <- function(expr, tidyverse = FALSE) {
   expr <- trimws(expr, whitespace = ws_regex)
 
-  # extract the column alias if there is one
+  # REMOVE THIS LATER
+  # BECAUSE WE EXPECT THE CALLING FUNCTION TO REMOVE THE ALIAS
+  # BUT KEEP IT NOW FOR TESTING PURPOSES
   expr <- extract_alias(expr)
   column_alias <- names(expr)
 

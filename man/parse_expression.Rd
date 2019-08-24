@@ -22,6 +22,10 @@ Parses a SQL expression into an R expression
 \details{
 The expression must not end with a column alias assignment. Use
   \code{\link{extract_alias}} to extract column alias assignments.
+
+  The expression must not contain any unquoted whitespace characters except
+  spaces, and there must be no unquoted runs or two or more spaces. Use
+  \code{\link{collapse_whitespace}} to satisfy this whitespace requirement.
 }
 \examples{
 expr <- "round(AVG(arr_delay))"
