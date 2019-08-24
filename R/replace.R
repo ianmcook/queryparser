@@ -21,6 +21,23 @@ replace_null_with_na <- function(expr_quotes_masked) {
   )
 }
 
+replace_in_operator <- function(expr_quotes_masked) {
+  # need to change this when adding support for subqueries
+  expr_quotes_masked <- gsub(
+    "\\bnot in ?\\(",
+    "%nin% c(", # this `%nin%` is replaced later by replace_nin()
+    expr_quotes_masked,
+    ignore.case = TRUE
+  )
+  expr_quotes_masked <- gsub(
+    "\\bin ?\\(",
+    "%in% c(",
+    expr_quotes_masked,
+    ignore.case = TRUE
+  )
+  expr_quotes_masked
+}
+
 replace_operators_binary_symbolic <- function(expr_quotes_masked) {
   for (i in seq_along(translations_operators_binary_symbolic)) {
     expr_quotes_masked <- gsub(
@@ -83,6 +100,22 @@ replace_all_distinct_keyword <- function(expr_quotes_masked) {
     ignore.case = TRUE
   )
   expr_quotes_masked
+}
+
+replace_nin <- function(expr) {
+  if (length(expr) == 1) {
+    return(expr)
+  } else {
+    if (expr[[1]] == quote(`%nin%`)) {
+      expr[[1]] <- quote(`%in%`)
+      return(as.call(lapply(
+        str2lang(paste0("!(", deparse(expr),")")),
+        replace_nin
+      )))
+    } else {
+      return(as.call(lapply(expr, replace_nin)))
+    }
+  }
 }
 
 replace_distinct_functions <- function(expr) {

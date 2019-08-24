@@ -51,14 +51,13 @@ translations_operators_binary_symbolic <- list(
 translations_operators_binary_word <- list(
   `and` = "&&",
   `or` = "||",
-  `in` = "%in%",
-  `as` = ","
+  `div` = "%/%",
+
+  `as` = "," # used in cast function
 
 
-  # maybe do something like this:
-  #`in(` = "%in% c(",
-  #`in (` = "%in% c("
 
+  # `in` and `not in` are handled elsewhere
 )
 
 translations_operators_unary_prefix <- list(

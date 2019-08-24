@@ -95,6 +95,7 @@ parse_expression <- function(expr, tidyverse = FALSE) {
   expr_quotes_masked <- replace_operators_unary_postfix(expr_quotes_masked) # this must be second
   expr_quotes_masked <- replace_operators_binary_symbolic(expr_quotes_masked)
   expr_quotes_masked <- replace_null_with_na(expr_quotes_masked)
+  expr_quotes_masked <- replace_in_operator(expr_quotes_masked)
   expr_quotes_masked <- replace_operators_binary_word(expr_quotes_masked)
   expr_quotes_masked <- replace_operators_unary_prefix(expr_quotes_masked)
   expr_quotes_masked <- quote_data_types(expr_quotes_masked) # this must be last
@@ -103,8 +104,10 @@ parse_expression <- function(expr, tidyverse = FALSE) {
 
   # RESUME HERE
 
-  # DEAL WITH
+  # DEAL WITH:
   #   * (the star)
+  #      as a bare expression
+  #      in the count function
 
 
   # unmask text enclosed in quotations
@@ -135,6 +138,7 @@ parse_expression <- function(expr, tidyverse = FALSE) {
     translation_environment_indirect <- translation_environment_indirect_base
   }
   call_out <- replace_distinct_functions(call_out) # this must be first
+  call_out <- replace_nin(call_out)
   call_out <- do.call(substitute, list(call_out, translation_environment_direct))
   call_out <- partial_eval(call_out, translation_environment_indirect)
   call_out <- unpipe(call_out)
