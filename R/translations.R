@@ -52,7 +52,6 @@ translations_operators_binary_word <- list(
   `and` = "&&",
   `or` = "||",
   `in` = "%in%",
-  `null` = "NA",
   `as` = ","
 
 

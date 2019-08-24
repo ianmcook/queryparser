@@ -25,4 +25,5 @@ Collate:
     'partial_eval.R'
     'translations.R'
     'process_translations.R'
+    'replace.R'
     'unpipe.R'
