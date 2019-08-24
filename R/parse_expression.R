@@ -133,9 +133,7 @@ make_function_names_and_keywords_lowercase <- function(expr_quotes_masked) {
     names(translations_indirect_generic),
     names(translations_indirect_base),
     names(translations_indirect_tidyverse),
-    names(translations_indirect_generic_agg),
-    names(translations_indirect_base_agg),
-    names(translations_indirect_tidyverse_agg)
+    sql_aggregate_functions
   ))
   for (x in all_names) {
     expr_quotes_masked <- gsub(paste0("\\b",x,"\\b"), tolower(x), expr_quotes_masked, ignore.case = TRUE)
