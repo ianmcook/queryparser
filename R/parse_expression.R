@@ -80,7 +80,7 @@ parse_expression <- function(expr, tidyverse = FALSE) {
   close(rc_out)
 
   # make the SQL query into a valid R expression
-  expr_quotes_masked <- make_function_names_lowercase(expr_quotes_masked)
+  expr_quotes_masked <- make_function_names_and_keywords_lowercase(expr_quotes_masked)
 
   expr_quotes_masked <- replace_all_distinct_keyword(expr_quotes_masked) # this must be first
   expr_quotes_masked <- replace_operators_unary_postfix(expr_quotes_masked) # this must be second
@@ -121,16 +121,22 @@ parse_expression <- function(expr, tidyverse = FALSE) {
   call_out
 }
 
-make_function_names_lowercase <- function(expr_quotes_masked) {
-  all_names <- c(
+make_function_names_and_keywords_lowercase <- function(expr_quotes_masked) {
+  all_names <- unique(c(
     names(data_types),
     names(translations_operators_binary_word),
     names(translations_operators_unary_prefix),
     names(translations_operators_unary_postfix),
     names(translations_direct_generic),
     names(translations_direct_base),
-    names(translations_direct_tidyverse)
-  )
+    names(translations_direct_tidyverse),
+    names(translations_indirect_generic),
+    names(translations_indirect_base),
+    names(translations_indirect_tidyverse),
+    names(translations_indirect_generic_agg),
+    names(translations_indirect_base_agg),
+    names(translations_indirect_tidyverse_agg)
+  ))
   for (x in all_names) {
     expr_quotes_masked <- gsub(paste0("\\b",x,"\\b"), tolower(x), expr_quotes_masked, ignore.case = TRUE)
   }
