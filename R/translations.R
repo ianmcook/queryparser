@@ -72,8 +72,12 @@ translations_operators_unary_postfix <- list(
 )
 
 translations_direct_generic <- list(
+
+  # constants
   true = quote(TRUE),
   false = quote(FALSE),
+
+  # mathematical functions
   ceil = quote(ceiling),
   is_nan = quote(is.nan),
   is_inf = quote(is.infinite),
@@ -85,22 +89,32 @@ translations_direct_generic <- list(
   pow = quote(`^`),
   power = quote(`^`),
   quotient = quote(`%/%`)
+
 )
 
 translations_direct_base <- list(
+
+  # string functions
   length = quote(nchar),
   lower = quote(tolower),
   upper = quote(toupper),
   to_date = quote(as.Date),
   trim = quote(trimws)
+
 )
 
 translations_direct_tidyverse <- list(
+
+  # string functions
   length = quote(str_length),
   lower = quote(str_to_lower),
   upper = quote(str_to_upper),
   to_date = quote(as_date),
-  trim = quote(str_trim)
+  trim = quote(str_trim),
+
+  # conditional functions
+  nullif = quote(na_if)
+
   # add other lubridate, stringr, and dplyr functions
 )
 
@@ -122,6 +136,7 @@ translations_indirect_base <- list(
 )
 
 translations_indirect_tidyverse <- list(
+
 )
 
 translations_indirect_generic_agg <- list(
