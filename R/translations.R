@@ -125,7 +125,7 @@ translations_indirect_generic <- list(
   cast = function(x, y = NULL) {
     assign("y", y, envir = .GlobalEnv)
     if (is.null(y)) stop("Unspecified data type in CAST", call. = FALSE)
-    data_type <- data_types[[gsub(" ?\\(.+", "", y)]]
+    data_type <- sql_data_types[sql_data_types == gsub(" ?\\(.+", "", y)][[1]]
     if (is.null(data_type)) stop("Unrecognized data type in CAST", call. = FALSE)
     func <- str2lang(paste0("as.", data_type))
     eval(substitute(quote(func(x))))
