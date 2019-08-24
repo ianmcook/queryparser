@@ -106,6 +106,7 @@ extract_alias <- function(expr) {
 
     if (
         !in_quotes && !char %in% quote_chars &&
+        !possible_word_at_end &&
         !is_whitespace_character(char) &&
         !is_word_character(char)) {
       break;
