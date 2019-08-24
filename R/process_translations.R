@@ -52,7 +52,9 @@ for (i in seq_along(translations_direct_for_tidyverse)) {
 
 translations_indirect_for_base <- c(
   translations_indirect_generic,
-  translations_indirect_base
+  translations_indirect_base,
+  translations_indirect_generic_agg,
+  translations_indirect_base_agg
 )
 for (i in seq_along(translations_indirect_for_base)) {
   do.call(
@@ -67,7 +69,9 @@ for (i in seq_along(translations_indirect_for_base)) {
 
 translations_indirect_for_tidyverse <- c(
   translations_indirect_generic,
-  translations_indirect_tidyverse
+  translations_indirect_tidyverse,
+  translations_indirect_generic_agg,
+  translations_indirect_tidyverse_agg
 )
 for (i in seq_along(translations_indirect_for_tidyverse)) {
   do.call(

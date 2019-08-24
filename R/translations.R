@@ -44,7 +44,6 @@ translations_operators_unary_postfix <- list(
 translations_direct_generic <- list(
   true = quote(TRUE),
   false = quote(FALSE),
-  avg = quote(mean),
   ceil = quote(ceiling),
   mod = quote(`%%`),
   negative = quote(`-`),
@@ -55,7 +54,6 @@ translations_direct_generic <- list(
 )
 
 translations_direct_base <- list(
-  count = quote(length),
   length = quote(nchar),
   lower = quote(tolower),
   upper = quote(toupper),
@@ -63,8 +61,6 @@ translations_direct_base <- list(
 )
 
 translations_direct_tidyverse <- list(
-  #count = quote(n), # handle elsewhere because it only works with no args
-  #count_distinct = quote(n_distinct), # handle elsewhere because it conflicts with the code for the base R case
   length = quote(str_length),
   lower = quote(str_to_lower),
   upper = quote(str_to_upper),
@@ -81,4 +77,52 @@ translations_indirect_base <- list(
 )
 
 translations_indirect_tidyverse <- list(
+)
+
+translations_indirect_generic_agg <- list(
+  avg = function(x) {
+    eval(substitute(quote(mean(x, na.rm = TRUE))))
+  },
+  group_concat = function(x, sep = ", ") {
+    eval(substitute(quote(paste0(x, collapse = sep))))
+  },
+  max = function(x) {
+    eval(substitute(quote(max(x, na.rm = TRUE))))
+  },
+  min = function(x) {
+    eval(substitute(quote(min(x, na.rm = TRUE))))
+  },
+  std = function(x) {
+    eval(substitute(quote(sd(x, na.rm = TRUE))))
+  },
+  stddev = function(x) {
+    eval(substitute(quote(sd(x, na.rm = TRUE))))
+  },
+  sum = function(x) {
+    eval(substitute(quote(sum(x, na.rm = TRUE))))
+  },
+  percentile = function(x, p) {
+    eval(substitute(quote(quantile(x, p, na.rm = TRUE))))
+  },
+  variance = function(x) {
+    eval(substitute(quote(var(x, na.rm = TRUE))))
+  }
+)
+
+translations_indirect_base_agg <- list(
+
+  # for count all, use into length() for count(*), otherwise length(!is.na(x))
+  # for count distinct, use length(unique(x)) if only one column,
+  #   but it's unclear how best to handle the multiple columns case
+  #   e.g. length(unique(mtcars[c("gear", "carb"),])) is 11
+  #     ( that's the right answer, and what mtcars %>% summarise(n_distinct(gear, carb)) returns )
+  #   but these give the wrong ansers:
+  #      mtcars %>% summarise(length(unique(gear, carb))) is 28
+  #      mtcars %>% summarise(length(unique(c(gear, carb)))) is 7
+  #   the safest thing would probably be to limit it to the one-variable case
+)
+
+translations_indirect_tidyverse_agg <- list(
+  # for count all, use n() for count(*), otherwise length(!is.na(x))
+  # for count distinct, use n_distinct(...)
 )
