@@ -88,7 +88,10 @@ translations_direct_generic <- list(
   positive = quote(`+`),
   pow = quote(`^`),
   power = quote(`^`),
-  quotient = quote(`%/%`)
+  quotient = quote(`%/%`),
+
+  # string functions
+  concat = quote(paste0)
 
 )
 
@@ -129,10 +132,19 @@ translations_indirect_generic <- list(
     if (is.null(data_type)) stop("Unrecognized data type in CAST", call. = FALSE)
     func <- str2lang(paste0("as.", data_type))
     eval(substitute(quote(func(x))))
-  }
+  },
+  regexp_replace = function(x, pattern, replacement) {
+    eval(substitute(quote(gsub(pattern, replacement, x))))
+  },
+  concat_ws = function(sep, ...) {
+    eval(substitute(quote(paste(..., sep = sep))))
+  } # I was worried that the sep before the equals sign would get replaced too, but it did not
 )
 
 translations_indirect_base <- list(
+  nullif = function(x, y) {
+    eval(substitute(quote(ifelse(is.na(x), x, y))))
+  }
 )
 
 translations_indirect_tidyverse <- list(
