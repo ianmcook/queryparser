@@ -234,19 +234,6 @@ sql_reserved_words <- c(
   "with"
 )
 
-sql_aggregate_functions <- c(
-  "avg",
-  "count",
-  "group_concat",
-  "max",
-  "min",
-  "std",
-  "stddev",
-  "sum",
-  "percentile",
-  "variance"
-)
-
 is_whitespace_character <- function(char, useBytes = FALSE) {
   grepl(ws_regex, char, useBytes = useBytes)
 }

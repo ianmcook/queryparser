@@ -15,6 +15,12 @@
 #' @include common.R translations.R
 NULL
 
+sql_aggregate_functions <- c(
+  names(translations_indirect_generic_agg),
+  names(translations_indirect_base_agg),
+  names(translations_indirect_tidyverse_agg)
+)
+
 translation_environment_direct_base <- new.env()
 translation_environment_direct_tidyverse <- new.env()
 translation_environment_indirect_base <- new.env()
