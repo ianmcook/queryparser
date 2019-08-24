@@ -12,6 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+#' @include process_translations.R
+NULL
+
 #' SQL expression parser
 #'
 #' @description Parses a SQL expression into an R expression
@@ -84,6 +87,7 @@ parse_expression <- function(expr, tidyverse = FALSE) {
   expr_quotes_masked <- replace_operators_binary_symbolic(expr_quotes_masked)
   expr_quotes_masked <- replace_operators_binary_word(expr_quotes_masked)
   expr_quotes_masked <- replace_operators_unary_prefix(expr_quotes_masked)
+  expr_quotes_masked <- quote_data_types(expr_quotes_masked) # this must be last
 
 
 
@@ -119,6 +123,7 @@ parse_expression <- function(expr, tidyverse = FALSE) {
 
 make_function_names_lowercase <- function(expr_quotes_masked) {
   all_names <- c(
+    names(data_types),
     names(translations_operators_binary_word),
     names(translations_operators_unary_prefix),
     names(translations_operators_unary_postfix),
@@ -130,6 +135,15 @@ make_function_names_lowercase <- function(expr_quotes_masked) {
     expr_quotes_masked <- gsub(paste0("\\b",x,"\\b"), tolower(x), expr_quotes_masked, ignore.case = TRUE)
   }
   expr_quotes_masked
+}
+
+quote_data_types <- function(expr_quotes_masked) {
+  data_type_names <- paste(names(data_types), collapse = "|")
+  gsub(
+    paste0("\\b((",data_type_names,")\\b( ?\\([0-9, ]*\\))?)"),
+    "'\\1'",
+    expr_quotes_masked
+  )
 }
 
 replace_operators_binary_symbolic <- function(expr_quotes_masked) {

@@ -15,6 +15,25 @@
 #' @include common.R
 NULL
 
+data_types <- list(
+  `string` = "character",
+  `char` = "character",
+  `varchar` = "character",
+  `boolean` = "logical",
+  `int` = "integer",
+  `integer` = "integer",
+  `bigint` = "integer",
+  `smallint` = "integer",
+  `tinyint` = "integer",
+  `double` = "double",
+  `real` = "double",
+  `float` = "single",
+  `decimal` = "numeric",
+  `timestamp` = "POSIXct"
+
+  # TBD: translate cast as timestamp to as_datetime for tidyverse
+)
+
 translations_operators_binary_symbolic <- list(
   `%` = "%%",
   `<>` = "!=",
@@ -57,6 +76,7 @@ translations_direct_base <- list(
   length = quote(nchar),
   lower = quote(tolower),
   upper = quote(toupper),
+  to_date = quote(as.Date),
   trim = quote(trimws)
 )
 
@@ -64,12 +84,22 @@ translations_direct_tidyverse <- list(
   length = quote(str_length),
   lower = quote(str_to_lower),
   upper = quote(str_to_upper),
+  to_date = quote(as_date),
   trim = quote(str_trim)
+  # add other lubridate, stringr, and dplyr functions
 )
 
 translations_indirect_generic <- list(
   ln = function(x) {
     eval(substitute(quote(log(x, base = exp(1)))))
+  },
+  cast = function(x, y = NULL) {
+    assign("y", y, envir = .GlobalEnv)
+    if (is.null(y)) stop("Unspecified data type in CAST", call. = FALSE)
+    data_type <- data_types[[gsub(" ?\\(.+", "", y)]]
+    if (is.null(data_type)) stop("Unrecognized data type in CAST", call. = FALSE)
+    func <- str2lang(paste0("as.", data_type))
+    eval(substitute(quote(func(x))))
   }
 )
 
