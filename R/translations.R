@@ -43,7 +43,10 @@ translations_operators_binary_symbolic <- list(
 translations_operators_binary_word <- list(
   `and` = "&&",
   `or` = "||",
-  `in` = "%in%"
+  `in` = "%in%",
+  `null` = "NA",
+  `as` = ","
+
 
   # maybe do something like this:
   #`in(` = "%in% c(",
@@ -64,8 +67,12 @@ translations_direct_generic <- list(
   true = quote(TRUE),
   false = quote(FALSE),
   ceil = quote(ceiling),
+  is_nan = quote(is.nan),
+  is_inf = quote(is.infinite),
   mod = quote(`%%`),
   negative = quote(`-`),
+  pmax = quote(greatest),
+  pmin = quote(least),
   positive = quote(`+`),
   pow = quote(`^`),
   power = quote(`^`),
