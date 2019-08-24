@@ -43,6 +43,7 @@ parse_expression <- function(expr, tidyverse = FALSE) {
   len <- seek(rc_in, 0L) - 1L
 
   rc_out <- rawConnection(raw(0L), "r+")
+  rc_quo <- rawConnection(raw(0L), "r+")
 
   in_quotes <- FALSE
   was_in_quotes <- FALSE
@@ -67,6 +68,7 @@ parse_expression <- function(expr, tidyverse = FALSE) {
 
     if (in_quotes && was_in_quotes) {
       writeChar("\U001", rc_out, eos = NULL)
+      writeChar(char, rc_quo, eos = NULL)
     } else {
       writeChar(char, rc_out, eos = NULL)
     }
@@ -76,8 +78,12 @@ parse_expression <- function(expr, tidyverse = FALSE) {
   seek(rc_out, 0L)
   expr_quotes_masked <- readChar(rc_out, len)
 
+  seek(rc_quo, 0L)
+  masked_chars <- readChar(rc_quo, len)
+
   close(rc_in)
   close(rc_out)
+  close(rc_quo)
 
   # make the SQL query into a valid R expression
   expr_quotes_masked <- make_function_names_and_keywords_lowercase(expr_quotes_masked)
@@ -98,9 +104,16 @@ parse_expression <- function(expr, tidyverse = FALSE) {
 
 
   # unmask text enclosed in quotations
-  expr_out_split <- strsplit(expr_quotes_masked, "")[[1]]
-  expr_out_split[expr_out_split == "\U001"] <- strsplit(expr, "")[[1]][expr_out_split == "\U001"]
-  expr_out <- paste(expr_out_split, collapse = "")
+  expr_quotes_masked_split <- strsplit(expr_quotes_masked, "")[[1]]
+  masked_chars_split <- strsplit(masked_chars, "")[[1]]
+  expr_out <- paste(
+    replace(
+      expr_quotes_masked_split,
+      expr_quotes_masked_split == "\U001",
+      masked_chars_split
+    ),
+    collapse = ""
+  )
 
   # convert from string to R expression
   call_out <- str2lang(expr_out) # most errors will happen on this line! try-catch here?
