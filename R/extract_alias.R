@@ -170,6 +170,8 @@ extract_alias <- function(expr) {
 
   if (is.null(column_alias) || is.null(expr_without_alias)) {
     expr
+  } else if (ends_with_operator_expecting_right_operand(expr_without_alias)) {
+    expr
   } else if (tolower(column_alias) %in% sql_reserved_words && !quoted_string_at_end) {
     expr
   } else {
