@@ -108,16 +108,20 @@ parse_expression <- function(expr, tidyverse = FALSE) {
 
 
   # unmask text enclosed in quotations
-  expr_quotes_masked_split <- strsplit(expr_quotes_masked, "")[[1]]
-  masked_chars_split <- strsplit(masked_chars, "")[[1]]
-  expr_out <- paste(
-    replace(
-      expr_quotes_masked_split,
-      expr_quotes_masked_split == "\U001",
-      masked_chars_split
-    ),
-    collapse = ""
-  )
+  if (length(masked_chars) < 1 || nchar(masked_chars) < 1) {
+    expr_out <- expr_quotes_masked
+  } else {
+    expr_quotes_masked_split <- strsplit(expr_quotes_masked, "")[[1]]
+    masked_chars_split <- strsplit(masked_chars, "")[[1]]
+    expr_out <- paste(
+      replace(
+        expr_quotes_masked_split,
+        expr_quotes_masked_split == "\U001",
+        masked_chars_split
+      ),
+      collapse = ""
+    )
+  }
 
   # convert from string to R expression
   call_out <- str2lang(expr_out) # most errors will happen on this line! try-catch here?
