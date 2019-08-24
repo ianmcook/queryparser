@@ -15,11 +15,17 @@
 #' @include common.R translations.R
 NULL
 
-sql_aggregate_functions <- c(
+sql_data_types <- unique(c(
+  names(translations_data_types_generic),
+  names(translations_data_types_base),
+  names(translations_data_types_tidyverse)
+))
+
+sql_aggregate_functions <- unique(c(
   names(translations_indirect_generic_agg),
   names(translations_indirect_base_agg),
   names(translations_indirect_tidyverse_agg)
-)
+))
 
 translation_environment_direct_base <- new.env()
 translation_environment_direct_tidyverse <- new.env()

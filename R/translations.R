@@ -15,7 +15,7 @@
 #' @include common.R
 NULL
 
-data_types <- list(
+translations_data_types_generic <- list(
   `string` = "character",
   `char` = "character",
   `varchar` = "character",
@@ -28,11 +28,19 @@ data_types <- list(
   `double` = "double",
   `real` = "double",
   `float` = "single",
-  `decimal` = "numeric",
-  `timestamp` = "POSIXct"
-
-  # TBD: translate cast as timestamp to as_datetime for tidyverse
+  `decimal` = "numeric"
 )
+
+translations_data_types_base <- list(
+  `timestamp` = "POSIXct",
+  `interval` = "difftime"
+)
+
+translations_data_types_tidyverse <- list(
+  `timestamp` = "datetime",
+  `interval` = "duration"
+)
+# TBD: translate cast as timestamp to as_datetime for tidyverse
 
 translations_operators_binary_symbolic <- list(
   `%` = "%%",

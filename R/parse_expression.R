@@ -122,8 +122,8 @@ parse_expression <- function(expr, tidyverse = FALSE) {
 }
 
 make_function_names_and_keywords_lowercase <- function(expr_quotes_masked) {
-  all_names <- unique(c(
-    names(data_types),
+  all_names <- paste(unique(c(
+    sql_data_types,
     names(translations_operators_binary_word),
     names(translations_operators_unary_prefix),
     names(translations_operators_unary_postfix),
@@ -144,7 +144,7 @@ make_function_names_and_keywords_lowercase <- function(expr_quotes_masked) {
 }
 
 quote_data_types <- function(expr_quotes_masked) {
-  data_type_names <- paste(names(data_types), collapse = "|")
+  data_type_names <- paste(sql_data_types, collapse = "|")
   gsub(
     paste0("\\b((",data_type_names,")\\b( ?\\([0-9, ]*\\))?)"),
     "'\\1'",
