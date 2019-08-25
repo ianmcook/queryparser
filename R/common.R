@@ -274,10 +274,10 @@ keyword_starts_here <- function(rc, keyword) {
   })
   if (at_start) {
     begin_regex <- ""
-    nchars <- nchar(keyword) + 1L
+    nchars <- nchar(keyword, type = "bytes") + 1L
   } else {
     begin_regex <- non_word_char_regex
-    nchars <- nchar(keyword) + 2L
+    nchars <- nchar(keyword, type = "bytes") + 2L
   }
   chars <- readChar(rc, nchars)
   keyword_regex <- paste0(
@@ -292,7 +292,7 @@ keyword_starts_here <- function(rc, keyword) {
 
 ends_with_operator_expecting_right_operand <- function(expr) {
   expr <- trimws(expr, whitespace = ws_regex)
-  expr_length <- nchar(expr)
+  expr_length <- nchar(expr, type = "bytes")
   last_char <- substr(expr, expr_length, expr_length)
   if (last_char %in% sql_characters_expecting_right_operands) return(TRUE)
 

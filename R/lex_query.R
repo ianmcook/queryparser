@@ -280,7 +280,7 @@ lex_comma_list <- function(comma_list) {
   if (is.null(pos_comma)) {
     trimws(comma_list, whitespace = ws_regex)
   } else {
-    original_encoding <- Encoding(query)
+    original_encoding <- Encoding(comma_list)
     Encoding(comma_list) <- "bytes"
     out <- trimws(
       substring(comma_list, c(1, pos_comma + 1), c(pos_comma - 1, len)),
