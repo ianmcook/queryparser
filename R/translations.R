@@ -124,7 +124,6 @@ translations_indirect_generic <- list(
     eval(substitute(quote(log(x, base = exp(1)))))
   },
   cast = function(x, y = NULL) {
-    assign("y", y, envir = .GlobalEnv)
     if (is.null(y)) stop("Unspecified data type in CAST", call. = FALSE)
     data_type <- sql_data_types[sql_data_types == gsub(" ?\\(.+", "", y)][[1]]
     if (is.null(data_type)) stop("Unrecognized data type in CAST", call. = FALSE)
@@ -152,6 +151,9 @@ translations_indirect_tidyverse <- list(
 translations_indirect_generic_agg <- list(
   avg = function(x) {
     eval(substitute(quote(mean(x, na.rm = TRUE))))
+  },
+  count = function(x) {
+    eval(substitute(quote(sum(!is.na(x)))))
   },
   group_concat = function(x, sep = ", ") {
     eval(substitute(quote(paste0(x, collapse = sep))))
@@ -193,6 +195,10 @@ translations_indirect_base_agg <- list(
 )
 
 translations_indirect_tidyverse_agg <- list(
+  count_star = function() {
+    eval(substitute(quote(n())))
+  }
+
   # for count all, use n() for count(*), otherwise length(!is.na(x))
   # for count distinct, use n_distinct(...)
 )

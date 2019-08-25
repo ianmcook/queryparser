@@ -93,6 +93,7 @@ parse_expression <- function(expr, tidyverse = FALSE) {
 
   expr_quotes_masked <- replace_all_distinct_keyword(expr_quotes_masked) # this must be first
   expr_quotes_masked <- replace_operators_unary_postfix(expr_quotes_masked) # this must be second
+  expr_quotes_masked <- replace_count_star(expr_quotes_masked)
   expr_quotes_masked <- replace_operators_binary_symbolic(expr_quotes_masked)
   expr_quotes_masked <- replace_null_with_na(expr_quotes_masked)
   expr_quotes_masked <- replace_in_operator(expr_quotes_masked)

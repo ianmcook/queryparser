@@ -102,6 +102,15 @@ replace_all_distinct_keyword <- function(expr_quotes_masked) {
   expr_quotes_masked
 }
 
+replace_count_star <- function(expr_quotes_masked) {
+  expr_quotes_masked <- gsub(
+    paste0("\\bcount ?\\( ?\\*"),
+    "count_star(",
+    expr_quotes_masked,
+    ignore.case = TRUE
+  )
+}
+
 replace_nin <- function(expr) {
   if (length(expr) == 1) {
     return(expr)
