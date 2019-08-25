@@ -13,10 +13,11 @@
 # limitations under the License.
 
 partial_eval <- function(expr, envir) {
+  if (is.call(expr) && deparse(expr[[1]]) %in% ls(envir = envir)) {
+    expr <- eval(expr, envir)
+  }
   if (length(expr) == 1) {
     return(expr)
-  } else if (deparse(expr[[1]]) %in% ls(envir = envir)) {
-    return(as.call(lapply(eval(expr, envir), partial_eval, envir)))
   } else {
     return(as.call(lapply(expr, partial_eval, envir)))
   }
