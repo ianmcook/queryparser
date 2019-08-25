@@ -197,8 +197,8 @@ translations_indirect_base_agg <- list(
 translations_indirect_tidyverse_agg <- list(
   count_star = function() {
     eval(substitute(quote(n())))
+  },
+  count_distinct = function(...) {
+    eval(substitute(quote(n_distinct(..., na.rm = TRUE))))
   }
-
-  # for count all, use n() for count(*), otherwise length(!is.na(x))
-  # for count distinct, use n_distinct(...)
 )

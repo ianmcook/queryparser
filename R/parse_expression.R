@@ -138,7 +138,7 @@ parse_expression <- function(expr, tidyverse = FALSE) {
     translation_environment_direct <- translation_environment_direct_base
     translation_environment_indirect <- translation_environment_indirect_base
   }
-  call_out <- replace_distinct_functions(call_out) # this must be first
+  call_out <- replace_distinct_functions(call_out, tidyverse) # this must be first
   call_out <- replace_nin(call_out)
   call_out <- do.call(substitute, list(call_out, translation_environment_direct))
   call_out <- partial_eval(call_out, translation_environment_indirect)

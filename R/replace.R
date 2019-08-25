@@ -127,7 +127,10 @@ replace_nin <- function(expr) {
   }
 }
 
-replace_distinct_functions <- function(expr) {
+replace_distinct_functions <- function(expr, tidyverse = FALSE) {
+  if (tidyverse) {
+    sql_aggregate_functions <- setdiff(sql_aggregate_functions, "count")
+  }
   for (func in sql_aggregate_functions) {
     expr <- replace_distinct_function(expr, func)
   }
