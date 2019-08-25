@@ -290,6 +290,29 @@ keyword_starts_here <- function(rc, keyword) {
   grepl(keyword_regex,  chars, ignore.case = TRUE)
 }
 
+preceded_by_keyword <- function(rc, keyword) {
+  pos <- seek(rc, NA)
+  on.exit(seek(rc, pos))
+  nchars <- nchar(keyword, type = "bytes")
+  at_start <- tryCatch({
+    seek(rc, -nchars - 2L, "current")
+    FALSE
+  }, error = function(e) {
+    TRUE
+  })
+  if (at_start) {
+    return(FALSE)
+  }
+  chars <- readChar(rc, nchars + 1L)
+  keyword_regex <- paste0(
+    "^",
+    non_word_char_regex,
+    keyword,
+    "$"
+  )
+  grepl(keyword_regex,  chars, ignore.case = TRUE)
+}
+
 ends_with_operator_expecting_right_operand <- function(expr) {
   expr <- trimws(expr, whitespace = ws_regex)
   expr_length <- nchar(expr, type = "bytes")

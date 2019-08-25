@@ -126,7 +126,9 @@ lex_query <- function(query) {
 
       # identify beginnings of clauses
       if (keyword_starts_here(rc, "from")) {
-        pos_from <- append(pos_from, pos)
+        if (!preceded_by_keyword(rc, "distinct")) {
+          pos_from <- append(pos_from, pos)
+        }
       } else if (keyword_starts_here(rc, "where")) {
         pos_where <- append(pos_where, pos)
       } else if (keyword_starts_here(rc, "group by")) {
