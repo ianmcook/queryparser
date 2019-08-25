@@ -26,4 +26,5 @@ Collate:
     'translations.R'
     'process_translations.R'
     'replace.R'
+    'translate.R'
     'unpipe.R'

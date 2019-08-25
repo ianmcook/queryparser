@@ -182,16 +182,21 @@ translations_indirect_generic_agg <- list(
 )
 
 translations_indirect_base_agg <- list(
+  count_star = function() {
+    eval(substitute(quote(nrow(.))))
+  }
+  # count_distinct for base R is translated elsewhere
 
-  # for count all, use into length() for count(*), otherwise length(!is.na(x))
-  # for count distinct, use length(unique(x)) if only one column,
+  # for count all, we translate to nrow(.) for count(*), otherwise length(!is.na(x))
+  # for count distinct, we use length(unique(x)) if only one column,
   #   but it's unclear how best to handle the multiple columns case
   #   e.g. length(unique(mtcars[c("gear", "carb"),])) is 11
   #     ( that's the right answer, and what mtcars %>% summarise(n_distinct(gear, carb)) returns )
   #   but these give the wrong ansers:
   #      mtcars %>% summarise(length(unique(gear, carb))) is 28
   #      mtcars %>% summarise(length(unique(c(gear, carb)))) is 7
-  #   the safest thing would probably be to limit it to the one-variable case
+  #   the safest thing would probably be to keep it limited to the one-variable case
+
 )
 
 translations_indirect_tidyverse_agg <- list(

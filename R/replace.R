@@ -102,59 +102,20 @@ replace_all_distinct_keyword <- function(expr_quotes_masked) {
   expr_quotes_masked
 }
 
-replace_count_star <- function(expr_quotes_masked) {
-  expr_quotes_masked <- gsub(
+replace_star <- function(expr_quotes_masked, tidyverse) {
+  if (expr_quotes_masked == "*") {
+    if (tidyverse) {
+      return("everything()")
+    } else {
+      return(".")
+    }
+  }
+  gsub(
     paste0("\\bcount ?\\( ?\\*"),
     "count_star(",
     expr_quotes_masked,
     ignore.case = TRUE
   )
-}
-
-replace_nin <- function(expr) {
-  if (length(expr) == 1) {
-    return(expr)
-  } else {
-    if (expr[[1]] == quote(`%nin%`)) {
-      expr[[1]] <- quote(`%in%`)
-      return(as.call(lapply(
-        str2lang(paste0("!(", deparse(expr),")")),
-        replace_nin
-      )))
-    } else {
-      return(as.call(lapply(expr, replace_nin)))
-    }
-  }
-}
-
-replace_distinct_functions <- function(expr, tidyverse = FALSE) {
-  if (tidyverse) {
-    sql_aggregate_functions <- setdiff(sql_aggregate_functions, "count")
-  }
-  for (func in sql_aggregate_functions) {
-    expr <- replace_distinct_function(expr, func)
-  }
-  expr
-}
-
-replace_distinct_function <- function(expr, func) {
-  if (length(expr) == 1) {
-    return(expr)
-  } else {
-    if (expr[[1]] == str2lang(paste0(func, "_distinct"))) {
-      return(as.call(lapply(
-        str2lang(paste0(gsub(
-          paste0("^", func, "_distinct\\("),
-          paste0(func, "(unique("),
-          deparse(expr),
-          ignore.case = TRUE
-        ),
-        ")")), replace_distinct_function, func
-      )))
-    } else {
-      return(as.call(lapply(expr, replace_distinct_function, func)))
-    }
-  }
 }
 
 make_function_names_and_keywords_lowercase <- function(expr_quotes_masked) {

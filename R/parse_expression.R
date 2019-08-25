@@ -89,27 +89,16 @@ parse_expression <- function(expr, tidyverse = FALSE) {
   close(rc_quo)
 
   # make the SQL query into a valid R expression
-  expr_quotes_masked <- make_function_names_and_keywords_lowercase(expr_quotes_masked)
-
-  expr_quotes_masked <- replace_all_distinct_keyword(expr_quotes_masked) # this must be first
-  expr_quotes_masked <- replace_operators_unary_postfix(expr_quotes_masked) # this must be second
-  expr_quotes_masked <- replace_count_star(expr_quotes_masked)
+  expr_quotes_masked <- make_function_names_and_keywords_lowercase(expr_quotes_masked) # this must be first
+  expr_quotes_masked <- replace_all_distinct_keyword(expr_quotes_masked) # this must be second
+  expr_quotes_masked <- replace_operators_unary_postfix(expr_quotes_masked) # this must be third
+  expr_quotes_masked <- replace_star(expr_quotes_masked, tidyverse)
   expr_quotes_masked <- replace_operators_binary_symbolic(expr_quotes_masked)
   expr_quotes_masked <- replace_null_with_na(expr_quotes_masked)
   expr_quotes_masked <- replace_in_operator(expr_quotes_masked)
   expr_quotes_masked <- replace_operators_binary_word(expr_quotes_masked)
   expr_quotes_masked <- replace_operators_unary_prefix(expr_quotes_masked)
   expr_quotes_masked <- quote_data_types(expr_quotes_masked) # this must be last
-
-
-
-  # RESUME HERE
-
-  # DEAL WITH:
-  #   * (the star)
-  #      as a bare expression
-  #      in the count function
-
 
   # unmask text enclosed in quotations
   if (length(masked_chars) < 1 || nchar(masked_chars) < 1) {
@@ -127,22 +116,15 @@ parse_expression <- function(expr, tidyverse = FALSE) {
     )
   }
 
-  # convert from string to R expression
+  # parse the string and return an unevaluated R expression
   call_out <- str2lang(expr_out) # most errors will happen on this line! try-catch here?
 
-  # replace SQL functions with R functions
-  if (tidyverse) {
-    translation_environment_direct <- translation_environment_direct_tidyverse
-    translation_environment_indirect <- translation_environment_indirect_tidyverse
-  } else {
-    translation_environment_direct <- translation_environment_direct_base
-    translation_environment_indirect <- translation_environment_indirect_base
-  }
-  call_out <- replace_distinct_functions(call_out, tidyverse) # this must be first
-  call_out <- replace_nin(call_out)
-  call_out <- do.call(substitute, list(call_out, translation_environment_direct))
-  call_out <- partial_eval(call_out, translation_environment_indirect)
-  call_out <- unpipe(call_out)
+  # translate SQL functions to R functions
+  call_out <- translate_distinct_functions(call_out, tidyverse) # this must be second
+  call_out <- translate_nin(call_out)
+  call_out <- translate_direct(call_out, tidyverse)
+  call_out <- translate_indirect(call_out, tidyverse)
+  call_out <- unpipe(call_out) # this must be last
 
   call_out
 }
