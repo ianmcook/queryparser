@@ -99,6 +99,9 @@ lex_query <- function(query) {
       if (keyword_starts_here(rc, "case")) {
         stop("CASE expressions are not supported", call. = FALSE)
       }
+      if (keyword_starts_here(rc, "over")) {
+        stop("OVER clauses are not supported", call. = FALSE)
+      }
       if (keyword_starts_here(rc, "select")) {
         if (in_parens > 0) {
           stop("Subqueries are not supported", call. = FALSE)
