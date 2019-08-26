@@ -22,7 +22,7 @@
 #'   query
 #' @examples
 #' query <- "SELECT origin, dest,
-#'     COUNT(*) AS num_flts,
+#'     COUNT(flight) AS num_flts,
 #'     round(AVG(distance)) AS dist,
 #'     round(AVG(arr_delay)) AS avg_delay
 #'   FROM flights
