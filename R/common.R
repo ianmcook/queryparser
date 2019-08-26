@@ -268,6 +268,7 @@ keyword_starts_here <- function(rc, keyword) {
   on.exit(seek(rc, pos))
   at_start <- tryCatch({
     seek(rc, -1L, "current")
+    seek(rc, -1L, "current")
     FALSE
   }, error = function(e) {
     TRUE
@@ -309,7 +310,7 @@ find_keyword_pairs <- function(expr_quotes_masked, keyword_1, keyword_2, right_o
 
   in_parens <- 0
 
-  pos <- 0
+  pos <- -1
   while(pos < len) {
     pos <- pos + 1
 
@@ -323,9 +324,9 @@ find_keyword_pairs <- function(expr_quotes_masked, keyword_1, keyword_2, right_o
     }
 
     if (keyword_starts_here(rc, keyword_1)) {
-      keyword_1_pos <- pos + 1L
+      keyword_1_pos <- pos
       seek(rc, keyword_1_pos + keyword_1_length)
-      keyword_2_pos <- find_this_keyword_after(rc, len, keyword_2, in_parens, parens_diff) + 1L
+      keyword_2_pos <- find_this_keyword_after(rc, len, keyword_2, in_parens, parens_diff)
       if (!is.null(keyword_2_pos)) {
         if (right_operand) {
           seek(rc, keyword_2_pos + keyword_2_length + 1L)
