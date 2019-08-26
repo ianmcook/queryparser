@@ -2,7 +2,7 @@
 % Please edit documentation in R/parse_query.R
 \name{parse_query}
 \alias{parse_query}
-\title{SQL query parser}
+\title{Parse a SQL query}
 \usage{
 parse_query(query, tidyverse = FALSE)
 }

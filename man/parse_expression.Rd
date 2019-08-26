@@ -2,7 +2,7 @@
 % Please edit documentation in R/parse_expression.R
 \name{parse_expression}
 \alias{parse_expression}
-\title{SQL expression parser}
+\title{Parse a SQL expression}
 \usage{
 parse_expression(expr, tidyverse = FALSE)
 }

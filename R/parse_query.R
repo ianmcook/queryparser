@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-#' SQL query parser
+#' Parse a SQL query
 #'
 #' @description Parses a SQL SELECT statement into a list of R expressions
 #'
