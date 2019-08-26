@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+MASKING_CHARACTER <- "\U001"
+
 quote_chars <- c("\"", "'", "`")
 
 ws_regex <- "[ \t\r\n]"

@@ -64,7 +64,7 @@ parse_expression <- function(expr, tidyverse = FALSE) {
     }
 
     if (in_quotes && was_in_quotes) {
-      writeChar("\U001", rc_out, eos = NULL)
+      writeChar(MASKING_CHARACTER, rc_out, eos = NULL)
       writeChar(char, rc_quo, eos = NULL)
     } else {
       writeChar(char, rc_out, eos = NULL)
@@ -104,7 +104,7 @@ parse_expression <- function(expr, tidyverse = FALSE) {
     expr_out <- paste(
       replace(
         expr_quotes_masked_split,
-        expr_quotes_masked_split == "\U001",
+        expr_quotes_masked_split == MASKING_CHARACTER,
         masked_chars_split
       ),
       collapse = ""
