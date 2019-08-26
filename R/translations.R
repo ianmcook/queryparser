@@ -53,10 +53,17 @@ translations_operators_binary_word <- list(
   `or` = "||",
   `div` = "%/%",
 
+  # variants negated by prefixing "not " must come BEFORE their positive equivalents
+  # these are translated further by the indirect translations specified below
+  `not like` = "%nlike%",
+  `like` = "%like%",
+  `not ilike` = "%nilike%",
+  `ilike` = "%ilike%"
 
 
 
   # `in` and `not in` are handled elsewhere
+  # `like` is handled as an indirect translation
 )
 
 translations_operators_unary_prefix <- list(
@@ -65,7 +72,13 @@ translations_operators_unary_prefix <- list(
 
 translations_operators_unary_postfix <- list(
   `is null` = "%>% is.na()",
-  `is not null` = "%>% is.na() %>% `!`"
+  `is not null` = "%>% is.na() %>% `!`",
+  `is unknown` = "%>% is.na()",
+  `is not unknown` = "%>% is.na() %>% `!`",
+  `is true` = "%>% as.logical()",
+  `is not true` = "%>% as.logical() %>% `!`",
+  `is false` = "%>% as.logical() %>% `!`",
+  `is not false` = "%>% as.logical()"
 )
 
 translations_direct_generic <- list(
@@ -119,6 +132,22 @@ translations_direct_tidyverse <- list(
 )
 
 translations_indirect_generic <- list(
+  `%like%` = function(x, wc) {
+    rx <- translate_wildcard_to_regex(wc)
+    eval(substitute(quote(grepl(rx, x))))
+  },
+  `%nlike%` = function(x, wc) {
+    rx <- translate_wildcard_to_regex(wc)
+    eval(substitute(quote(!grepl(rx, x))))
+  },
+  `%ilike%` = function(x, wc) {
+    rx <- translate_wildcard_to_regex(wc)
+    eval(substitute(quote(grepl(rx, x, ignore.case = TRUE))))
+  },
+  `%nilike%` = function(x, wc) {
+    rx <- translate_wildcard_to_regex(wc)
+    eval(substitute(quote(!grepl(rx, x, ignore.case = TRUE))))
+  },
   ln = function(x) {
     eval(substitute(quote(log(x, base = exp(1)))))
   },
