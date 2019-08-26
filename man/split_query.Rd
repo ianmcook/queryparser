@@ -28,6 +28,7 @@ query <- "SELECT origin, dest,
   HAVING num_flts > 5000
   ORDER BY num_flts DESC, avg_delay DESC
   LIMIT 100;"
+
 split_query(query)
 }
 \seealso{

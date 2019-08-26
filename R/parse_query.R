@@ -33,6 +33,7 @@
 #'   HAVING num_flts > 5000
 #'   ORDER BY num_flts DESC, avg_delay DESC
 #'   LIMIT 100;"
+#'
 #' parse_query(query)
 #' @export
 parse_query <- function(query, tidyverse = FALSE) {
