@@ -293,7 +293,7 @@ keyword_starts_here <- function(rc, keyword) {
   grepl(keyword_regex,  chars, ignore.case = TRUE)
 }
 
-find_keyword_pairs <- function(expr_quotes_masked, keyword_1, keyword_2, right_operand = FALSE, parens_diff = 0) {
+find_keyword_pairs <- function(expr_quotes_masked, keyword_1, keyword_2, operands = FALSE, parens_diff = 0) {
   # returns the positions of the start of each keyword
   # in every instance of the specified matching pair of keywords
   # both at the same parentheses nesting level
@@ -323,21 +323,28 @@ find_keyword_pairs <- function(expr_quotes_masked, keyword_1, keyword_2, right_o
       in_parens <- in_parens + 1
     } else if (char == ")") {
       in_parens <- in_parens - 1
+    } else if (char == MASKING_CHARACTER) {
+      next;
     }
 
     if (keyword_starts_here(rc, keyword_1)) {
+      if (operands) {
+        left_operand_start <- find_beginning_of_boolean_operand_before(rc, in_parens)
+      }
       keyword_1_pos <- pos
       seek(rc, keyword_1_pos + keyword_1_length)
       keyword_2_pos <- find_this_keyword_after(rc, len, keyword_2, in_parens, parens_diff)
       if (!is.null(keyword_2_pos)) {
-        if (right_operand) {
+        if (operands) {
           seek(rc, keyword_2_pos + keyword_2_length + 1L)
+          right_operand_end <- find_end_of_boolean_operand_after(rc, len, in_parens)
           keyword_pair_pos <- append(
             keyword_pair_pos,
             list(c(
+              left_operand_start,
               keyword_1_pos,
               keyword_2_pos,
-              find_end_of_operand_after(rc, len, in_parens)
+              right_operand_end
             ))
           )
         } else {
@@ -381,12 +388,7 @@ find_this_keyword_after <- function(rc, len, keyword, in_parens, parens_diff = 0
   return(NULL)
 }
 
-find_end_of_operand_after <- function(rc, len, in_parens) {
-  # returns the next position after right operand that follows
-  # the current position
-
-  # only for use on expressions with quoted text masked
-
+find_end_of_boolean_operand_after <- function(rc, len, in_parens) {
   orig_pos <- seek(rc, NA)
   on.exit(seek(rc, orig_pos))
   orig_parens <- in_parens
@@ -394,21 +396,139 @@ find_end_of_operand_after <- function(rc, len, in_parens) {
   while((pos <- seek(rc, NA)) <= len) {
     char <- readChar(rc, 1L)
 
+    next_thing <- get_next_character_word_or_number(rc, len)
+
     if (char == "(") {
       in_parens <- in_parens + 1
     } else if (char == ")") {
       in_parens <- in_parens - 1
-    } else if (in_parens == orig_parens && is_non_word_character(char)) {
-      return(pos)
     } else if (in_parens < orig_parens) {
-      return(pos)
+      return(pos + 1)
+    } else if (in_parens == orig_parens && isTRUE(next_thing %in% c("and", "or", ","))) {
+      return(pos + 1)
     }
-
-    seek(rc, pos + 1L)
   }
-  return(pos - 2L)
+  return(len)
 }
 
+find_beginning_of_boolean_operand_before <- function(rc, in_parens) {
+  orig_pos <- seek(rc, NA)
+  on.exit(seek(rc, orig_pos))
+  orig_parens <- in_parens
+
+  pos <- orig_pos + 1
+  while(pos > 1) {
+    pos <- pos - 1
+    seek(rc, pos)
+    char <- readChar(rc, 1L)
+
+    previous_thing <- get_previous_character_word_or_number(rc)
+
+    if (char == ")") {
+      in_parens <- in_parens + 1
+    } else if (char == "(") {
+      in_parens <- in_parens - 1
+    } else if (in_parens < orig_parens) {
+      return(pos)
+    } else if (in_parens == orig_parens && isTRUE(previous_thing %in% c("and", "or", ","))) {
+      return(pos)
+    }
+  }
+  return(0L)
+}
+
+get_next_character_word_or_number <- function(rc, len) {
+  # get the next non-space character
+  # or if it's a word character or digit, then get the whole word or number
+  # or if there is nothing after, then return character(0)
+
+  out_str <- character(0)
+
+  orig_pos <- seek(rc, NA)
+  on.exit(seek(rc, orig_pos))
+
+  while((pos <- seek(rc, NA)) <= len) {
+    char <- readChar(rc, 1L)
+
+    # if it's a space, get the next one
+    if (is_whitespace_character(char)) {
+      next;
+    }
+
+    # if it's the masking character, get the next one
+    if (isTRUE(char == MASKING_CHARACTER)) {
+      next;
+    }
+
+    # if it's a word character or digit, keep going
+    # until there's a non-word character or non-digit,
+    # and return the whole word or number
+    if (is_word_character(char)) { # this matches digits
+      while(is_word_character(char)) { # this matches digits
+        out_str <- paste0(out_str, char)
+        char <- readChar(rc, 1L)
+      }
+      break;
+    }
+
+    # if it's some other character, then return that character
+    out_str <- char
+    break;
+  }
+  out_str
+}
+
+get_previous_character_word_or_number <- function(rc) {
+  # get the previous non-space character
+  # or if it's a word character or digit, then get the whole word or number
+  # or if there is nothing before, then return character(0)
+
+  out_str <- character(0)
+
+  orig_pos <- seek(rc, NA)
+  on.exit(seek(rc, orig_pos))
+
+  pos <- orig_pos
+  while(pos > 1) {
+    seek(rc, -2L, "current")
+    char <- readChar(rc, 1L)
+
+    # if it's a space, get the previous one
+    if (is_whitespace_character(char)) {
+      next;
+    }
+
+    # if it's the masking character, get the previous one
+    if (isTRUE(char == MASKING_CHARACTER)) {
+      next;
+    }
+
+    # if it's a word character or digit, keep going
+    # until there's a non-word character or non-digit,
+    # and return the whole word or number
+    if (is_word_character(char)) { # this matches digits
+      while(is_word_character(char)) { # this matches digits
+        out_str <- paste0(char, out_str)
+        at_start <- tryCatch({
+          seek(rc, -2L, "current")
+          FALSE
+        }, error = function(e) {
+          TRUE
+        })
+        if (at_start) {
+          break;
+        }
+        char <- readChar(rc, 1L)
+      }
+      break;
+    }
+
+    # if it's some other character, then return that character
+    out_str <- char
+    break;
+  }
+  out_str
+}
 
 preceded_by_keyword <- function(rc, keyword) {
   pos <- seek(rc, NA)
@@ -433,13 +553,13 @@ preceded_by_keyword <- function(rc, keyword) {
   grepl(keyword_regex,  chars, ignore.case = TRUE)
 }
 
-ends_with_operator_expecting_right_operand <- function(expr) {
+ends_with_operator_expecting_right_operand <- function(expr, except = c()) {
   expr <- trimws(expr, whitespace = ws_regex)
   expr_length <- nchar(expr, type = "bytes")
   last_char <- substr(expr, expr_length, expr_length)
-  if (last_char %in% sql_characters_expecting_right_operands) return(TRUE)
+  if (last_char %in% setdiff(sql_characters_expecting_right_operands, except)) return(TRUE)
 
-  words_regex <- paste0("(", paste(sql_words_expecting_right_operands, collapse = "|"), ")")
+  words_regex <- paste0("(", paste(setdiff(sql_words_expecting_right_operands, except), collapse = "|"), ")")
   if (grepl(paste0("\\b",words_regex, "$"), expr, ignore.case = TRUE)) return(TRUE)
   FALSE
 }
