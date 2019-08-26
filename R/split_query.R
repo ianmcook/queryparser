@@ -128,6 +128,7 @@ split_query <- function(query) {
 
       # identify beginnings of clauses
       if (keyword_starts_here(rc, "from", useBytes = TRUE)) {
+        # don't split on the "from" is "is [not] distinct from"
         if (!preceded_by_keyword(rc, "distinct", useBytes = TRUE)) {
           pos_from <- append(pos_from, pos)
         }

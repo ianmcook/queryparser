@@ -553,7 +553,7 @@ preceded_by_keyword <- function(rc, keyword, useBytes = FALSE) {
   on.exit(seek(rc, pos))
   nchars <- nchar(keyword, type = "bytes")
   at_start <- tryCatch({
-    seek(rc, -nchars - 2L, "current")
+    seek(rc, -nchars - 3L, "current")
     FALSE
   }, error = function(e) {
     TRUE
@@ -566,6 +566,7 @@ preceded_by_keyword <- function(rc, keyword, useBytes = FALSE) {
     "^",
     non_word_char_regex,
     keyword,
+    " ?",
     "$"
   )
   grepl(keyword_regex,  chars, ignore.case = TRUE, useBytes = useBytes)
