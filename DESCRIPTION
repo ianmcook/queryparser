@@ -28,3 +28,4 @@ Collate:
     'split_query.R'
     'translate.R'
     'unpipe.R'
+    'wrap_bangs.R'

@@ -119,7 +119,8 @@ parse_expression <- function(expr, tidyverse = FALSE) {
   call_out <- translate_nin(call_out)
   call_out <- translate_direct(call_out, tidyverse)
   call_out <- translate_indirect(call_out, tidyverse)
-  call_out <- unpipe(call_out) # this must be last
+  call_out <- unpipe(call_out) # this must be second to last
+  call_out <- wrap_bangs(call_out) # this must be last
 
   call_out
 }
