@@ -145,6 +145,28 @@ translations_indirect_base <- list(
   },
   nullif = function(x, y) {
     eval(substitute(quote(ifelse(is.na(x), x, y))))
+  },
+  lpad = function(str, len, pad) {
+    if (is.null(pad) || !as.character(pad) %in% c(" ", "0")) {
+      stop(
+        "Translation for function lpad() only supports ",
+        "' '  or '0' as the padding character when tidyverse = FALSE",
+        call. = FALSE
+      )
+    }
+    format_string <- paste0("%", pad, len, "s")
+    eval(substitute(quote(sprintf(format_string, str))))
+  },
+  rpad = function(str, len, pad) {
+    if (is.null(pad) || !as.character(pad) %in% c(" ")) {
+      stop(
+        "Translation for function rpad() only supports ",
+        "' ' as the padding character when tidyverse = FALSE",
+        call. = FALSE
+      )
+    }
+    format_string <- paste0("%-", len, "s")
+    eval(substitute(quote(sprintf(format_string, str))))
   }
 )
 
@@ -159,6 +181,12 @@ translations_indirect_tidyverse <- list(
     }
     func <- str2lang(func_name)
     eval(substitute(quote(func(x))))
+  },
+  lpad = function(str, len, pad) {
+    eval(substitute(quote(str_pad(str, len, side = "left", pad = pad))))
+  },
+  rpad = function(str, len, pad) {
+    eval(substitute(quote(str_pad(str, len, side = "right", pad = pad))))
   }
 )
 
