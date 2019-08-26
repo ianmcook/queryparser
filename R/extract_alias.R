@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-#' Extract column alias from SQL expression
+#' Extract the column alias from a SQL expression
 #'
 #' @description Extracts the column alias from an expression used in the SELECT
 #'   list of a SQL query

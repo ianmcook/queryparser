@@ -2,7 +2,7 @@
 % Please edit documentation in R/extract_alias.R
 \name{extract_alias}
 \alias{extract_alias}
-\title{Extract column alias from SQL expression}
+\title{Extract the column alias from a SQL expression}
 \usage{
 extract_alias(expr)
 }
