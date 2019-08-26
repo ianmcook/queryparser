@@ -39,6 +39,14 @@ sql_words_expecting_right_operands <- c(
   "like", "ilike", "regexp", "iregexp", "rlike"
 )
 
+sql_logical_operators_with_left_operands <- c(
+  "and", "or", "xor"
+)
+
+sql_logical_operators_with_right_operands <- c(
+  "and", "or", "xor", "not"
+)
+
 sql_reserved_words <- c(
   "add",
   "aggregate",
@@ -298,6 +306,14 @@ find_keyword_pairs <- function(expr_quotes_masked, keyword_1, keyword_2, operand
   # in every instance of the specified matching pair of keywords
   # both at the same parentheses nesting level
 
+  # optionally also returns the positions of the left and right operands
+  # for when an operator pair and their three operands create a boolean expression
+  # (as is the case with the BETWEEN ... AND operator pair)
+
+  # optionally also searches for the second keyword in a different
+  # parentheses nesting level than the first keyword
+  # (as is the case with CAST( AS ))
+
   keyword_1_length <- nchar(keyword_1, type = "bytes")
   keyword_2_length <- nchar(keyword_2, type = "bytes")
 
@@ -404,7 +420,8 @@ find_end_of_boolean_operand_after <- function(rc, len, in_parens) {
       in_parens <- in_parens - 1
     } else if (in_parens < orig_parens) {
       return(pos + 1)
-    } else if (in_parens == orig_parens && isTRUE(next_thing %in% c("and", "or", ","))) {
+    } else if (in_parens == orig_parens &&
+               isTRUE(next_thing %in% c(sql_logical_operators_with_left_operands, ","))) {
       return(pos + 1)
     }
   }
@@ -430,7 +447,8 @@ find_beginning_of_boolean_operand_before <- function(rc, in_parens) {
       in_parens <- in_parens - 1
     } else if (in_parens < orig_parens) {
       return(pos)
-    } else if (in_parens == orig_parens && isTRUE(previous_thing %in% c("and", "or", ","))) {
+    } else if (in_parens == orig_parens &&
+               isTRUE(previous_thing %in% c(sql_logical_operators_with_right_operands, ","))) {
       return(pos)
     }
   }
