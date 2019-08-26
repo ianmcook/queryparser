@@ -37,9 +37,9 @@
 #' @export
 parse_query <- function(query, tidyverse = FALSE) {
 
-  tree <- lex_query(query)
+  tree <- split_query(query)
   if (!names(tree)[1] %in% c("select", "distinct")) {
-    stop("Unexpected lexer output", call. = FALSE)
+    stop("Unexpected output from split_query()", call. = FALSE)
   }
   # ALSO HANDLE WHEN IT'S tree$distinct
   # maybe do it positionally and check the name

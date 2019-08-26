@@ -12,11 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-#' SQL query lexer
+#' Split a SQL query
 #'
 #' @description Splits a SQL SELECT statement into clauses and splits
-#'   comma-separated column lists within the clauses. Finer-grained lexing is
-#'   performed by \code{\link{parse_query}}.
+#'   comma-separated column lists within the clauses.
 #'
 #' @param query a SQL SELECT statement
 #' @return A list object with named elements representing the clauses of the
@@ -32,10 +31,10 @@
 #'   HAVING num_flts > 5000
 #'   ORDER BY num_flts DESC, avg_delay DESC
 #'   LIMIT 100;"
-#' lex_query(query)
+#' split_query(query)
 #' @seealso \code{\link{parse_query}}
 #' @export
-lex_query <- function(query) {
+split_query <- function(query) {
   query <- trimws(query, whitespace = ws_regex)
   query <- collapse_whitespace(query)
   query <- sub(";$", "", query)
@@ -187,13 +186,13 @@ lex_query <- function(query) {
     }
   )
 
-  clauses$select <- lex_select(clauses$select)
-  clauses$from <- lex_from(clauses$from)
-  clauses$where <- lex_where(clauses$where)
-  clauses$group_by <- lex_group_by(clauses$group_by)
-  clauses$having <- lex_having(clauses$having)
-  clauses$order_by <- lex_order_by(clauses$order_by)
-  clauses$limit <- lex_limit(clauses$limit)
+  clauses$select <- split_select(clauses$select)
+  clauses$from <- split_from(clauses$from)
+  clauses$where <- split_where(clauses$where)
+  clauses$group_by <- split_group_by(clauses$group_by)
+  clauses$having <- split_having(clauses$having)
+  clauses$order_by <- split_order_by(clauses$order_by)
+  clauses$limit <- split_limit(clauses$limit)
 
   if (select_distinct) {
     names(clauses)[1] <- "distinct"
@@ -202,35 +201,35 @@ lex_query <- function(query) {
   clauses
 }
 
-lex_select <- function(clause) {
-  lex_comma_list(lex_clause(clause, "select( all)?( distinct)?"))
+split_select <- function(clause) {
+  split_comma_list(split_clause(clause, "select( all)?( distinct)?"))
 }
 
-lex_from <- function(clause) {
-  lex_clause(clause, "from")
+split_from <- function(clause) {
+  split_clause(clause, "from")
 }
 
-lex_where <- function(clause) {
-  lex_clause(clause, "where")
+split_where <- function(clause) {
+  split_clause(clause, "where")
 }
 
-lex_group_by <- function(clause) {
-  lex_comma_list(lex_clause(clause, "group by"))
+split_group_by <- function(clause) {
+  split_comma_list(split_clause(clause, "group by"))
 }
 
-lex_having <- function(clause) {
-  lex_clause(clause, "having")
+split_having <- function(clause) {
+  split_clause(clause, "having")
 }
 
-lex_order_by <- function(clause) {
-  lex_comma_list(lex_clause(clause, "order by"))
+split_order_by <- function(clause) {
+  split_comma_list(split_clause(clause, "order by"))
 }
 
-lex_limit <- function(clause) {
-  lex_clause(clause, "limit")
+split_limit <- function(clause) {
+  split_clause(clause, "limit")
 }
 
-lex_clause <- function(clause, keyword) {
+split_clause <- function(clause, keyword) {
   if (is.null(clause)) return(NULL)
   clause <- trimws(clause, whitespace = ws_regex)
   keyword_regex <- paste0("^", keyword, ws_regex, "*")
@@ -238,7 +237,7 @@ lex_clause <- function(clause, keyword) {
   clause
 }
 
-lex_comma_list <- function(comma_list) {
+split_comma_list <- function(comma_list) {
   if (is.null(comma_list)) return(NULL)
 
   rc <- rawConnection(raw(0L), "r+")
