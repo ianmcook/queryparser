@@ -290,6 +290,123 @@ keyword_starts_here <- function(rc, keyword) {
   grepl(keyword_regex,  chars, ignore.case = TRUE)
 }
 
+find_keyword_pairs <- function(expr_quotes_masked, keyword_1, keyword_2, right_operand = FALSE, parens_diff = 0) {
+  # returns the positions of the start of each keyword
+  # in every instance of the specified matching pair of keywords
+  # both at the same parentheses nesting level
+
+  keyword_1_length <- nchar(keyword_1, type = "bytes")
+  keyword_2_length <- nchar(keyword_2, type = "bytes")
+
+  # only for use on expressions with quoted text masked
+
+  keyword_pair_pos <- list()
+
+  rc <- rawConnection(raw(0L), "r+")
+
+  writeChar(paste0(expr_quotes_masked, " "), rc)
+  len <- seek(rc, 0L) - 1L
+
+  in_parens <- 0
+
+  pos <- 0
+  while(pos < len) {
+    pos <- pos + 1
+
+    seek(rc, pos)
+    char <- readChar(rc, 1L)
+
+    if (char == "(") {
+      in_parens <- in_parens + 1
+    } else if (char == ")") {
+      in_parens <- in_parens - 1
+    }
+
+    if (keyword_starts_here(rc, keyword_1)) {
+      keyword_1_pos <- pos + 1L
+      seek(rc, keyword_1_pos + keyword_1_length)
+      keyword_2_pos <- find_this_keyword_after(rc, len, keyword_2, in_parens, parens_diff) + 1L
+      if (!is.null(keyword_2_pos)) {
+        if (right_operand) {
+          seek(rc, keyword_2_pos + keyword_2_length + 1L)
+          keyword_pair_pos <- append(
+            keyword_pair_pos,
+            list(c(
+              keyword_1_pos,
+              keyword_2_pos,
+              find_end_of_operand_after(rc, len, in_parens)
+            ))
+          )
+        } else {
+          keyword_pair_pos <- append(
+            keyword_pair_pos,
+            list(c(keyword_1_pos, keyword_2_pos))
+          )
+        }
+      }
+    }
+
+  }
+  close(rc)
+  keyword_pair_pos
+}
+
+find_this_keyword_after <- function(rc, len, keyword, in_parens, parens_diff = 0) {
+  # returns the position of the start of the specified keyword
+  # at the specified parentheses nesting level
+
+  # only for use on expressions with quoted text masked
+
+  orig_pos <- seek(rc, NA)
+  on.exit(seek(rc, orig_pos))
+  orig_parens <- in_parens
+  while((pos <- seek(rc, NA)) <= len) {
+    char <- readChar(rc, 1L)
+
+    if (char == "(") {
+      in_parens <- in_parens + 1
+    } else if (char == ")") {
+      in_parens <- in_parens - 1
+    }
+
+    if (in_parens == orig_parens + parens_diff && keyword_starts_here(rc, keyword)) {
+      return(pos);
+    }
+
+    seek(rc, pos + 1)
+  }
+  return(NULL)
+}
+
+find_end_of_operand_after <- function(rc, len, in_parens) {
+  # returns the next position after right operand that follows
+  # the current position
+
+  # only for use on expressions with quoted text masked
+
+  orig_pos <- seek(rc, NA)
+  on.exit(seek(rc, orig_pos))
+  orig_parens <- in_parens
+
+  while((pos <- seek(rc, NA)) <= len) {
+    char <- readChar(rc, 1L)
+
+    if (char == "(") {
+      in_parens <- in_parens + 1
+    } else if (char == ")") {
+      in_parens <- in_parens - 1
+    } else if (in_parens == orig_parens && is_non_word_character(char)) {
+      return(pos)
+    } else if (in_parens < orig_parens) {
+      return(pos)
+    }
+
+    seek(rc, pos + 1L)
+  }
+  return(pos - 2L)
+}
+
+
 preceded_by_keyword <- function(rc, keyword) {
   pos <- seek(rc, NA)
   on.exit(seek(rc, pos))
