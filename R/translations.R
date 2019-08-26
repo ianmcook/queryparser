@@ -45,7 +45,8 @@ attr(translations_data_types_tidyverse[["timestamp"]], "function") <- "as_dateti
 translations_operators_binary_symbolic <- list(
   `%` = "%%",
   `<>` = "!=",
-  `=` = "=="
+  `=` = "==",
+  `<=>` = "%<=>%"
 )
 
 translations_operators_binary_word <- list(
@@ -58,8 +59,12 @@ translations_operators_binary_word <- list(
   `not like` = "%nlike%",
   `like` = "%like%",
   `not ilike` = "%nilike%",
-  `ilike` = "%ilike%"
+  `ilike` = "%ilike%",
+  `is not distinct from` = "%<=>%",
+  `is distinct from` = "%<!=>%",
 
+  # other operators that are procesed further below
+  `xor` = "%xor%"
 
 
   # `in` and `not in` are handled elsewhere
@@ -82,6 +87,9 @@ translations_operators_unary_postfix <- list(
 )
 
 translations_direct_generic <- list(
+
+  # operators
+  `%xor%` = quote(xor),
 
   # constants
   true = quote(TRUE),
@@ -147,6 +155,26 @@ translations_indirect_generic <- list(
   `%nilike%` = function(x, wc) {
     rx <- translate_wildcard_to_regex(wc)
     eval(substitute(quote(!grepl(rx, x, ignore.case = TRUE))))
+  },
+  `%<=>%` = function(x, y) {
+    # x is not distinct from y
+    # is equivalent to
+    # (x IS NULL AND y IS NULL ) OR (x IS NOT NULL AND y IS NOT NULL) AND (x = y)
+    # or
+    # if(x IS NULL OR y IS NULL, (x IS NULL) = (y IS NULL), x = y)
+    # this translation uses the latter version
+    eval(substitute(quote(
+      #( (is.na(x) && is.na(y)) || (!is.na(x) && !is.na(y)) && (x == y) )
+      ifelse(is.na(x) || is.na(y), is.na(x) == is.na(y), x == y)
+    )))
+  },
+  `%<!=>%` = function(x, y) {
+    # x is distinct from y
+    # is equivalent to
+    # if(x IS NULL OR y IS NULL, x IS NULL != y IS NULL, x != y)
+    eval(substitute(quote(
+      ifelse(is.na(x) || is.na(y), is.na(x) != is.na(y), x != y)
+    )))
   },
   ln = function(x) {
     eval(substitute(quote(log(x, base = exp(1)))))

@@ -33,7 +33,7 @@ sql_characters_expecting_right_operands <- c(
 )
 
 sql_words_expecting_right_operands <- c(
-  "and", "or", "as", "from", "not",
+  "and", "or", "xor", "as", "from", "not",
   "in", "div", "between",
   "all", "any", "some",
   "like", "ilike", "regexp", "iregexp", "rlike"
