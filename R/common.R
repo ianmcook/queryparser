@@ -265,7 +265,7 @@ is_non_word_character <- function(char, useBytes = FALSE) {
   grepl(non_word_char_regex, char, useBytes = useBytes)
 }
 
-keyword_starts_here <- function(rc, keyword) {
+keyword_starts_here <- function(rc, keyword, useBytes = FALSE) {
   pos <- seek(rc, NA)
   on.exit(seek(rc, pos))
   at_start <- tryCatch({
@@ -290,7 +290,7 @@ keyword_starts_here <- function(rc, keyword) {
     non_word_char_regex,
     "$"
   )
-  grepl(keyword_regex,  chars, ignore.case = TRUE)
+  grepl(keyword_regex,  chars, ignore.case = TRUE, useBytes = useBytes)
 }
 
 find_keyword_pairs <- function(expr_quotes_masked, keyword_1, keyword_2, operands = FALSE, parens_diff = 0) {
@@ -530,7 +530,7 @@ get_previous_character_word_or_number <- function(rc) {
   out_str
 }
 
-preceded_by_keyword <- function(rc, keyword) {
+preceded_by_keyword <- function(rc, keyword, useBytes = FALSE) {
   pos <- seek(rc, NA)
   on.exit(seek(rc, pos))
   nchars <- nchar(keyword, type = "bytes")
@@ -550,13 +550,16 @@ preceded_by_keyword <- function(rc, keyword) {
     keyword,
     "$"
   )
-  grepl(keyword_regex,  chars, ignore.case = TRUE)
+  grepl(keyword_regex,  chars, ignore.case = TRUE, useBytes = useBytes)
 }
 
 ends_with_operator_expecting_right_operand <- function(expr, except = c()) {
   expr <- trimws(expr, whitespace = ws_regex)
   expr_length <- nchar(expr, type = "bytes")
+  original_encoding <- Encoding(expr)
+  Encoding(expr) <- "bytes"
   last_char <- substr(expr, expr_length, expr_length)
+  Encoding(expr) <- original_encoding
   if (last_char %in% setdiff(sql_characters_expecting_right_operands, except)) return(TRUE)
 
   words_regex <- paste0("(", paste(setdiff(sql_words_expecting_right_operands, except), collapse = "|"), ")")

@@ -36,6 +36,8 @@
 #' @seealso \code{\link{parse_query}}
 #' @export
 split_query <- function(query) {
+  original_encoding <- Encoding(query)
+
   query <- trimws(query, whitespace = ws_regex)
   query <- collapse_whitespace(query)
   query <- sub(";$", "", query)
@@ -45,15 +47,15 @@ split_query <- function(query) {
   writeChar(query, rc)
   len <- seek(rc, 0L) - 1L
 
-  if (!keyword_starts_here(rc, "select")) {
+  if (!keyword_starts_here(rc, "select", useBytes = TRUE)) {
     stop("Query must begin with the SELECT keyword", call. = FALSE)
   }
 
   seek(rc, 7L)
   select_distinct <- FALSE
-  if (keyword_starts_here(rc, "all")) {
+  if (keyword_starts_here(rc, "all", useBytes = TRUE)) {
     seek(rc, 10L)
-  } else if (keyword_starts_here(rc, "distinct")) {
+  } else if (keyword_starts_here(rc, "distinct", useBytes = TRUE)) {
     select_distinct <- TRUE
     seek(rc, 15L)
   } else {
@@ -73,7 +75,7 @@ split_query <- function(query) {
   while((pos <- seek(rc, NA)) <= len) {
 
     # identify when inside strings and parentheses
-    char <- readChar(rc, 1L)
+    char <- readChar(rc, 1L, useBytes = TRUE)
     if (char %in% quote_chars) {
       if (!in_quotes) {
         in_quotes <- TRUE
@@ -81,7 +83,7 @@ split_query <- function(query) {
       } else if (char == quo_char) {
         seek(rc, -2L, "current")
         esc_quo <- c(quo_char, "\\")
-        if (!readChar(rc, 1L) %in% esc_quo) {
+        if (!readChar(rc, 1L, useBytes = TRUE) %in% esc_quo) {
           in_quotes <- FALSE
           rm(quo_char)
         }
@@ -96,13 +98,13 @@ split_query <- function(query) {
     if (!in_quotes) {
 
       # identify unsupported syntax
-      if (keyword_starts_here(rc, "case")) {
+      if (keyword_starts_here(rc, "case", useBytes = TRUE)) {
         stop("CASE expressions are not supported", call. = FALSE)
       }
-      if (keyword_starts_here(rc, "over")) {
+      if (keyword_starts_here(rc, "over", useBytes = TRUE)) {
         stop("OVER clauses are not supported", call. = FALSE)
       }
-      if (keyword_starts_here(rc, "select")) {
+      if (keyword_starts_here(rc, "select", useBytes = TRUE)) {
         if (in_parens > 0) {
           stop("Subqueries are not supported", call. = FALSE)
         } else {
@@ -114,30 +116,30 @@ split_query <- function(query) {
     if (!in_quotes && in_parens <= 0) {
 
       # identify unsupported syntax
-      if (keyword_starts_here(rc, "union")) {
+      if (keyword_starts_here(rc, "union", useBytes = TRUE)) {
         stop("The UNION operator is not supported", call. = FALSE)
       }
-      if (keyword_starts_here(rc, "intersect")) {
+      if (keyword_starts_here(rc, "intersect", useBytes = TRUE)) {
         stop("The INTERSECT operator is not supported", call. = FALSE)
       }
-      if (keyword_starts_here(rc, "except")) {
+      if (keyword_starts_here(rc, "except", useBytes = TRUE)) {
         stop("The EXCEPT operator is not supported", call. = FALSE)
       }
 
       # identify beginnings of clauses
-      if (keyword_starts_here(rc, "from")) {
-        if (!preceded_by_keyword(rc, "distinct")) {
+      if (keyword_starts_here(rc, "from", useBytes = TRUE)) {
+        if (!preceded_by_keyword(rc, "distinct", useBytes = TRUE)) {
           pos_from <- append(pos_from, pos)
         }
-      } else if (keyword_starts_here(rc, "where")) {
+      } else if (keyword_starts_here(rc, "where", useBytes = TRUE)) {
         pos_where <- append(pos_where, pos)
-      } else if (keyword_starts_here(rc, "group by")) {
+      } else if (keyword_starts_here(rc, "group by", useBytes = TRUE)) {
         pos_group_by <- append(pos_group_by, pos)
-      } else if (keyword_starts_here(rc, "having")) {
+      } else if (keyword_starts_here(rc, "having", useBytes = TRUE)) {
         pos_having <- append(pos_having, pos)
-      } else if (keyword_starts_here(rc, "order by")) {
+      } else if (keyword_starts_here(rc, "order by", useBytes = TRUE)) {
         pos_order_by <- append(pos_order_by, pos)
-      } else if (keyword_starts_here(rc, "limit")) {
+      } else if (keyword_starts_here(rc, "limit", useBytes = TRUE)) {
         pos_limit <- append(pos_limit, pos)
       }
 
@@ -177,13 +179,10 @@ split_query <- function(query) {
     stop_pos,
     SIMPLIFY = FALSE
   )
-  original_encoding <- Encoding(query)
   Encoding(query) <- "bytes"
   clauses <- lapply(
     clauses, function(x) {
-      clause <- substr(query, x$start, x$stop)
-      Encoding(clause) <- original_encoding
-      clause
+      substr(query, x$start, x$stop)
     }
   )
 
@@ -198,6 +197,8 @@ split_query <- function(query) {
   if (select_distinct) {
     names(clauses)[1] <- "distinct"
   }
+
+  clauses <- lapply(clauses, function(clause) {Encoding(clause) <- original_encoding; clause})
 
   clauses
 }
@@ -234,7 +235,7 @@ split_clause <- function(clause, keyword) {
   if (is.null(clause)) return(NULL)
   clause <- trimws(clause, whitespace = ws_regex)
   keyword_regex <- paste0("^", keyword, ws_regex, "*")
-  clause <- sub(keyword_regex, "", clause, ignore.case = TRUE)
+  clause <- sub(keyword_regex, "", clause, ignore.case = TRUE, useBytes = TRUE)
   clause
 }
 
@@ -251,7 +252,7 @@ split_comma_list <- function(comma_list) {
   in_quotes <- FALSE
   in_parens <- 0
   while((pos <- seek(rc, NA)) <= len) {
-    char <- readChar(rc, 1L)
+    char <- readChar(rc, 1L, useBytes = TRUE)
 
     if (char %in% quote_chars) {
       if (!in_quotes) {
@@ -260,7 +261,7 @@ split_comma_list <- function(comma_list) {
       } else if (char == quo_char) {
         seek(rc, -2L, "current")
         esc_quo <- c(quo_char, "\\")
-        if (!readChar(rc, 1L) %in% esc_quo) {
+        if (!readChar(rc, 1L, useBytes = TRUE) %in% esc_quo) {
           in_quotes <- FALSE
           rm(quo_char)
         }

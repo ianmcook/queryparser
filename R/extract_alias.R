@@ -33,7 +33,7 @@
 extract_alias <- function(expr) {
   expr <- trimws(expr, whitespace = ws_regex)
 
-  bytes_in_chars <- nchar(strsplit(expr, "")[[1]], "bytes")
+  bytes_in_chars <- nchar(strsplit(expr, "")[[1]], type = "bytes")
 
   rc <- rawConnection(raw(0L), "r+")
   on.exit(close(rc))
