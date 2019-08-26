@@ -34,12 +34,6 @@
 parse_expression <- function(expr, tidyverse = FALSE) {
   expr <- trimws(expr, whitespace = ws_regex)
 
-  # REMOVE THIS LATER
-  # BECAUSE WE EXPECT THE CALLING FUNCTION TO REMOVE THE ALIAS
-  # BUT KEEP IT NOW FOR TESTING PURPOSES
-  expr <- extract_alias(expr)
-  column_alias <- names(expr)
-
   # mask text enclosed in quotations
   rc_in <- rawConnection(raw(0L), "r+")
   writeChar(expr, rc_in)
