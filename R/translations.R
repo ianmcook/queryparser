@@ -32,15 +32,15 @@ translations_data_types_generic <- list(
 )
 
 translations_data_types_base <- list(
-  `timestamp` = "POSIXct",
-  `interval` = "difftime"
+  `timestamp` = "POSIXct"
+  # `interval` = "difftime" # does not work directly
 )
 
 translations_data_types_tidyverse <- list(
   `timestamp` = "datetime",
   `interval` = "duration"
 )
-# TBD: translate cast as timestamp to as_datetime for tidyverse
+attr(translations_data_types_tidyverse[["timestamp"]], "function") <- "as_datetime"
 
 translations_operators_binary_symbolic <- list(
   `%` = "%%",
@@ -123,13 +123,6 @@ translations_indirect_generic <- list(
   ln = function(x) {
     eval(substitute(quote(log(x, base = exp(1)))))
   },
-  cast = function(x, y = NULL) {
-    if (is.null(y)) stop("Unspecified data type in CAST", call. = FALSE)
-    data_type <- sql_data_types[sql_data_types == gsub(" ?\\(.+", "", y)][[1]]
-    if (is.null(data_type)) stop("Unrecognized data type in CAST", call. = FALSE)
-    func <- str2lang(paste0("as.", data_type))
-    eval(substitute(quote(func(x))))
-  },
   regexp_replace = function(x, pattern, replacement) {
     eval(substitute(quote(gsub(pattern, replacement, x))))
   },
@@ -139,13 +132,34 @@ translations_indirect_generic <- list(
 )
 
 translations_indirect_base <- list(
+  cast = function(x, y = NULL) {
+    if (is.null(y)) stop("Unspecified data type in CAST", call. = FALSE)
+    data_type <- data_type_translations_for_base[[gsub(" ?\\(.+", "", y)]]
+    if (is.null(data_type)) stop("Unrecognized data type in CAST", call. = FALSE)
+    func_name <- attr(data_type, "function")
+    if (is.null(func_name)) {
+      func_name <- paste0("as.", data_type)
+    }
+    func <- str2lang(func_name)
+    eval(substitute(quote(func(x))))
+  },
   nullif = function(x, y) {
     eval(substitute(quote(ifelse(is.na(x), x, y))))
   }
 )
 
 translations_indirect_tidyverse <- list(
-
+  cast = function(x, y = NULL) {
+    if (is.null(y)) stop("Unspecified data type in CAST", call. = FALSE)
+    data_type <- data_type_translations_for_tidyverse[[gsub(" ?\\(.+", "", y)]]
+    if (is.null(data_type)) stop("Unrecognized data type in CAST", call. = FALSE)
+    func_name <- attr(data_type, "function")
+    if (is.null(func_name)) {
+      func_name <- paste0("as.", data_type)
+    }
+    func <- str2lang(func_name)
+    eval(substitute(quote(func(x))))
+  }
 )
 
 translations_indirect_generic_agg <- list(

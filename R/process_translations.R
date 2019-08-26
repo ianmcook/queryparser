@@ -21,6 +21,16 @@ sql_data_types <- unique(c(
   names(translations_data_types_tidyverse)
 ))
 
+data_type_translations_for_base <- c(
+  translations_data_types_generic,
+  translations_data_types_base
+)
+
+data_type_translations_for_tidyverse <- c(
+  translations_data_types_generic,
+  translations_data_types_tidyverse
+)
+
 sql_aggregate_functions <- unique(c(
   names(translations_indirect_generic_agg),
   names(translations_indirect_base_agg),
