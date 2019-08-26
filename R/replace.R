@@ -38,6 +38,11 @@ replace_in_operator <- function(expr_quotes_masked) {
   expr_quotes_masked
 }
 
+replace_as <- function(expr_quotes_masked) {
+  # this is needed to make the CAST function translate
+  gsub(paste0("\\bas "), ", ", expr_quotes_masked, ignore.case = TRUE)
+}
+
 replace_operators_binary_symbolic <- function(expr_quotes_masked) {
   for (i in seq_along(translations_operators_binary_symbolic)) {
     expr_quotes_masked <- gsub(

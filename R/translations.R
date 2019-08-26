@@ -53,7 +53,6 @@ translations_operators_binary_word <- list(
   `or` = "||",
   `div` = "%/%",
 
-  `as` = "," # used in cast function
 
 
 

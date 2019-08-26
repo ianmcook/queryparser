@@ -91,6 +91,7 @@ parse_expression <- function(expr, tidyverse = FALSE) {
   expr_quotes_masked <- replace_null_with_na(expr_quotes_masked)
   expr_quotes_masked <- replace_in_operator(expr_quotes_masked)
   expr_quotes_masked <- replace_operators_binary_word(expr_quotes_masked)
+  expr_quotes_masked <- replace_as(expr_quotes_masked)
   expr_quotes_masked <- replace_operators_unary_prefix(expr_quotes_masked)
   expr_quotes_masked <- quote_data_types(expr_quotes_masked) # this must be last
 
