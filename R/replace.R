@@ -25,7 +25,7 @@ replace_in_operator <- function(expr_quotes_masked) {
   # need to change this when adding support for subqueries
   expr_quotes_masked <- gsub(
     "\\bnot in ?\\(",
-    "%nin% c(", # this `%nin%` is replaced later by replace_nin()
+    "%nin% c(", # this `%nin%` is translated later by translate_nin()
     expr_quotes_masked,
     ignore.case = TRUE
   )
