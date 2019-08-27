@@ -12,16 +12,17 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-#' Collapse whitespace
+#' Squish a SQL query or SQL expression
 #'
-#' @description Replaces each unquoted run of whitespace characters with a
-#'   single space
+#' @description Replaces every unquoted run of whitespace characters with a
+#'   single space. Whitespace within quotes is not modified.
 #'
-#' @param x a character string
-#' @return a character string
-collapse_whitespace <- function(x) {
+#' @param x a character string containing a SQL query or expression
+#' @return a character string containing the squished query or expression
+#' @export
+squish_sql <- function(x) {
   if (!identical(typeof(x), "character") || !identical(length(x), 1L)) {
-    stop("Unexpected input to collapse_whitespace()", call. = FALSE)
+    stop("Unexpected input to squish_sql()", call. = FALSE)
   }
 
   rc_in <- rawConnection(raw(0L), "r+")

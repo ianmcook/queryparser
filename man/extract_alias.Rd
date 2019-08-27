@@ -22,8 +22,7 @@ Extracts the column alias from an expression used in the SELECT
 \details{
 The expression must not contain any unquoted whitespace characters
   except spaces, and there must be no unquoted runs or two or more spaces.
-  Use \code{\link{collapse_whitespace}} to satisfy this whitespace
-  requirement.
+  Use \code{\link{squish_sql}} to satisfy this whitespace requirement.
 }
 \examples{
 expr <- "round(AVG(arr_delay)) AS avg_delay"

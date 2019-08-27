@@ -43,7 +43,7 @@ split_query <- function(query) {
   original_encoding <- Encoding(query)
 
   query <- trimws(query, whitespace = ws_regex)
-  query <- collapse_whitespace(query)
+  query <- squish_sql(query)
   query <- sub(";$", "", query)
 
   rc <- rawConnection(raw(0L), "r+")
