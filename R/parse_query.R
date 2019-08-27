@@ -39,6 +39,14 @@
 #' parse_query(query)
 #' @export
 parse_query <- function(query, tidyverse = FALSE, secure = TRUE) {
+  if (!identical(typeof(query), "character") ||
+      !identical(length(query), 1) ||
+      !identical(typeof(tidyverse), "logical") ||
+      !identical(length(tidyverse), 1) ||
+      !identical(typeof(secure), "logical") ||
+      !identical(length(secure), 1)) {
+    stop("Unexpected input to parse_query()", call. = FALSE)
+  }
 
   tree <- split_query(query)
   if (!names(tree)[1] %in% c("select", "distinct")) {

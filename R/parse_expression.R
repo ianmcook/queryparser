@@ -34,6 +34,15 @@
 #'   \code{\link{collapse_whitespace}} to satisfy this whitespace requirement.
 #' @export
 parse_expression <- function(expr, tidyverse = FALSE, secure = TRUE) {
+  if (!identical(typeof(expr), "character") ||
+      !identical(length(expr), 1) ||
+      !identical(typeof(tidyverse), "logical") ||
+      !identical(length(tidyverse), 1) ||
+      !identical(typeof(secure), "logical") ||
+      !identical(length(secure), 1)) {
+    stop("Unexpected input to parse_expression()", call. = FALSE)
+  }
+
   expr <- trimws(expr, whitespace = ws_regex)
 
   # mask text enclosed in quotations

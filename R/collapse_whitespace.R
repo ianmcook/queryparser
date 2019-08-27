@@ -20,6 +20,9 @@
 #' @param x a character string
 #' @return a character string
 collapse_whitespace <- function(x) {
+  if (!identical(typeof(x), "character") || !identical(length(x), 1)) {
+    stop("Unexpected input to collapse_whitespace()", call. = FALSE)
+  }
 
   rc_in <- rawConnection(raw(0L), "r+")
   writeChar(x, rc_in)

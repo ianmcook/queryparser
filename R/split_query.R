@@ -36,6 +36,10 @@
 #' @seealso \code{\link{parse_query}}
 #' @export
 split_query <- function(query) {
+  if (!identical(typeof(query), "character") || !identical(length(query), 1)) {
+    stop("Unexpected input to split_query()", call. = FALSE)
+  }
+
   original_encoding <- Encoding(query)
 
   query <- trimws(query, whitespace = ws_regex)

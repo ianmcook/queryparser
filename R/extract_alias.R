@@ -31,6 +31,10 @@
 #'   requirement.
 #' @export
 extract_alias <- function(expr) {
+  if (!identical(typeof(expr), "character") || !identical(length(expr), 1)) {
+    stop("Unexpected input to extract_alias()", call. = FALSE)
+  }
+
   expr <- trimws(expr, whitespace = ws_regex)
 
   bytes_in_chars <- nchar(strsplit(expr, "")[[1]], type = "bytes")
