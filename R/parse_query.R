@@ -19,6 +19,8 @@
 #' @param query a character string containing a SQL SELECT statement
 #' @param tidyverse set to \code{TRUE} to use functions from tidyverse packages
 #'   including dplyr, stringr, and lubridate in the R expressions
+#' @param secure set to \code{FALSE} to allow potentially dangerous functions in
+#'   the returned R expressions
 #' @return A list object with named elements representing the clauses of the
 #'   query and containing unevaluated R expressions representing the SQL
 #'   expressions in the query
@@ -36,7 +38,7 @@
 #'
 #' parse_query(query)
 #' @export
-parse_query <- function(query, tidyverse = FALSE) {
+parse_query <- function(query, tidyverse = FALSE, secure = TRUE) {
 
   tree <- split_query(query)
   if (!names(tree)[1] %in% c("select", "distinct")) {

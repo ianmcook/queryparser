@@ -4,13 +4,16 @@
 \alias{parse_query}
 \title{Parse a SQL query}
 \usage{
-parse_query(query, tidyverse = FALSE)
+parse_query(query, tidyverse = FALSE, secure = TRUE)
 }
 \arguments{
 \item{query}{a character string containing a SQL SELECT statement}
 
 \item{tidyverse}{set to \code{TRUE} to use functions from tidyverse packages
 including dplyr, stringr, and lubridate in the R expressions}
+
+\item{secure}{set to \code{FALSE} to allow potentially dangerous functions in
+the returned R expressions}
 }
 \value{
 A list object with named elements representing the clauses of the

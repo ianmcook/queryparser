@@ -4,7 +4,7 @@
 \alias{parse_expression}
 \title{Parse a SQL expression}
 \usage{
-parse_expression(expr, tidyverse = FALSE)
+parse_expression(expr, tidyverse = FALSE, secure = TRUE)
 }
 \arguments{
 \item{expr}{a character string containing a SQL expression}
@@ -12,6 +12,9 @@ parse_expression(expr, tidyverse = FALSE)
 \item{tidyverse}{set to \code{TRUE} to use functions from tidyverse packages
 including dplyr, stringr, and lubridate in the returned R expression
 expression (for example, \code{n} and \code{n_distinct})}
+
+\item{secure}{set to \code{FALSE} to allow potentially dangerous functions in
+the returned R expression}
 }
 \value{
 an unevaluated R expression (a \code{\link{call}})

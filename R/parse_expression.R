@@ -20,6 +20,8 @@
 #' @param tidyverse set to \code{TRUE} to use functions from tidyverse packages
 #'   including dplyr, stringr, and lubridate in the returned R expression
 #'   expression (for example, \code{n} and \code{n_distinct})
+#' @param secure set to \code{FALSE} to allow potentially dangerous functions in
+#'   the returned R expression
 #' @return an unevaluated R expression (a \code{\link{call}})
 #' @examples
 #' expr <- "round(AVG(arr_delay))"
@@ -31,7 +33,7 @@
 #'   spaces, and there must be no unquoted runs or two or more spaces. Use
 #'   \code{\link{collapse_whitespace}} to satisfy this whitespace requirement.
 #' @export
-parse_expression <- function(expr, tidyverse = FALSE) {
+parse_expression <- function(expr, tidyverse = FALSE, secure = TRUE) {
   expr <- trimws(expr, whitespace = ws_regex)
 
   # mask text enclosed in quotations
@@ -113,6 +115,11 @@ parse_expression <- function(expr, tidyverse = FALSE) {
 
   # parse the string and return an unevaluated R expression
   call_out <- str2lang(expr_out) # most errors will happen on this line! try-catch here?
+
+  # stop if contains illegal functions or operators
+  if (secure) {
+    secure_expression(call_out)
+  }
 
   # translate SQL functions to R functions
   call_out <- translate_distinct_functions(call_out, tidyverse) # this must be second
