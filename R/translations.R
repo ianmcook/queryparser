@@ -41,6 +41,8 @@ translations_data_types_tidyverse <- list(
   `interval` = "duration"
 )
 attr(translations_data_types_tidyverse[["timestamp"]], "function") <- "as_datetime"
+attr(translations_data_types_tidyverse[["timestamp"]], "package") <- "lubridate"
+attr(translations_data_types_tidyverse[["interval"]], "package") <- "lubridate"
 
 translations_operators_binary_symbolic <- list(
   `%` = "%%",
@@ -135,13 +137,13 @@ translations_direct_base <- list(
 translations_direct_tidyverse <- list(
 
   # string functions
-  length = quote(str_length),
-  lower = quote(str_to_lower),
-  upper = quote(str_to_upper),
-  to_date = quote(as_date),
+  length = quote(stringr::str_length),
+  lower = quote(stringr::str_to_lower),
+  upper = quote(stringr::str_to_upper),
+  to_date = quote(lubridate::as_date),
 
   # conditional functions
-  nullif = quote(na_if)
+  nullif = quote(dplyr::na_if)
 
   # add other lubridate, stringr, and dplyr functions
 )
@@ -218,6 +220,10 @@ translations_indirect_base <- list(
     if (is.null(func_name)) {
       func_name <- paste0("as.", data_type)
     }
+    pkg_name <- attr(data_type, "package")
+    if (!is.null(pkg_name)) {
+      func_name <- paste(pkg_name, func_name, sep = "::")
+    }
     func <- str2lang(func_name)
     eval(substitute(quote(func(x))))
   },
@@ -247,13 +253,13 @@ translations_indirect_base <- list(
     eval(substitute(quote(sprintf(format_string, str))))
   },
   trim = function(x) {
-    val(substitute(quote(trimws(x))))
+    eval(substitute(quote(trimws(x))))
   },
   ltrim = function(x) {
-    val(substitute(quote(trimws(x, which = "left"))))
+    eval(substitute(quote(trimws(x, which = "left"))))
   },
   rtrim = function(x) {
-    val(substitute(quote(trimws(x, which = "right"))))
+    eval(substitute(quote(trimws(x, which = "right"))))
   }
 )
 
@@ -266,23 +272,27 @@ translations_indirect_tidyverse <- list(
     if (is.null(func_name)) {
       func_name <- paste0("as.", data_type)
     }
+    pkg_name <- attr(data_type, "package")
+    if (!is.null(pkg_name)) {
+      func_name <- paste(pkg_name, func_name, sep = "::")
+    }
     func <- str2lang(func_name)
     eval(substitute(quote(func(x))))
   },
   lpad = function(str, len, pad) {
-    eval(substitute(quote(str_pad(str, len, side = "left", pad = pad))))
+    eval(substitute(quote(stringr::str_pad(str, len, side = "left", pad = pad))))
   },
   rpad = function(str, len, pad) {
-    eval(substitute(quote(str_pad(str, len, side = "right", pad = pad))))
+    eval(substitute(quote(stringr::str_pad(str, len, side = "right", pad = pad))))
   },
   trim = function(x) {
-    val(substitute(quote(str_trim(x))))
+    eval(substitute(quote(stringr::str_trim(x))))
   },
   ltrim = function(x) {
-    val(substitute(quote(str_trim(x, side = "left"))))
+    eval(substitute(quote(stringr::str_trim(x, side = "left"))))
   },
   rtrim = function(x) {
-    val(substitute(quote(str_trim(x, side = "right"))))
+    eval(substitute(quote(stringr::str_trim(x, side = "right"))))
   }
 )
 
@@ -339,9 +349,9 @@ translations_indirect_base_agg <- list(
 
 translations_indirect_tidyverse_agg <- list(
   count_star = function() {
-    eval(substitute(quote(n())))
+    eval(substitute(quote(dplyr::n())))
   },
   count_distinct = function(...) {
-    eval(substitute(quote(n_distinct(..., na.rm = TRUE))))
+    eval(substitute(quote(dplyr::n_distinct(..., na.rm = TRUE))))
   }
 )

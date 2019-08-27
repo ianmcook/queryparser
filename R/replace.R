@@ -93,7 +93,7 @@ replace_special_keywords <- function(expr_quotes_masked, tidyverse) {
     first_pos <- c(0L, pos[1L] + 1, pos[2L] + 1L, pos[2L] + 11L, pos[3L] + 4L, pos[4L] + 2L)
     repl_strings <- substring(expr_quotes_masked, first_pos, last_pos)
     if (tidyverse) {
-      repl_strings <- c(repl_strings[1], " !between(", repl_strings[2], ",", repl_strings[4], ",", repl_strings[5], ")", repl_strings[6])
+      repl_strings <- c(repl_strings[1], " !dplyr::between(", repl_strings[2], ",", repl_strings[4], ",", repl_strings[5], ")", repl_strings[6])
     } else {
       repl_strings <- c(repl_strings[1], " (", repl_strings[2], "<", repl_strings[4], " | ", repl_strings[2], ">", repl_strings[5], ")", repl_strings[6])
     }
@@ -106,7 +106,7 @@ replace_special_keywords <- function(expr_quotes_masked, tidyverse) {
     first_pos <- c(0L, pos[1L] + 1, pos[2L] + 1L, pos[2L] + 8L, pos[3L] + 4L, pos[4L] + 2L)
     repl_strings <- substring(expr_quotes_masked, first_pos, last_pos)
     if (tidyverse) {
-      repl_strings <- c(repl_strings[1], " between(", repl_strings[2], ",", repl_strings[4], ",", repl_strings[5], ")", repl_strings[6])
+      repl_strings <- c(repl_strings[1], " dplyr::between(", repl_strings[2], ",", repl_strings[4], ",", repl_strings[5], ")", repl_strings[6])
     } else {
       repl_strings <- c(repl_strings[1], " (", repl_strings[2], ">=", repl_strings[4], " & ", repl_strings[2], "<=", repl_strings[5], ")", repl_strings[6])
     }
@@ -185,7 +185,7 @@ replace_all_distinct_keyword <- function(expr_quotes_masked) {
 replace_star <- function(expr_quotes_masked, tidyverse) {
   if (expr_quotes_masked == "*") {
     if (tidyverse) {
-      return("everything()")
+      return("dplyr::everything()")
     } else {
       return(".")
     }
