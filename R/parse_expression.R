@@ -35,11 +35,11 @@
 #' @export
 parse_expression <- function(expr, tidyverse = FALSE, secure = TRUE) {
   if (!identical(typeof(expr), "character") ||
-      !identical(length(expr), 1) ||
+      !identical(length(expr), 1L) ||
       !identical(typeof(tidyverse), "logical") ||
-      !identical(length(tidyverse), 1) ||
+      !identical(length(tidyverse), 1L) ||
       !identical(typeof(secure), "logical") ||
-      !identical(length(secure), 1)) {
+      !identical(length(secure), 1L)) {
     stop("Unexpected input to parse_expression()", call. = FALSE)
   }
 

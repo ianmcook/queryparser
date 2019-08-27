@@ -20,7 +20,7 @@
 #' @param x a character string
 #' @return a character string
 collapse_whitespace <- function(x) {
-  if (!identical(typeof(x), "character") || !identical(length(x), 1)) {
+  if (!identical(typeof(x), "character") || !identical(length(x), 1L)) {
     stop("Unexpected input to collapse_whitespace()", call. = FALSE)
   }
 

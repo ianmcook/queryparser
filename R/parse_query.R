@@ -40,11 +40,11 @@
 #' @export
 parse_query <- function(query, tidyverse = FALSE, secure = TRUE) {
   if (!identical(typeof(query), "character") ||
-      !identical(length(query), 1) ||
+      !identical(length(query), 1L) ||
       !identical(typeof(tidyverse), "logical") ||
-      !identical(length(tidyverse), 1) ||
+      !identical(length(tidyverse), 1L) ||
       !identical(typeof(secure), "logical") ||
-      !identical(length(secure), 1)) {
+      !identical(length(secure), 1L)) {
     stop("Unexpected input to parse_query()", call. = FALSE)
   }
 

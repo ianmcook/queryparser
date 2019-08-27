@@ -36,7 +36,7 @@
 #' @seealso \code{\link{parse_query}}
 #' @export
 split_query <- function(query) {
-  if (!identical(typeof(query), "character") || !identical(length(query), 1)) {
+  if (!identical(typeof(query), "character") || !identical(length(query), 1L)) {
     stop("Unexpected input to split_query()", call. = FALSE)
   }
 

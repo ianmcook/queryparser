@@ -31,7 +31,7 @@
 #'   requirement.
 #' @export
 extract_alias <- function(expr) {
-  if (!identical(typeof(expr), "character") || !identical(length(expr), 1)) {
+  if (!identical(typeof(expr), "character") || !identical(length(expr), 1L)) {
     stop("Unexpected input to extract_alias()", call. = FALSE)
   }
 
