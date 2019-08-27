@@ -152,6 +152,11 @@ translations_direct_tidyverse <- list(
   # add other lubridate, stringr, and dplyr functions
 )
 
+# the return value of these indirect expressions must be in the form:
+#   eval(substitute(quote(  expression  )))
+# the body of each function can process scalar arguments, but all
+# operations on the data in columns must happen in the returned expression
+
 translations_indirect_generic <- list(
   `%like%` = function(x, wc) {
     rx <- translate_wildcard_to_regex(wc)
