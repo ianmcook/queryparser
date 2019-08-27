@@ -96,17 +96,25 @@ translations_direct_generic <- list(
   false = quote(FALSE),
 
   # mathematical functions
+  abs = quote(abs),
   ceil = quote(ceiling),
+  ceiling = quote(ceiling),
+  floor = quote(floor),
+  greatest = quote(pmax),
   is_nan = quote(is.nan),
   is_inf = quote(is.infinite),
+  least = quote(pmin),
+  log10 = quote(log10),
+  log2 = quote(log2),
   mod = quote(`%%`),
   negative = quote(`-`),
-  pmax = quote(greatest),
-  pmin = quote(least),
   positive = quote(`+`),
   pow = quote(`^`),
   power = quote(`^`),
   quotient = quote(`%/%`),
+  round = quote(round),
+  sign = quote(sign),
+  sqrt = quote(sqrt),
 
   # string functions
   concat = quote(paste0)
@@ -176,8 +184,23 @@ translations_indirect_generic <- list(
       ifelse(is.na(x) || is.na(y), is.na(x) != is.na(y), x != y)
     )))
   },
+  e = function(x) {
+    eval(substitute(quote(exp(1))))
+  },
   ln = function(x) {
     eval(substitute(quote(log(x, base = exp(1)))))
+  },
+  log = function(x, y) {
+    eval(substitute(quote(log(x, base = y))))
+  },
+  pi = function() {
+    eval(substitute(quote(pi)))
+  },
+  rand = function(seed = NULL) {
+    if(!is.null(seed)) {
+      warning("Function rand() currently ignores the seed argument", call. = FALSE)
+    }
+    eval(substitute(quote(runif(1))))
   },
   regexp_replace = function(x, pattern, replacement) {
     eval(substitute(quote(gsub(pattern, replacement, x))))
