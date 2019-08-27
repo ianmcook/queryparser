@@ -15,7 +15,7 @@
 #' @include common.R translations.R
 NULL
 
-# prevent this:
+# prevent this kind of horror:
 #parse_query("SELECT system('rm -rf /')")
 
 secure_expressions_list <- function(tree) {
@@ -77,4 +77,7 @@ allowed_funs <- unique(c(
   paste(names(translations_indirect_base_agg), "distinct", sep = "_"),
   paste(names(translations_indirect_tidyverse_agg), "distinct", sep = "_")
 ))
-allowed_funs <- setdiff(allowed_funs, c("count_star_distinct", "count_distinct_distinct"))
+allowed_funs <- setdiff(
+  allowed_funs,
+  c("count_star_distinct", "count_distinct_distinct")
+)
