@@ -24,6 +24,8 @@
 #' @return A list object with named elements representing the clauses of the
 #'   query and containing unevaluated R expressions representing the SQL
 #'   expressions in the query
+#' @details The query must not contain line comments (\code{--}) or block
+#'   comments (\code{/* */}).
 #' @examples
 #' query <- "SELECT origin, dest,
 #'     COUNT(flight) AS num_flts,

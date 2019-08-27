@@ -23,6 +23,10 @@ A list object with named elements representing the clauses of the
 \description{
 Parses a SQL SELECT statement into a list of R expressions
 }
+\details{
+The query must not contain line comments (\code{--}) or block
+  comments (\code{/* */}).
+}
 \examples{
 query <- "SELECT origin, dest,
     COUNT(flight) AS num_flts,
