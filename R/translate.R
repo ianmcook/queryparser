@@ -95,6 +95,7 @@ quasieval <- function(expr, envir) {
 }
 
 translate_wildcard_to_regex <- function(expr) {
+  # adapted from utils::glob2rx
   if (length(expr) < 1) {
     return(character())
   }
