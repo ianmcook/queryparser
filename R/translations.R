@@ -127,8 +127,8 @@ translations_direct_base <- list(
   length = quote(nchar),
   lower = quote(tolower),
   upper = quote(toupper),
-  to_date = quote(as.Date),
-  trim = quote(trimws)
+  to_date = quote(as.Date)
+
 
 )
 
@@ -139,7 +139,6 @@ translations_direct_tidyverse <- list(
   lower = quote(str_to_lower),
   upper = quote(str_to_upper),
   to_date = quote(as_date),
-  trim = quote(str_trim),
 
   # conditional functions
   nullif = quote(na_if)
@@ -246,6 +245,15 @@ translations_indirect_base <- list(
     }
     format_string <- paste0("%-", len, "s")
     eval(substitute(quote(sprintf(format_string, str))))
+  },
+  trim = function(x) {
+    val(substitute(quote(trimws(x))))
+  },
+  ltrim = function(x) {
+    val(substitute(quote(trimws(x, which = "left"))))
+  },
+  rtrim = function(x) {
+    val(substitute(quote(trimws(x, which = "right"))))
   }
 )
 
@@ -266,6 +274,15 @@ translations_indirect_tidyverse <- list(
   },
   rpad = function(str, len, pad) {
     eval(substitute(quote(str_pad(str, len, side = "right", pad = pad))))
+  },
+  trim = function(x) {
+    val(substitute(quote(str_trim(x))))
+  },
+  ltrim = function(x) {
+    val(substitute(quote(str_trim(x, side = "left"))))
+  },
+  rtrim = function(x) {
+    val(substitute(quote(str_trim(x, side = "right"))))
   }
 )
 
