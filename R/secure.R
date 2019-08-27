@@ -40,10 +40,13 @@ stop_if_bad_funs <- function(bad_funs) {
 }
 
 bad_funs <- function(expr) {
-  if (!identical(typeof(expr), "language")) {
-    stop("Unexpected input to bad_funs()", call. = FALSE)
+  if (identical(typeof(expr), "language")) {
+    return(setdiff(all_funs(expr), allowed_funs))
+  } else {
+    if (!identical(typeof(expr), "symbol")) {
+      stop("Unexpected input to bad_funs()", call. = FALSE)
+    }
   }
-  bad_funs <- setdiff(all_funs(expr), allowed_funs)
 }
 
 all_funs <- function(expr) {
