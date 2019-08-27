@@ -260,6 +260,17 @@ translations_indirect_base <- list(
   },
   rtrim = function(x) {
     eval(substitute(quote(trimws(x, which = "right"))))
+  },
+  substr = function(x, start, len) {
+    if (start <= 0) {
+      # interpret non-positive start as an offset from the end
+      start_offset <- -start - 1L
+      stop_offset <- -pmax(as.integer(len) - start_offset - 1L, start - 1L)
+      eval(substitute(quote(substr(x, nchar(x) - start_offset, nchar(x) - stop_offset))))
+    } else {
+      stop <- pmax(as.integer(len) + start - 1L, 0L)
+      eval(substitute(quote(substr(x, start, stop))))
+    }
   }
 )
 
@@ -293,6 +304,17 @@ translations_indirect_tidyverse <- list(
   },
   rtrim = function(x) {
     eval(substitute(quote(stringr::str_trim(x, side = "right"))))
+  },
+  substr = function(x, start, len) {
+    if (start <= 0) {
+      # interpret non-positive start as an offset from the end
+      start_offset <- -start - 1L
+      stop_offset <- -pmax(as.integer(len) - start_offset - 1L, start - 1L)
+      eval(substitute(quote(stringr::str_sub(x, nchar(x) - start_offset, nchar(x) - stop_offset))))
+    } else {
+      stop <- pmax(as.integer(len) + start - 1L, 0L)
+      eval(substitute(quote(stringr::str_sub(x, start, stop))))
+    }
   }
 )
 
