@@ -66,11 +66,12 @@ translations_operators_binary_word <- list(
   `is distinct from` = "%<!=>%",
 
   # other operators that are procesed further below
-  `xor` = "%xor%"
-
+  `xor` = "%xor%",
+  `regexp` = "%regexp%",
+  `rlike` = "%regexp%",
+  `iregexp` = "%iregexp%"
 
   # `in` and `not in` are handled elsewhere
-  # `like` is handled as an indirect translation
 )
 
 translations_operators_unary_prefix <- list(
@@ -119,7 +120,8 @@ translations_direct_generic <- list(
   sqrt = quote(sqrt),
 
   # string functions
-  concat = quote(paste0)
+  concat = quote(paste0),
+  substring = quote(substr) # substr is translated below
 
 )
 
@@ -127,7 +129,9 @@ translations_direct_base <- list(
 
   # string functions
   length = quote(nchar),
+  lcase = quote(tolower),
   lower = quote(tolower),
+  ucase = quote(toupper),
   upper = quote(toupper),
   to_date = quote(as.Date)
 
@@ -164,6 +168,12 @@ translations_indirect_generic <- list(
   `%nilike%` = function(x, wc) {
     rx <- translate_wildcard_to_regex(wc)
     eval(substitute(quote(!grepl(rx, x, ignore.case = TRUE))))
+  },
+  `%regexp%` = function(x, rx) {
+    eval(substitute(quote(grepl(rx, x))))
+  },
+  `%iregexp%` = function(x, rx) {
+    eval(substitute(quote(grepl(rx, x, ignore.case = TRUE))))
   },
   `%<=>%` = function(x, y) {
     # x is not distinct from y
