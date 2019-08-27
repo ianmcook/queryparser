@@ -38,6 +38,15 @@ replace_in_operator <- function(expr_quotes_masked) {
   expr_quotes_masked
 }
 
+replace_special_functions <- function(expr_quotes_masked) {
+  gsub(
+    "\\bif ?\\(",
+    "ifelse(",
+    expr_quotes_masked,
+    ignore.case = TRUE
+  )
+}
+
 replace_special_keywords <- function(expr_quotes_masked, tidyverse) {
 
   special_keywords <- c("CAST", "BETWEEN")
