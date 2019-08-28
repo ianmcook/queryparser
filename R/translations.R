@@ -350,6 +350,9 @@ translations_indirect_generic_agg <- list(
   max = function(x) {
     eval(substitute(quote(max(x, na.rm = TRUE))))
   },
+  median = function(x) {
+    eval(substitute(quote(median(x, na.rm = TRUE))))
+  },
   min = function(x) {
     eval(substitute(quote(min(x, na.rm = TRUE))))
   },
