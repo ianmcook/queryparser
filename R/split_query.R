@@ -55,7 +55,7 @@ split_query <- function(query) {
     stop("Query must begin with the SELECT keyword", call. = FALSE)
   }
 
-  seek(rc, 7L)
+  seek(rc, 8L)
   select_distinct <- FALSE
   if (keyword_starts_here(rc, "all", useBytes = TRUE)) {
     seek(rc, 10L)
