@@ -31,6 +31,11 @@ r_symbolic_constants <- c(
   "NA_integer_", "NA_real_", "NA_complex_", "NA_character_"
 )
 
+r_reserved_words <- c(
+  "if", "else", "repeat", "while", "function",
+  "for", "in", "next", "break"
+  # also the dots (..., ..1, ..2, and so on)
+)
 
 sql_characters_expecting_right_operands <- c(
   ">", "<", "=", "&", "|",

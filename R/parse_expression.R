@@ -131,6 +131,20 @@ parse_expression <- function(expr, tidyverse = FALSE, secure = TRUE) {
     secure_expression(call_out)
   }
 
+  # stop if any column names are R reserved words
+  all_words <- all_cols(call_out)
+  res_words <- c(
+    intersect(all_words, r_reserved_words),
+    all_words[substr(all_words, 1, 2) == ".."]
+  )
+  if (length(res_words) > 0) {
+    stop(
+      "Query contains R reserved words: ",
+      paste(res_words, collapse = ", "),
+      call. = FALSE
+    )
+  }
+
   # translate SQL functions to R functions
   call_out <- translate_distinct_functions(call_out, tidyverse) # this must be second
   call_out <- translate_nin(call_out)
