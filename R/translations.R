@@ -260,7 +260,7 @@ translations_indirect_generic <- list(
   },
   concat_ws = function(sep, ...) {
     eval(substitute(quote(paste(..., sep = sep))))
-  } # I was worried that the sep before the equals sign would get replaced too, but it did not
+  }
 )
 
 translations_indirect_base <- list(
