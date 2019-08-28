@@ -57,17 +57,56 @@ parse_query <- function(query, tidyverse = FALSE, secure = TRUE) {
 
   is_select_distinct <- isTRUE(attr(tree$select, "distinct"))
 
-  tree$select <- unlist(lapply(tree$select, extract_alias))
-  tree$select <- sapply(tree[[1]], parse_expression, tidyverse = tidyverse, USE.NAMES = !is.null(names(tree[[1]])))
+  has_from <- !is.null(tree$from)
+  has_where <- !is.null(tree$where)
+  has_group_by <- !is.null(tree$group_by)
+  has_having <- !is.null(tree$having)
+  has_order_by <- !is.null(tree$order_by)
+  has_limit <- !is.null(tree$limit)
 
+  tree$select <- parse_select(tree$select, tidyverse, FALSE)
+  tree$from <- parse_from(tree$from, tidyverse, FALSE)
+  tree$where <- parse_where(tree$where, tidyverse, FALSE)
+  tree$group_by <- parse_group_by(tree$group_by, tidyverse, FALSE)
+  tree$having <- parse_having(tree$having, tidyverse, FALSE)
+  tree$order_by <- parse_order_by(tree$order_by, tidyverse, FALSE)
+  tree$limit <- parse_limit(tree$limit)
 
-  if (!is.null(tree$group_by)) {
+  valid_agg_cols <- sapply(tree$group_by, deparse)
 
+  is_aggregate_expression <- are_aggregate_expressions(tree$select)
+  has_aggregates_in_select_list <- any(is_aggregate_expression)
+  if (has_aggregates_in_select_list) {
+    valid_agg_cols <- setdiff(c(valid_agg_cols, names(tree$select)[is_aggregate_expression]), "")
   }
 
+  has_aggregates_in_order_by_clause <- any(are_aggregate_expressions(tree$order_by))
 
+  if (is_select_distinct && (has_group_by || has_aggregates_in_select_list || has_having)) {
+    stop("SELECT DISTINCT cannot be used together with ",
+         "aggregate expressions or a GROUP BY clause", call. = FALSE)
+  }
 
+  if (!is_valid_expression_in_aggregation(tree$having[[1]], valid_agg_cols)) {
+    stop("The expression in the HAVING clause is invalid in an aggregation context ",
+         "or incompatible with the GROUP BY clause", call. = FALSE)
+  }
 
-  # ...
+  # use tree$group_by (not valid_agg_cols) in this test
+  #because we can't refer to aliases in the select list itself
+  if (has_aggregates_in_select_list &&
+      !all(are_valid_expressions_in_aggregation(tree$select, tree$group_by))) {
+    stop("The SELECT list includes expressions that are invalid in an aggregation context ",
+         "or incompatible with the GROUP BY clause", call. = FALSE)
+  }
+
+  if (has_aggregates_in_order_by_clause &&
+      !all(are_valid_expressions_in_aggregation(tree$order_by, valid_agg_cols))) {
+    stop("The ORDER BY list includes expressions that are invalid in an aggregation context ",
+         "or incompatible with the GROUP BY clause", call. = FALSE)
+  }
+
+  secure_expressions_list(tree)
+
   tree
 }
