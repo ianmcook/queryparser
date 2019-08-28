@@ -599,3 +599,7 @@ all_cols <- function(expr) {
 all_names <- function(expr) {
   setdiff(all.names(expr), r_symbolic_constants)
 }
+
+is_constant <- function(expr) {
+  length(all_cols(expr)) == 0
+}

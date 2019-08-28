@@ -102,6 +102,8 @@ translations_direct_generic <- list(
   abs = quote(abs),
   ceil = quote(ceiling),
   ceiling = quote(ceiling),
+  exp = quote(exp),
+  factorial = quote(factorial),
   floor = quote(floor),
   greatest = quote(pmax),
   is_nan = quote(is.nan),
@@ -118,6 +120,7 @@ translations_direct_generic <- list(
   round = quote(round),
   sign = quote(sign),
   sqrt = quote(sqrt),
+  truncate = quote(trunc), # trunc is translated below
 
   # string functions
   concat = quote(paste0),
@@ -201,6 +204,9 @@ translations_indirect_generic <- list(
       ifelse(is.na(x) || is.na(y), is.na(x) != is.na(y), x != y)
     )))
   },
+  degrees = function(rad) {
+    eval(substitute(quote(rad*180/pi)))
+  },
   e = function(x) {
     eval(substitute(quote(exp(1))))
   },
@@ -213,6 +219,9 @@ translations_indirect_generic <- list(
   pi = function() {
     eval(substitute(quote(pi)))
   },
+  radians = function(deg) {
+    eval(substitute(quote(deg*pi/180)))
+  },
   rand = function(seed = NULL) {
     if(!is.null(seed)) {
       warning("Function rand() currently ignores the seed argument", call. = FALSE)
@@ -221,6 +230,17 @@ translations_indirect_generic <- list(
   },
   regexp_replace = function(x, pattern, replacement) {
     eval(substitute(quote(gsub(pattern, replacement, x))))
+  },
+  trunc = function(x, d = 0) {
+    if(!is_constant(eval(substitute(quote(d))))) {
+      stop("The second argument to trunc() or truncate() must be a constant value")
+    }
+    if (d != 0) {
+      mult <- 10^as.integer(-d)
+      eval(substitute(quote(trunc(x / mult) * mult)))
+    } else {
+      eval(substitute(quote(trunc(x, d))))
+    }
   },
   concat_ws = function(sep, ...) {
     eval(substitute(quote(paste(..., sep = sep))))
