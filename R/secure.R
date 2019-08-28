@@ -49,10 +49,6 @@ bad_funs <- function(expr) {
   }
 }
 
-all_funs <- function(expr) {
-  setdiff(all.names(expr), all.vars(expr))
-}
-
 allowed_funs <- unique(c(
   "::", ":::", "+", "-", "*", "/", "^", "%/%", "%%",
   "!", "&", "&&", "|", "||",

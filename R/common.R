@@ -26,6 +26,8 @@ digit_regex <- "[0-9]"
 
 non_operator_regex <- "[^<>=%!]"
 
+r_symbolic_constants <- c("pi")
+
 sql_characters_expecting_right_operands <- c(
   ">", "<", "=", "&", "|",
   "+", "-", "*", "/", "%",
@@ -584,4 +586,16 @@ ends_with_operator_expecting_right_operand <- function(expr, except = c()) {
   words_regex <- paste0("(", paste(setdiff(sql_words_expecting_right_operands, except), collapse = "|"), ")")
   if (grepl(paste0("\\b",words_regex, "$"), expr, ignore.case = TRUE)) return(TRUE)
   FALSE
+}
+
+all_funs <- function(expr) {
+  setdiff(all_names(expr), all_cols(expr))
+}
+
+all_cols <- function(expr) {
+  setdiff(all.vars(expr), r_symbolic_constants)
+}
+
+all_names <- function(expr) {
+  setdiff(all.names(expr), r_symbolic_constants)
 }

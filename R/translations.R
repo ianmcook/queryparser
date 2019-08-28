@@ -334,6 +334,10 @@ translations_indirect_tidyverse <- list(
 )
 
 translations_indirect_generic_agg <- list(
+
+  # when adding functions here, also add their tranlated
+  # R function names to the list r_aggregate_functions below
+
   avg = function(x) {
     eval(substitute(quote(mean(x, na.rm = TRUE))))
   },
@@ -367,6 +371,10 @@ translations_indirect_generic_agg <- list(
 )
 
 translations_indirect_base_agg <- list(
+
+  # when adding functions here, also add their tranlated
+  # R function names to the list r_aggregate_functions below
+
   count_star = function() {
     eval(substitute(quote(nrow(.))))
   }
@@ -385,6 +393,10 @@ translations_indirect_base_agg <- list(
 )
 
 translations_indirect_tidyverse_agg <- list(
+
+  # when adding functions here, also add their tranlated
+  # R function names to the list r_aggregate_functions below
+
   count_star = function() {
     eval(substitute(quote(dplyr::n())))
   },
@@ -392,3 +404,20 @@ translations_indirect_tidyverse_agg <- list(
     eval(substitute(quote(dplyr::n_distinct(..., na.rm = TRUE))))
   }
 )
+
+r_aggregate_functions <- c(
+  "mean",
+  "count",
+  "max",
+  "median",
+  "min",
+  "std",
+  "stddev",
+  "sum",
+  "percentile",
+  "variance",
+  "nrow",
+  "dplyr::n",
+  "dplyr::n_distinct"
+)
+# paste() with !is.null(collapse) is also an aggregate function
