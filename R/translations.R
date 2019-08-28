@@ -97,6 +97,7 @@ translations_direct_generic <- list(
   # constants
   true = quote(TRUE),
   false = quote(FALSE),
+  null = quote(NA),
 
   # mathematical functions
   abs = quote(abs),
