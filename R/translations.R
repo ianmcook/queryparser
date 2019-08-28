@@ -147,6 +147,7 @@ translations_direct_tidyverse <- list(
   to_date = quote(lubridate::as_date),
 
   # conditional functions
+  coalesce = quote(coalesce),
   nullif = quote(dplyr::na_if)
 
   # add other lubridate, stringr, and dplyr functions
@@ -241,6 +242,20 @@ translations_indirect_base <- list(
     }
     func <- str2lang(func_name)
     eval(substitute(quote(func(x))))
+  },
+  coalesce = function(...) {
+    dots <- eval(substitute(alist(...)))
+    assign("dots", dots, envir = .GlobalEnv)
+    if (length(dots) < 1) {
+      stop("At least one argument must be passed to coalesce()", call. = FALSE)
+    }
+    x <- dots[[1]]
+    expr <- paste0("if (!is.na(", x, ")) ", x, " ")
+    for (x in dots[-1]) {
+      expr <- paste0(expr, "else if (!is.na(", x, ")) ", x, " ")
+    }
+    expr <- paste0(expr, "else NA")
+    eval(substitute(str2lang(expr)))
   },
   nullif = function(x, y) {
     eval(substitute(quote(ifelse(is.na(x), x, y))))
