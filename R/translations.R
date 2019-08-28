@@ -122,6 +122,20 @@ translations_direct_generic <- list(
   sqrt = quote(sqrt),
   truncate = quote(trunc), # trunc is translated below
 
+  # trigonometric functions
+  acos = quote(acos),
+  asin = quote(asin),
+  atan = quote(atan),
+  atan2 = quote(atan2),
+  cos = quote(cos),
+  cosh = quote(cosh),
+  cot = quote(cot),
+  coth = quote(coth),
+  sin = quote(sin),
+  sinh = quote(sinh),
+  tan = quote(tan),
+  tanh = quote(tanh),
+
   # string functions
   concat = quote(paste0),
   substring = quote(substr) # substr is translated below
