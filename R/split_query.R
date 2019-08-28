@@ -120,6 +120,9 @@ split_query <- function(query) {
     if (!in_quotes && in_parens <= 0) {
 
       # identify unsupported syntax
+      if (keyword_starts_here(rc, "join", useBytes = TRUE)) {
+        stop("Joins are not supported", call. = FALSE)
+      }
       if (keyword_starts_here(rc, "union", useBytes = TRUE)) {
         stop("The UNION operator is not supported", call. = FALSE)
       }
