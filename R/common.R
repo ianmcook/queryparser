@@ -26,7 +26,11 @@ digit_regex <- "[0-9]"
 
 non_operator_regex <- "[^<>=%!]"
 
-r_symbolic_constants <- c("pi")
+r_symbolic_constants <- c(
+  "pi", "TRUE", "FALSE", "NULL", "Inf", "NA", "NaN",
+  "NA_integer_", "NA_real_", "NA_complex_", "NA_character_"
+)
+
 
 sql_characters_expecting_right_operands <- c(
   ">", "<", "=", "&", "|",
