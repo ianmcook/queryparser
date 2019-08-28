@@ -89,8 +89,8 @@ replace_special_keywords <- function(expr_quotes_masked, tidyverse) {
 
   # replace "x not between y and z" with "(x < y | x > z)" or "!between(x,y,z)"
   for (pos in not_between_and_pos) {
-    last_pos <- c(pos[1L], pos[2L], pos[2L] + 10L, pos[3L:4L], nchar_bytes)
-    first_pos <- c(0L, pos[1L] + 1, pos[2L] + 1L, pos[2L] + 11L, pos[3L] + 4L, pos[4L] + 2L)
+    last_pos <- c(pos[1L], pos[2L] - 1L, pos[2L] + 10L, pos[3L] - 1L, pos[4L], nchar_bytes)
+    first_pos <- c(0L, pos[1L] + 1, pos[2L], pos[2L] + 11L, pos[3L] + 4L, pos[4L] + 2L)
     repl_strings <- substring(expr_quotes_masked, first_pos, last_pos)
     if (tidyverse) {
       repl_strings <- c(repl_strings[1], " !dplyr::between(", repl_strings[2], ",", repl_strings[4], ",", repl_strings[5], ")", repl_strings[6])
@@ -102,8 +102,8 @@ replace_special_keywords <- function(expr_quotes_masked, tidyverse) {
 
   # replace "x between y and z" with "(x >= y & x <= z)" or "between(x,y,z)"
   for (pos in between_and_pos) {
-    last_pos <- c(pos[1L], pos[2L], pos[2L] + 7L, pos[3L:4L], nchar_bytes)
-    first_pos <- c(0L, pos[1L] + 1, pos[2L] + 1L, pos[2L] + 8L, pos[3L] + 4L, pos[4L] + 2L)
+    last_pos <- c(pos[1L], pos[2L] - 1L, pos[2L] + 7L, pos[3L] - 1L, pos[4L], nchar_bytes)
+    first_pos <- c(0L, pos[1L] + 1, pos[2L], pos[2L] + 8L, pos[3L] + 4L, pos[4L] + 2L)
     repl_strings <- substring(expr_quotes_masked, first_pos, last_pos)
     if (tidyverse) {
       repl_strings <- c(repl_strings[1], " dplyr::between(", repl_strings[2], ",", repl_strings[4], ",", repl_strings[5], ")", repl_strings[6])
