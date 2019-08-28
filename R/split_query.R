@@ -199,11 +199,11 @@ split_query <- function(query) {
   clauses$order_by <- split_order_by(clauses$order_by)
   clauses$limit <- split_limit(clauses$limit)
 
-  if (select_distinct) {
-    names(clauses)[1] <- "distinct"
-  }
-
   clauses <- lapply(clauses, function(clause) {Encoding(clause) <- original_encoding; clause})
+
+  if (select_distinct) {
+    attr(clauses$select, "distinct") <- TRUE
+  }
 
   clauses
 }
