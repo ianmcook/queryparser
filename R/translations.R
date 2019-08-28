@@ -233,7 +233,7 @@ translations_indirect_generic <- list(
   },
   trunc = function(x, d = 0) {
     if(!is_constant(eval(substitute(quote(d))))) {
-      stop("The second argument to trunc() or truncate() must be a constant value")
+      stop("The second argument to trunc() or truncate() must be a constant value", call. = FALSE)
     }
     if (d != 0) {
       mult <- 10^as.integer(-d)
@@ -249,6 +249,9 @@ translations_indirect_generic <- list(
 
 translations_indirect_base <- list(
   cast = function(x, y = NULL) {
+    if(!is_constant(eval(substitute(quote(y))))) {
+      stop("Invalid data type in CAST", call. = FALSE)
+    }
     if (is.null(y)) stop("Unspecified data type in CAST", call. = FALSE)
     data_type <- data_type_translations_for_base[[gsub(" ?\\(.+", "", y)]]
     if (is.null(data_type)) stop("Unrecognized data type in CAST", call. = FALSE)
@@ -326,6 +329,9 @@ translations_indirect_base <- list(
 
 translations_indirect_tidyverse <- list(
   cast = function(x, y = NULL) {
+    if(!is_constant(eval(substitute(quote(y))))) {
+      stop("Invalid data type in CAST", call. = FALSE)
+    }
     if (is.null(y)) stop("Unspecified data type in CAST", call. = FALSE)
     data_type <- data_type_translations_for_tidyverse[[gsub(" ?\\(.+", "", y)]]
     if (is.null(data_type)) stop("Unrecognized data type in CAST", call. = FALSE)
