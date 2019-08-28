@@ -18,6 +18,7 @@ RoxygenNote: 6.1.1
 Collate: 
     'common.R'
     'extract_alias.R'
+    'parse_clauses.R'
     'parse_expression.R'
     'translations.R'
     'process_translations.R'

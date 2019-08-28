@@ -597,6 +597,11 @@ ends_with_operator_expecting_right_operand <- function(expr, except = c()) {
   FALSE
 }
 
+is_one_valid_r_name <- function(x) {
+  names <- make.names(x)
+  length(names) == 1 && names == x
+}
+
 all_funs <- function(expr) {
   setdiff(all_names(expr), all_cols(expr))
 }
