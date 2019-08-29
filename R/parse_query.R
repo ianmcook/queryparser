@@ -65,12 +65,12 @@ parse_query <- function(query, tidyverse = FALSE, secure = TRUE) {
   has_order_by <- !is.null(tree$order_by)
   has_limit <- !is.null(tree$limit)
 
-  tree$select <- parse_select(tree$select, tidyverse)
-  tree$from <- parse_from(tree$from, tidyverse)
-  tree$where <- parse_where(tree$where, tidyverse)
-  tree$group_by <- parse_group_by(tree$group_by, tidyverse)
-  tree$having <- parse_having(tree$having, tidyverse)
-  tree$order_by <- parse_order_by(tree$order_by, tidyverse)
+  tree$select <- parse_select(tree$select, tidyverse, secure)
+  tree$from <- parse_from(tree$from, tidyverse, secure)
+  tree$where <- parse_where(tree$where, tidyverse, secure)
+  tree$group_by <- parse_group_by(tree$group_by, tidyverse, secure)
+  tree$having <- parse_having(tree$having, tidyverse, secure)
+  tree$order_by <- parse_order_by(tree$order_by, tidyverse, secure)
   tree$limit <- parse_limit(tree$limit)
 
   valid_agg_cols <- sapply(tree$group_by, deparse)
