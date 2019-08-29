@@ -16,9 +16,9 @@ test_that("parse_query(tidy = TRUE) works on 'flights' example query", {
     list(select = list(quote(origin), quote(dest), num_flts = quote(sum(!is.na(flight))),
       dist = quote(round(mean(distance, na.rm = TRUE))), avg_delay = quote(round(mean(arr_delay,
       na.rm = TRUE)))), from = list(quote(flights)), where = list(
-      quote(dplyr::between(distance, 200, 300))), group_by = list(
+      str2lang("dplyr::between(distance, 200, 300)")), group_by = list(
       quote(origin), quote(dest)), having = list(quote(num_flts >
-      5000)), order_by = list(quote(dplyr::desc(num_flts)), quote(dplyr::desc(avg_delay))),
+      5000)), order_by = list(str2lang("dplyr::desc(num_flts)"), str2lang("dplyr::desc(avg_delay)")),
       limit = list(100L))
   )
 })
@@ -71,13 +71,13 @@ test_that("parse_query(tidy = TRUE) works on 'arcos' example query", {
       quote(reporter_bus_act), quote(reporter_name), quote(reporter_addl_co_info),
       quote(reporter_address1), quote(reporter_address2), quote(reporter_city),
       reporter_state = quote(as.character(reporter_state)),
-      reporter_zip = quote(as.character(
-        stringr::str_pad(reporter_zip, 5, side = "left", pad = "0"))), quote(reporter_county),
+      reporter_zip = str2lang('as.character(
+        stringr::str_pad(reporter_zip, 5, side = "left", pad = "0"))'), quote(reporter_county),
       buyer_dea_no = quote(as.character(buyer_dea_no)), quote(buyer_bus_act),
       quote(buyer_name), quote(buyer_addl_co_info), quote(buyer_address1),
       quote(buyer_address2), quote(buyer_city), buyer_state = quote(as.character(buyer_state)),
-      buyer_zip = quote(as.character(
-        stringr::str_pad(buyer_zip, 5, side = "left", pad = "0"))),
+      buyer_zip = str2lang('as.character(
+        stringr::str_pad(buyer_zip, 5, side = "left", pad = "0"))'),
       transaction_code = quote(as.character(transaction_code)),
       drug_code = quote(as.character(drug_code)), quote(ndc_no),
       quote(drug_name), quote(quantity), quote(unit), quote(action_indicator),

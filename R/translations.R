@@ -160,14 +160,15 @@ translations_direct_base <- list(
 translations_direct_tidyverse <- list(
 
   # string functions
-  length = quote(stringr::str_length),
-  lower = quote(stringr::str_to_lower),
-  upper = quote(stringr::str_to_upper),
-  to_date = quote(lubridate::as_date),
+  length = str2lang("stringr::str_length"),
+  lower = str2lang("stringr::str_to_lower"),
+  upper = str2lang("stringr::str_to_upper"),
+  to_date = str2lang("lubridate::as_date"),
+  trim = str2lang("stringr::str_trim"),
 
   # conditional functions
-  coalesce = quote(dplyr::coalesce),
-  nullif = quote(dplyr::na_if)
+  coalesce = str2lang("dplyr::coalesce"),
+  nullif = str2lang("dplyr::na_if")
 
   # add other lubridate, stringr, and dplyr functions
 )
@@ -377,19 +378,20 @@ translations_indirect_tidyverse <- list(
     eval(substitute(quote(func(x))))
   },
   lpad = function(str, len, pad) {
-    eval(substitute(quote(stringr::str_pad(str, len, side = "left", pad = pad))))
+    fun <- str2lang("stringr::str_pad")
+    eval(substitute(quote(fun(str, len, side = "left", pad = pad))))
   },
   rpad = function(str, len, pad) {
-    eval(substitute(quote(stringr::str_pad(str, len, side = "right", pad = pad))))
-  },
-  trim = function(x) {
-    eval(substitute(quote(stringr::str_trim(x))))
+    fun <- str2lang("stringr::str_pad")
+    eval(substitute(quote(fun(str, len, side = "right", pad = pad))))
   },
   ltrim = function(x) {
-    eval(substitute(quote(stringr::str_trim(x, side = "left"))))
+    fun <- str2lang("stringr::str_trim")
+    eval(substitute(quote(fun(x, side = "left"))))
   },
   rtrim = function(x) {
-    eval(substitute(quote(stringr::str_trim(x, side = "right"))))
+    fun <- str2lang("stringr::str_trim")
+    eval(substitute(quote(fun(x, side = "right"))))
   },
   substr = function(x, start, len) {
     if (!is_constant(eval(substitute(quote(start)))) ||
@@ -401,10 +403,12 @@ translations_indirect_tidyverse <- list(
       # interpret non-positive start as an offset from the end
       start_offset <- -start - 1L
       stop_offset <- -pmax(as.integer(len) - start_offset - 1L, start - 1L)
-      eval(substitute(quote(stringr::str_sub(x, nchar(x) - start_offset, nchar(x) - stop_offset))))
+      fun <- str2lang("stringr::str_sub")
+      eval(substitute(quote(fun(x, nchar(x) - start_offset, nchar(x) - stop_offset))))
     } else {
       stop <- pmax(as.integer(len) + start - 1L, 0L)
-      eval(substitute(quote(stringr::str_sub(x, start, stop))))
+      fun <- str2lang("stringr::str_sub")
+      eval(substitute(quote(fun(x, start, stop))))
     }
   }
 )
@@ -463,10 +467,12 @@ translations_indirect_tidyverse_agg <- list(
   # R function names to the list r_aggregate_functions below
 
   count_star = function() {
-    eval(substitute(quote(dplyr::n())))
+    fun <- str2lang("dplyr::n")
+    eval(substitute(quote(fun())))
   },
   count_distinct = function(...) {
-    eval(substitute(quote(dplyr::n_distinct(..., na.rm = TRUE))))
+    fun <- str2lang("dplyr::n_distinct")
+    eval(substitute(quote(fun(..., na.rm = TRUE))))
   }
 )
 
