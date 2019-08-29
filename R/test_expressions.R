@@ -27,10 +27,6 @@ is_aggregate_expression <- function(expr) {
   }
   any(sapply(out, isTRUE))
 }
-# can't just test
-#any(r_aggregate_functions %in% all_funs(expr))
-# because paste() also is also an aggregate function
-# but only when !is.null(collapse)
 
 are_valid_expressions_in_aggregation <- function(exprs, allowed_names) {
   sapply(exprs, is_valid_expression_in_aggregation, allowed_names = sapply(allowed_names, deparse))
@@ -60,27 +56,3 @@ is_aggregate_function_call <- function(expr) {
        (deparse(expr[[1]]) %in% c("paste","paste0") && "collapse" %in% names(expr) &&
           !is.null(expr[[which(names(expr) == "collapse")]])))
 }
-
-# example usage:
-#
-#allowed_names <- "Species"
-#good <- quote(1 + mean(Sepal.Length + 3))
-#bad <- quote((Sepal.Length + 3) - mean(Sepal.Length + 3))
-#
-#is_aggregate_expression(good)                      # returns TRUE
-#is_valid_expression_in_aggregation(good, allowed_names) # returns TRUE
-#
-#is_aggregate_expression(good)                      # returns TRUE
-#is_valid_expression_in_aggregation(bad, allowed_names)  # returns FALSE
-#
-
-# note:
-#
-# there are cases where is_aggregate_expression() returns FALSE
-# but is_valid_expression_in_aggregation() returns TRUE
-# for example:
-#
-#is_aggregate_expression(quote(Species))
-#is_valid_expression_in_aggregation(quote(Species), "Species")
-#
-# this is deliberate

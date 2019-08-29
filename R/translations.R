@@ -203,12 +203,8 @@ translations_indirect_generic <- list(
   `%<=>%` = function(x, y) {
     # x is not distinct from y
     # is equivalent to
-    # (x IS NULL AND y IS NULL ) OR (x IS NOT NULL AND y IS NOT NULL) AND (x = y)
-    # or
     # if(x IS NULL OR y IS NULL, (x IS NULL) = (y IS NULL), x = y)
-    # this translation uses the latter version
     eval(substitute(quote(
-      #( (is.na(x) && is.na(y)) || (!is.na(x) && !is.na(y)) && (x == y) )
       ifelse(is.na(x) || is.na(y), is.na(x) == is.na(y), x == y)
     )))
   },
@@ -457,17 +453,6 @@ translations_indirect_base_agg <- list(
     eval(substitute(quote(nrow(.))))
   }
   # count_distinct for base R is translated elsewhere
-
-  # for count all, we translate to nrow(.) for count(*), otherwise length(!is.na(x))
-  # for count distinct, we use length(unique(x)) if only one column,
-  #   but it's unclear how best to handle the multiple columns case
-  #   e.g. length(unique(mtcars[c("gear", "carb"),])) is 11
-  #     ( that's the right answer, and what mtcars %>% summarise(n_distinct(gear, carb)) returns )
-  #   but these give the wrong ansers:
-  #      mtcars %>% summarise(length(unique(gear, carb))) is 28
-  #      mtcars %>% summarise(length(unique(c(gear, carb)))) is 7
-  #   the safest thing would probably be to keep it limited to the one-variable case
-
 )
 
 translations_indirect_tidyverse_agg <- list(
