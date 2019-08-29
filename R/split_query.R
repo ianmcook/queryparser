@@ -75,6 +75,7 @@ split_query <- function(query) {
 
   in_quotes <- FALSE
   in_parens <- 0
+  escaped <- FALSE
 
   while((pos <- seek(rc, NA)) <= len) {
 
@@ -83,19 +84,28 @@ split_query <- function(query) {
     if (char %in% quote_chars) {
       if (!in_quotes) {
         in_quotes <- TRUE
+        escaped <- FALSE
         quo_char <- char
       } else if (char == quo_char) {
-        seek(rc, -2L, "current")
-        esc_quo <- c(quo_char, "\\")
-        if (!readChar(rc, 1L, useBytes = TRUE) %in% esc_quo) {
-          in_quotes <- FALSE
-          rm(quo_char)
+        if (escaped) {
+          escaped <- FALSE
+        } else {
+          esc_quo <- c(quo_char, "\\")
+          if (!readChar(rc, 1L, useBytes = TRUE) %in% esc_quo) {
+            in_quotes <- FALSE
+            escaped <- FALSE
+            rm(quo_char)
+          } else {
+            escaped <- TRUE
+          }
+          seek(rc, -1L, "current")
         }
-        seek(rc, 1L, "current")
       }
     } else if (!in_quotes && char == "(") {
+      escaped <- FALSE
       in_parens <- in_parens + 1
     } else if (!in_quotes && char == ")") {
+      escaped <- FALSE
       in_parens <- in_parens - 1
     }
 
@@ -259,30 +269,45 @@ split_comma_list <- function(comma_list) {
 
   in_quotes <- FALSE
   in_parens <- 0
+  escaped <- FALSE
+
   while((pos <- seek(rc, NA)) <= len) {
     char <- readChar(rc, 1L, useBytes = TRUE)
-
     if (char %in% quote_chars) {
       if (!in_quotes) {
         in_quotes <- TRUE
+        escaped <- FALSE
         quo_char <- char
       } else if (char == quo_char) {
-        seek(rc, -2L, "current")
-        esc_quo <- c(quo_char, "\\")
-        if (!readChar(rc, 1L, useBytes = TRUE) %in% esc_quo) {
-          in_quotes <- FALSE
-          rm(quo_char)
+        if (escaped) {
+          escaped <- FALSE
+        } else {
+          esc_quo <- c(quo_char, "\\")
+          if (!readChar(rc, 1L, useBytes = TRUE) %in% esc_quo) {
+            in_quotes <- FALSE
+            escaped <- FALSE
+            rm(quo_char)
+          } else {
+            escaped <- TRUE
+          }
+          seek(rc, -1L, "current")
         }
-        seek(rc, 1L, "current")
+      } else {
+        escaped <- FALSE
       }
     } else if (!in_quotes && char == "(") {
+      escaped <- FALSE
       in_parens <- in_parens + 1
     } else if (!in_quotes && char == ")") {
+      escaped <- FALSE
       in_parens <- in_parens - 1
     } else if (!in_quotes && in_parens <= 0) {
+      escaped <- FALSE
       if (char == ",") {
         pos_comma <- append(pos_comma, pos)
       }
+    } else {
+      escaped <- FALSE
     }
   }
 

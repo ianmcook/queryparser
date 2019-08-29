@@ -33,26 +33,35 @@ squish_sql <- function(x) {
 
   in_quotes <- FALSE
   in_ws <- FALSE
+  escaped <- FALSE
 
   while((pos <- seek(rc_in, NA)) < len) {
     char <- readChar(rc_in, 1L)
-
     if (char %in% quote_chars) {
       if (!in_quotes) {
         in_quotes <- TRUE
+        escaped <- FALSE
         quo_char <- char
       } else if (char == quo_char) {
-        seek(rc_in, -2L, "current")
-        esc_quo <- c(quo_char, "\\")
-        if (!readChar(rc_in, 1L) %in% esc_quo) {
-          in_quotes <- FALSE
-          rm(quo_char)
+        if (escaped) {
+          escaped <- FALSE
+        } else {
+          esc_quo <- c(quo_char, "\\")
+          if (!readChar(rc_in, 1L) %in% esc_quo) {
+            in_quotes <- FALSE
+            escaped <- FALSE
+            rm(quo_char)
+          } else {
+            escaped <- TRUE
+          }
+          seek(rc_in, -1L, "current")
         }
-        seek(rc_in, 1L, "current")
       }
       writeChar(char, rc_out, eos = NULL)
       in_ws <- FALSE
       next;
+    } else {
+      escaped <- FALSE
     }
 
     if (!in_quotes) {
