@@ -37,6 +37,7 @@ NULL
 #'     round(AVG(arr_delay)) AS avg_delay
 #'   FROM flights
 #'   WHERE distance BETWEEN 200 AND 300
+#'     AND air_time IS NOT NULL
 #'   GROUP BY origin, dest
 #'   HAVING num_flts > 5000
 #'   ORDER BY num_flts DESC, avg_delay DESC
