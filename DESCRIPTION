@@ -1,6 +1,6 @@
 Package: queryparser
 Type: Package
-Title: Parse SQL queries into R expressions
+Title: Parse SQL Queries into R Expressions
 Version: 0.1.0
 Authors@R: c(
     person("Ian", "Cook", email = "ian@cloudera.com", role = c("aut", "cre")),
