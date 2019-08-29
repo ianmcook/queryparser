@@ -107,5 +107,9 @@ parse_query <- function(query, tidyverse = FALSE, secure = TRUE) {
          "or incompatible with the GROUP BY clause", call. = FALSE)
   }
 
+  if (is_select_distinct) {
+    attr(tree$select, "distinct") <- TRUE
+  }
+
   tree
 }
