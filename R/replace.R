@@ -55,62 +55,74 @@ replace_special_keywords <- function(expr_quotes_masked, tidyverse) {
     return(expr_quotes_masked)
   }
 
-  # identify positions of "cast(x as y)"
-  cast_as_pos <- find_keyword_pairs(expr_quotes_masked, "cast", "as", parens_diff = +1)
-
-  # identify positions of "x not between y and z"
-  # (need to do this before identifying positions of "x between y and z")
-  expr_quotes_masked <- gsub(
-    "\\bnot between\\b",
-    "notbetween",
-    expr_quotes_masked,
-    ignore.case = TRUE
-  )
-  not_between_and_pos <- find_keyword_pairs(expr_quotes_masked, "notbetween", "and", operands = TRUE)
-
-  # identify positions of "x between y and z"
-  between_and_pos <- find_keyword_pairs(expr_quotes_masked, "between", "and", operands = TRUE)
-
   original_encoding <- Encoding(expr_quotes_masked)
   Encoding(expr_quotes_masked) <- "bytes"
   nchar_bytes <- nchar(expr_quotes_masked, type = "bytes")
 
-  # replace "cast(x as y)" with "cast(x,y)"
-  for (pos in cast_as_pos) {
-    first_pos <- c(0L, pos + 1L)
-    first_pos[3L] <- first_pos[3L]
-    first_pos <- append(first_pos, first_pos[3L] + 2L)
-    last_pos <- c(first_pos[2L:4L] - 1L, nchar_bytes)
-    #last_pos <- c(last_pos[1L], last_pos + 2L, nchar_bytes)
-    repl_strings <- substring(expr_quotes_masked, first_pos, last_pos)
-    repl_strings <- c(repl_strings[1], repl_strings[2], ",", repl_strings[4])
-    expr_quotes_masked <- paste(repl_strings, collapse = "")
+  # replace CAST
+  if (grepl(paste0("\\bCAST\\b"), expr_quotes_masked, ignore.case = TRUE)) {
+
+    # identify positions of "cast(x as y)"
+    cast_as_pos <- find_keyword_pairs(expr_quotes_masked, "cast", "as", parens_diff = +1)
+
+    # replace "cast(x as y)" with "cast(x,y)"
+    for (pos in cast_as_pos) {
+      first_pos <- c(0L, pos + 1L)
+      first_pos[3L] <- first_pos[3L]
+      first_pos <- append(first_pos, first_pos[3L] + 2L)
+      last_pos <- c(first_pos[2L:4L] - 1L, nchar_bytes)
+      #last_pos <- c(last_pos[1L], last_pos + 2L, nchar_bytes)
+      repl_strings <- substring(expr_quotes_masked, first_pos, last_pos)
+      repl_strings <- c(repl_strings[1], repl_strings[2], ",", repl_strings[4])
+      expr_quotes_masked <- paste(repl_strings, collapse = "")
+    }
   }
 
-  # replace "x not between y and z" with "(x < y | x > z)" or "!between(x,y,z)"
-  for (pos in not_between_and_pos) {
-    last_pos <- c(pos[1L], pos[2L] - 1L, pos[2L] + 10L, pos[3L] - 1L, pos[4L], nchar_bytes)
-    first_pos <- c(0L, pos[1L] + 1, pos[2L], pos[2L] + 11L, pos[3L] + 4L, pos[4L] + 2L)
-    repl_strings <- substring(expr_quotes_masked, first_pos, last_pos)
-    if (tidyverse) {
-      repl_strings <- c(repl_strings[1], " !dplyr::between(", repl_strings[2], ",", repl_strings[4], ",", repl_strings[5], ")", repl_strings[6])
-    } else {
-      repl_strings <- c(repl_strings[1], " (", repl_strings[2], "<", repl_strings[4], " | ", repl_strings[2], ">", repl_strings[5], ")", repl_strings[6])
+  # replace NOT BETWEEN
+  if (grepl(paste0("\\bNOT BETWEEN\\b"), expr_quotes_masked, ignore.case = TRUE)) {
+
+    # identify positions of "x not between y and z"
+    # (need to do this before identifying positions of "x between y and z")
+    expr_quotes_masked <- gsub(
+      "\\bnot between\\b",
+      "notbetween",
+      expr_quotes_masked,
+      ignore.case = TRUE
+    )
+    not_between_and_pos <- find_keyword_pairs(expr_quotes_masked, "notbetween", "and", operands = TRUE)
+
+    # replace "x not between y and z" with "(x < y | x > z)" or "!between(x,y,z)"
+    for (pos in not_between_and_pos) {
+      last_pos <- c(pos[1L], pos[2L] - 1L, pos[2L] + 10L, pos[3L] - 1L, pos[4L], nchar_bytes)
+      first_pos <- c(0L, pos[1L] + 1, pos[2L], pos[2L] + 11L, pos[3L] + 4L, pos[4L] + 1L)
+      repl_strings <- substring(expr_quotes_masked, first_pos, last_pos)
+      if (tidyverse) {
+        repl_strings <- c(repl_strings[1], " !dplyr::between(", repl_strings[2], ",", repl_strings[4], ",", repl_strings[5], ")", repl_strings[6])
+      } else {
+        repl_strings <- c(repl_strings[1], " (", repl_strings[2], "<", repl_strings[4], " | ", repl_strings[2], ">", repl_strings[5], ")", repl_strings[6])
+      }
+      expr_quotes_masked <- paste(repl_strings, collapse = "")
     }
-    expr_quotes_masked <- paste(repl_strings, collapse = "")
   }
 
-  # replace "x between y and z" with "(x >= y & x <= z)" or "between(x,y,z)"
-  for (pos in between_and_pos) {
-    last_pos <- c(pos[1L], pos[2L] - 1L, pos[2L] + 7L, pos[3L] - 1L, pos[4L], nchar_bytes)
-    first_pos <- c(0L, pos[1L] + 1, pos[2L], pos[2L] + 8L, pos[3L] + 4L, pos[4L] + 2L)
-    repl_strings <- substring(expr_quotes_masked, first_pos, last_pos)
-    if (tidyverse) {
-      repl_strings <- c(repl_strings[1], " dplyr::between(", repl_strings[2], ",", repl_strings[4], ",", repl_strings[5], ")", repl_strings[6])
-    } else {
-      repl_strings <- c(repl_strings[1], " (", repl_strings[2], ">=", repl_strings[4], " & ", repl_strings[2], "<=", repl_strings[5], ")", repl_strings[6])
+  # replace BETWEEN
+  if (grepl(paste0("\\bBETWEEN\\b"), expr_quotes_masked, ignore.case = TRUE)) {
+
+    # identify positions of "x between y and z"
+    between_and_pos <- find_keyword_pairs(expr_quotes_masked, "between", "and", operands = TRUE)
+
+    # replace "x between y and z" with "(x >= y & x <= z)" or "between(x,y,z)"
+    for (pos in between_and_pos) {
+      last_pos <- c(pos[1L], pos[2L] - 1L, pos[2L] + 7L, pos[3L] - 1L, pos[4L], nchar_bytes)
+      first_pos <- c(0L, pos[1L] + 1, pos[2L], pos[2L] + 8L, pos[3L] + 4L, pos[4L] + 1L)
+      repl_strings <- substring(expr_quotes_masked, first_pos, last_pos)
+      if (tidyverse) {
+        repl_strings <- c(repl_strings[1], " dplyr::between(", repl_strings[2], ",", repl_strings[4], ",", repl_strings[5], ")", repl_strings[6])
+      } else {
+        repl_strings <- c(repl_strings[1], " (", repl_strings[2], ">=", repl_strings[4], " & ", repl_strings[2], "<=", repl_strings[5], ")", repl_strings[6])
+      }
+      expr_quotes_masked <- paste(repl_strings, collapse = "")
     }
-    expr_quotes_masked <- paste(repl_strings, collapse = "")
   }
 
   Encoding(expr_quotes_masked) <- original_encoding
