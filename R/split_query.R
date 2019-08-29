@@ -51,15 +51,15 @@ split_query <- function(query) {
   writeChar(query, rc)
   len <- seek(rc, 0L) - 1L
 
-  if (!keyword_starts_here(rc, "select", useBytes = TRUE)) {
+  if (!clause_starts_here(rc, "select")) {
     stop("Query must begin with the SELECT keyword", call. = FALSE)
   }
 
-  seek(rc, 8L)
+  seek(rc, 7L)
   select_distinct <- FALSE
-  if (keyword_starts_here(rc, "all", useBytes = TRUE)) {
+  if (clause_starts_here(rc, "all")) {
     seek(rc, 10L)
-  } else if (keyword_starts_here(rc, "distinct", useBytes = TRUE)) {
+  } else if (clause_starts_here(rc, "distinct")) {
     select_distinct <- TRUE
     seek(rc, 15L)
   } else {
@@ -101,24 +101,33 @@ split_query <- function(query) {
           seek(rc, -1L, "current")
         }
       }
+      in_word <- FALSE
     } else if (!in_quotes && char == "(") {
       escaped <- FALSE
       in_parens <- in_parens + 1
+      in_word <- FALSE
     } else if (!in_quotes && char == ")") {
       escaped <- FALSE
       in_parens <- in_parens - 1
+      in_word <- FALSE
+    } else if (is_word_character(char)) {
+      escaped <- FALSE
+      in_word <- TRUE
+    } else {
+      escaped <- FALSE
+      in_word <- FALSE
     }
 
-    if (!in_quotes) {
+    if (!in_quotes && !in_word) {
 
       # identify unsupported syntax
-      if (keyword_starts_here(rc, "case", useBytes = TRUE)) {
+      if (clause_starts_here(rc, "case")) {
         stop("CASE expressions are not supported", call. = FALSE)
       }
-      if (keyword_starts_here(rc, "over", useBytes = TRUE)) {
+      if (clause_starts_here(rc, "over")) {
         stop("OVER clauses are not supported", call. = FALSE)
       }
-      if (keyword_starts_here(rc, "select", useBytes = TRUE)) {
+      if (clause_starts_here(rc, "select")) {
         if (in_parens > 0) {
           stop("Subqueries are not supported", call. = FALSE)
         } else {
@@ -127,37 +136,37 @@ split_query <- function(query) {
       }
     }
 
-    if (!in_quotes && in_parens <= 0) {
+    if (!in_quotes && in_parens <= 0 && !in_word) {
 
       # identify unsupported syntax
-      if (keyword_starts_here(rc, "join", useBytes = TRUE)) {
+      if (clause_starts_here(rc, "join")) {
         stop("Joins are not supported", call. = FALSE)
       }
-      if (keyword_starts_here(rc, "union", useBytes = TRUE)) {
+      if (clause_starts_here(rc, "union")) {
         stop("The UNION operator is not supported", call. = FALSE)
       }
-      if (keyword_starts_here(rc, "intersect", useBytes = TRUE)) {
+      if (clause_starts_here(rc, "intersect")) {
         stop("The INTERSECT operator is not supported", call. = FALSE)
       }
-      if (keyword_starts_here(rc, "except", useBytes = TRUE)) {
+      if (clause_starts_here(rc, "except")) {
         stop("The EXCEPT operator is not supported", call. = FALSE)
       }
 
       # identify beginnings of clauses
-      if (keyword_starts_here(rc, "from", useBytes = TRUE)) {
+      if (clause_starts_here(rc, "from")) {
         # don't split on the "from" is "is [not] distinct from"
-        if (!preceded_by_keyword(rc, "distinct", useBytes = TRUE)) {
+        if (!preceded_by_keyword(rc, "distinct")) {
           pos_from <- append(pos_from, pos)
         }
-      } else if (keyword_starts_here(rc, "where", useBytes = TRUE)) {
+      } else if (clause_starts_here(rc, "where")) {
         pos_where <- append(pos_where, pos)
-      } else if (keyword_starts_here(rc, "group by", useBytes = TRUE)) {
+      } else if (clause_starts_here(rc, "group by")) {
         pos_group_by <- append(pos_group_by, pos)
-      } else if (keyword_starts_here(rc, "having", useBytes = TRUE)) {
+      } else if (clause_starts_here(rc, "having")) {
         pos_having <- append(pos_having, pos)
-      } else if (keyword_starts_here(rc, "order by", useBytes = TRUE)) {
+      } else if (clause_starts_here(rc, "order by")) {
         pos_order_by <- append(pos_order_by, pos)
-      } else if (keyword_starts_here(rc, "limit", useBytes = TRUE)) {
+      } else if (clause_starts_here(rc, "limit")) {
         pos_limit <- append(pos_limit, pos)
       }
 
@@ -219,6 +228,10 @@ split_query <- function(query) {
   }
 
   clauses
+}
+
+clause_starts_here <- function(rc, keyword) {
+  keyword_starts_here(rc, keyword, useBytes = TRUE, look_back = FALSE)
 }
 
 split_select <- function(clause) {

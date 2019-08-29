@@ -284,10 +284,10 @@ is_non_word_character <- function(char, useBytes = FALSE) {
   grepl(non_word_char_regex, char, useBytes = useBytes)
 }
 
-keyword_starts_here <- function(rc, keyword, useBytes = FALSE) {
+keyword_starts_here <- function(rc, keyword, useBytes = FALSE, look_back = TRUE) {
   pos <- seek(rc, NA)
   on.exit(seek(rc, pos))
-  at_start <- tryCatch({
+  at_start <- !look_back || tryCatch({
     seek(rc, -1L, "current")
     seek(rc, -1L, "current")
     FALSE
@@ -309,7 +309,7 @@ keyword_starts_here <- function(rc, keyword, useBytes = FALSE) {
     non_word_char_regex,
     "$"
   )
-  grepl(keyword_regex,  chars, ignore.case = TRUE, useBytes = useBytes)
+  isTRUE(grepl(keyword_regex,  chars, ignore.case = TRUE, useBytes = useBytes))
 }
 
 find_keyword_pairs <- function(expr_quotes_masked, keyword_1, keyword_2, operands = FALSE, parens_diff = 0) {
