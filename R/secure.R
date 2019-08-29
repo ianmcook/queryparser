@@ -18,12 +18,12 @@ NULL
 # prevent this kind of horror:
 #parse_query("SELECT system('rm -rf /')")
 
-secure_expressions_list <- function(tree) {
-  stop_if_bad_funs(unique(unlist(sapply(unlist(tree), bad_funs))))
+secure_expressions_list <- function(tree, tidyverse) {
+  stop_if_bad_funs(unique(unlist(sapply(unlist(tree), bad_funs, tidyverse))))
 }
 
-secure_expression <- function(expr) {
-  stop_if_bad_funs(bad_funs(expr))
+secure_expression <- function(expr, tidyverse) {
+  stop_if_bad_funs(bad_funs(expr, tidyverse))
 }
 
 stop_if_bad_funs <- function(bad_funs) {
@@ -39,42 +39,59 @@ stop_if_bad_funs <- function(bad_funs) {
   }
 }
 
-bad_funs <- function(expr) {
+bad_funs <- function(expr, tidyverse) {
   if (identical(typeof(expr), "language")) {
-    return(setdiff(all_funs(expr), allowed_funs))
+    if (tidyverse) {
+      return(setdiff(all_funs(expr), allowed_funs_tidyverse))
+    } else {
+      return(setdiff(all_funs(expr), allowed_funs_base))
+    }
   }
   character(0)
 }
 
-# the expression is tested against this list of allowed functions
-# after the string replacements occur but before the
+# the expression is tested against one of these lists of allowed
+# functions after the string replacements occur but before the
 # environment translations occur
-allowed_funs <- unique(c(
+
+allowed_funs_generic <- c(
   "::", ":::", "+", "-", "*", "/", "^", "%/%", "%%",
   "!", "&", "&&", "|", "||",
   "!=",  "<", "<=", "=", "==", ">", ">=",
-  "cast", "everything", "count_star", "is.na",
+  "cast", "count_star", "is.na",
   "as.logical", "%>%", "%in%", "%nin%",  "ifelse",
-  "(", "c",
-  "dplyr", "desc", "between",
+  "(", "c", "between",
   unname(unlist(translations_operators_binary_symbolic)),
   unname(unlist(translations_operators_binary_word)),
   unname(unlist(translations_operators_unary_prefix)),
   names(translations_direct_generic),
-  names(translations_direct_base),
-  names(translations_direct_tidyverse),
   names(translations_indirect_generic),
-  names(translations_indirect_base),
-  names(translations_indirect_tidyverse),
   names(translations_indirect_generic_agg),
+  paste(names(translations_indirect_generic_agg), "distinct", sep = "_")
+)
+
+allowed_funs_base <- unique(c(
+  allowed_funs_generic,
+  names(translations_direct_base),
+  names(translations_indirect_base),
   names(translations_indirect_base_agg),
+  paste(names(translations_indirect_base_agg), "distinct", sep = "_")
+))
+allowed_funs_base <- setdiff(
+  allowed_funs_base,
+  c("count_star_distinct", "count_distinct_distinct")
+)
+
+allowed_funs_tidyverse <- unique(c(
+  allowed_funs_generic,
+  "everything", "dplyr", "desc", "between",
+  names(translations_direct_tidyverse),
+  names(translations_indirect_tidyverse),
   names(translations_indirect_tidyverse_agg),
   paste(names(translations_indirect_tidyverse), "distinct", sep = "_"),
-  paste(names(translations_indirect_generic_agg), "distinct", sep = "_"),
-  paste(names(translations_indirect_base_agg), "distinct", sep = "_"),
   paste(names(translations_indirect_tidyverse_agg), "distinct", sep = "_")
 ))
-allowed_funs <- setdiff(
-  allowed_funs,
+allowed_funs_tidyverse <- setdiff(
+  allowed_funs_tidyverse,
   c("count_star_distinct", "count_distinct_distinct")
 )

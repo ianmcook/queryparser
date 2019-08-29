@@ -141,7 +141,7 @@ parse_expression <- function(expr, tidyverse = FALSE, secure = TRUE) {
 
   # stop if contains illegal functions or operators
   if (secure) {
-    secure_expression(call_out)
+    secure_expression(call_out, tidyverse)
   }
 
   # stop if any column names are R reserved words
