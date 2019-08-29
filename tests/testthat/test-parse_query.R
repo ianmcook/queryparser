@@ -2,11 +2,12 @@ test_that("parse_query(tidy = TRUE) works on 'flights' example query", {
   expect_equal(
     {
       query <- "SELECT origin, dest,
-        COUNT(flight) AS num_flts,
-        round(AVG(distance)) AS dist,
-        round(AVG(arr_delay)) AS avg_delay
+          COUNT(flight) AS num_flts,
+          round(AVG(distance)) AS dist,
+          round(AVG(arr_delay)) AS avg_delay
         FROM flights
         WHERE distance BETWEEN 200 AND 300
+          AND air_time IS NOT NULL
         GROUP BY origin, dest
         HAVING num_flts > 5000
         ORDER BY num_flts DESC, avg_delay DESC
@@ -16,7 +17,7 @@ test_that("parse_query(tidy = TRUE) works on 'flights' example query", {
     list(select = list(quote(origin), quote(dest), num_flts = quote(sum(!is.na(flight))),
       dist = quote(round(mean(distance, na.rm = TRUE))), avg_delay = quote(round(mean(arr_delay,
       na.rm = TRUE)))), from = list(quote(flights)), where = list(
-      str2lang("dplyr::between(distance, 200, 300)")), group_by = list(
+      str2lang("dplyr::between(distance, 200, 300) && !is.na(air_time)")), group_by = list(
       quote(origin), quote(dest)), having = list(quote(num_flts >
       5000)), order_by = list(str2lang("dplyr::desc(num_flts)"), str2lang("dplyr::desc(avg_delay)")),
       limit = list(100L))
@@ -27,11 +28,12 @@ test_that("parse_query(tidy = FALSE) works on 'flights' example query", {
   expect_equal(
     {
       query <- "SELECT origin, dest,
-      COUNT(flight) AS num_flts,
-      round(AVG(distance)) AS dist,
-      round(AVG(arr_delay)) AS avg_delay
+        COUNT(flight) AS num_flts,
+        round(AVG(distance)) AS dist,
+        round(AVG(arr_delay)) AS avg_delay
       FROM flights
       WHERE distance BETWEEN 200 AND 300
+        AND air_time IS NOT NULL
       GROUP BY origin, dest
       HAVING num_flts > 5000
       ORDER BY num_flts DESC, avg_delay DESC
@@ -41,7 +43,7 @@ test_that("parse_query(tidy = FALSE) works on 'flights' example query", {
     list(select = list(quote(origin), quote(dest), num_flts = quote(sum(!is.na(flight))),
       dist = quote(round(mean(distance, na.rm = TRUE))), avg_delay = quote(round(mean(arr_delay,
       na.rm = TRUE)))), from = list(quote(flights)), where = list(
-      quote((distance >= 200 & distance <= 300))), group_by = list(
+      quote((distance >= 200 & distance <= 300) && !is.na(air_time))), group_by = list(
       quote(origin), quote(dest)), having = list(quote(num_flts >
       5000)), order_by = structure(list(quote(num_flts), quote(avg_delay)), descreasing = c(TRUE,
       TRUE)), limit = list(100L))
@@ -52,17 +54,17 @@ test_that("parse_query(tidy = TRUE) works on 'arcos' example query", {
   expect_equal(
     {
       query <- 'SELECT CAST(reporter_dea_no AS CHAR(9)) AS reporter_dea_no,
-        reporter_bus_act, reporter_name, reporter_addl_co_info, reporter_address1,
-        reporter_address2, reporter_city, CAST(reporter_state AS CHAR(2)) AS reporter_state,
-        CAST(lpad(reporter_zip, 5, "0") AS CHAR(5)) AS reporter_zip, reporter_county,
-        CAST(buyer_dea_no AS CHAR(9)) AS buyer_dea_no, buyer_bus_act, buyer_name, buyer_addl_co_info, buyer_address1,
-        buyer_address2, buyer_city, CAST(buyer_state AS CHAR(2)) AS buyer_state,
-        CAST(lpad(buyer_zip, 5, "0") AS CHAR(5)) AS buyer_zip,
-        CAST(transaction_code AS CHAR(1)) AS transaction_code, CAST(drug_code AS CHAR(4)) AS drug_code, ndc_no, drug_name,
-        quantity, unit, action_indicator, order_form_no, correction_no, strength, transaction_date,
-        calc_base_wt_in_gm, dosage_unit, transaction_id, product_name, ingredient_name,
-        CAST(measure AS CHAR(3)) AS measure, mme_conversion_factor, combined_labeler_name, revised_company_name,
-        reporter_family, dos_str
+          reporter_bus_act, reporter_name, reporter_addl_co_info, reporter_address1,
+          reporter_address2, reporter_city, CAST(reporter_state AS CHAR(2)) AS reporter_state,
+          CAST(lpad(reporter_zip, 5, "0") AS CHAR(5)) AS reporter_zip, reporter_county,
+          CAST(buyer_dea_no AS CHAR(9)) AS buyer_dea_no, buyer_bus_act, buyer_name, buyer_addl_co_info, buyer_address1,
+          buyer_address2, buyer_city, CAST(buyer_state AS CHAR(2)) AS buyer_state,
+          CAST(lpad(buyer_zip, 5, "0") AS CHAR(5)) AS buyer_zip,
+          CAST(transaction_code AS CHAR(1)) AS transaction_code, CAST(drug_code AS CHAR(4)) AS drug_code, ndc_no, drug_name,
+          quantity, unit, action_indicator, order_form_no, correction_no, strength, transaction_date,
+          calc_base_wt_in_gm, dosage_unit, transaction_id, product_name, ingredient_name,
+          CAST(measure AS CHAR(3)) AS measure, mme_conversion_factor, combined_labeler_name, revised_company_name,
+          reporter_family, dos_str
         FROM arcos
         WHERE buyer_state NOT IN ("AE","GU","PW","MP","VI");'
       parse_query(query, tidy = TRUE)
@@ -95,17 +97,17 @@ test_that("parse_query(tidy = FALSE) works on 'arcos' example query", {
   expect_equal(
     {
       query <- 'SELECT CAST(reporter_dea_no AS CHAR(9)) AS reporter_dea_no,
-      reporter_bus_act, reporter_name, reporter_addl_co_info, reporter_address1,
-      reporter_address2, reporter_city, CAST(reporter_state AS CHAR(2)) AS reporter_state,
-      CAST(lpad(reporter_zip, 5, "0") AS CHAR(5)) AS reporter_zip, reporter_county,
-      CAST(buyer_dea_no AS CHAR(9)) AS buyer_dea_no, buyer_bus_act, buyer_name, buyer_addl_co_info, buyer_address1,
-      buyer_address2, buyer_city, CAST(buyer_state AS CHAR(2)) AS buyer_state,
-      CAST(lpad(buyer_zip, 5, "0") AS CHAR(5)) AS buyer_zip,
-      CAST(transaction_code AS CHAR(1)) AS transaction_code, CAST(drug_code AS CHAR(4)) AS drug_code, ndc_no, drug_name,
-      quantity, unit, action_indicator, order_form_no, correction_no, strength, transaction_date,
-      calc_base_wt_in_gm, dosage_unit, transaction_id, product_name, ingredient_name,
-      CAST(measure AS CHAR(3)) AS measure, mme_conversion_factor, combined_labeler_name, revised_company_name,
-      reporter_family, dos_str
+        reporter_bus_act, reporter_name, reporter_addl_co_info, reporter_address1,
+        reporter_address2, reporter_city, CAST(reporter_state AS CHAR(2)) AS reporter_state,
+        CAST(lpad(reporter_zip, 5, "0") AS CHAR(5)) AS reporter_zip, reporter_county,
+        CAST(buyer_dea_no AS CHAR(9)) AS buyer_dea_no, buyer_bus_act, buyer_name, buyer_addl_co_info, buyer_address1,
+        buyer_address2, buyer_city, CAST(buyer_state AS CHAR(2)) AS buyer_state,
+        CAST(lpad(buyer_zip, 5, "0") AS CHAR(5)) AS buyer_zip,
+        CAST(transaction_code AS CHAR(1)) AS transaction_code, CAST(drug_code AS CHAR(4)) AS drug_code, ndc_no, drug_name,
+        quantity, unit, action_indicator, order_form_no, correction_no, strength, transaction_date,
+        calc_base_wt_in_gm, dosage_unit, transaction_id, product_name, ingredient_name,
+        CAST(measure AS CHAR(3)) AS measure, mme_conversion_factor, combined_labeler_name, revised_company_name,
+        reporter_family, dos_str
       FROM arcos
       WHERE buyer_state NOT IN ("AE","GU","PW","MP","VI");'
       parse_query(query, tidy = FALSE)
