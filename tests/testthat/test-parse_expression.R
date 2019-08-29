@@ -82,3 +82,18 @@ test_that("parse_expression(tidy = F) successfully parses test expression #7 wit
     str2lang("dplyr::coalesce(w, x, y, z)")
   )
 })
+
+test_that("parse_expression() successfully parses test expression #8 with IN", {
+  expect_equal(
+    parse_expression("x IN (a,b,c)"),
+    quote(x %in% c(a, b, c))
+  )
+})
+
+test_that("parse_expression() successfully parses test expression #9 with NOT IN", {
+  expect_equal(
+    parse_expression("x NOT IN (a,b,c)"),
+    quote(!(x %in% c(a, b, c)))
+  )
+})
+
