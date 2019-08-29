@@ -7,14 +7,14 @@
 split_query(query)
 }
 \arguments{
-\item{query}{a SQL SELECT statement}
+\item{query}{a character string containing a SQL \code{SELECT} statement}
 }
 \value{
 A list object with named elements representing the clauses of the
   query
 }
 \description{
-Splits a SQL SELECT statement into clauses and splits
+Splits a SQL \code{SELECT} statement into clauses, and splits
   comma-separated column lists within the clauses.
 }
 \examples{

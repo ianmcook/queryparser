@@ -17,16 +17,17 @@ NULL
 
 #' Parse a SQL query
 #'
-#' @description Parses a SQL SELECT statement into a list of R expressions
+#' @description Parses a SQL \code{SELECT} statement into a list of R
+#'   expressions
 #'
-#' @param query a character string containing a SQL SELECT statement
+#' @param query a character string containing a SQL \code{SELECT} statement
 #' @param tidyverse set to \code{TRUE} to use functions from tidyverse packages
 #'   including dplyr, stringr, and lubridate in the R expressions
 #' @param secure set to \code{FALSE} to allow potentially dangerous functions in
 #'   the returned R expressions
 #' @return A list object with named elements representing the clauses of the
-#'   query and containing unevaluated R expressions representing the SQL
-#'   expressions in the query
+#'   query and containing lists of unevaluated R expressions translated from the
+#'   SQL expressions in the query
 #' @details The query must not contain line comments (\code{--}) or block
 #'   comments (\code{/* */}).
 #' @examples

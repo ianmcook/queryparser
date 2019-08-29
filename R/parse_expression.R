@@ -19,7 +19,7 @@
 #' @param expr a character string containing a SQL expression
 #' @param tidyverse set to \code{TRUE} to use functions from tidyverse packages
 #'   including dplyr, stringr, and lubridate in the returned R expression
-#'   expression (for example, \code{n} and \code{n_distinct})
+#'   expression
 #' @param secure set to \code{FALSE} to allow potentially dangerous functions in
 #'   the returned R expression
 #' @return an unevaluated R expression (a \code{\link{call}})
@@ -27,11 +27,14 @@
 #' expr <- "round(AVG(arr_delay))"
 #' parse_expression(expr)
 #' @details The expression must not end with a column alias assignment. Use
-#'   \code{\link{extract_alias}} to extract column alias assignments.
+#'   \code{\link{extract_alias}} to extract and remove column alias assignments.
 #'
 #'   The expression must not contain any unquoted whitespace characters except
 #'   spaces, and there must be no unquoted runs or two or more spaces. Use
 #'   \code{\link{squish_sql}} to satisfy this whitespace requirement.
+#'
+#'   The expression must not contain line comments (\code{--}) or block comments
+#'   (\code{/* */}).
 #' @export
 parse_expression <- function(expr, tidyverse = FALSE, secure = TRUE) {
   if (!identical(typeof(expr), "character") ||

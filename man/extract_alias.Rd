@@ -11,13 +11,13 @@ extract_alias(expr)
 column alias assignment at the end}
 }
 \value{
-a character string containing the inputed SQL expression with the
-  column alias assignment removed (if it was present) and with the assigned
-  alias as its name
+a character string containing the inputted SQL expression with the
+  column alias assignment removed (if it existed) and with the assigned alias
+  as its name
 }
 \description{
-Extracts the column alias from an expression used in the SELECT
-  list of a SQL query
+Extracts the column alias assignment from an expression used in
+  the \code{SELECT} list of a SQL query
 }
 \details{
 The expression must not contain any unquoted whitespace characters

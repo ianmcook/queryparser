@@ -7,7 +7,7 @@
 parse_query(query, tidyverse = FALSE, secure = TRUE)
 }
 \arguments{
-\item{query}{a character string containing a SQL SELECT statement}
+\item{query}{a character string containing a SQL \code{SELECT} statement}
 
 \item{tidyverse}{set to \code{TRUE} to use functions from tidyverse packages
 including dplyr, stringr, and lubridate in the R expressions}
@@ -17,11 +17,12 @@ the returned R expressions}
 }
 \value{
 A list object with named elements representing the clauses of the
-  query and containing unevaluated R expressions representing the SQL
-  expressions in the query
+  query and containing lists of unevaluated R expressions translated from the
+  SQL expressions in the query
 }
 \description{
-Parses a SQL SELECT statement into a list of R expressions
+Parses a SQL \code{SELECT} statement into a list of R
+  expressions
 }
 \details{
 The query must not contain line comments (\code{--}) or block

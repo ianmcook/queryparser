@@ -14,14 +14,14 @@
 
 #' Extract the column alias from a SQL expression
 #'
-#' @description Extracts the column alias from an expression used in the SELECT
-#'   list of a SQL query
+#' @description Extracts the column alias assignment from an expression used in
+#'   the \code{SELECT} list of a SQL query
 #'
 #' @param expr a character string containing a SQL expression which might have a
 #'   column alias assignment at the end
-#' @return a character string containing the inputed SQL expression with the
-#'   column alias assignment removed (if it was present) and with the assigned
-#'   alias as its name
+#' @return a character string containing the inputted SQL expression with the
+#'   column alias assignment removed (if it existed) and with the assigned alias
+#'   as its name
 #' @examples
 #' expr <- "round(AVG(arr_delay)) AS avg_delay"
 #' extract_alias(expr)

@@ -14,10 +14,10 @@
 
 #' Split a SQL query
 #'
-#' @description Splits a SQL SELECT statement into clauses and splits
+#' @description Splits a SQL \code{SELECT} statement into clauses, and splits
 #'   comma-separated column lists within the clauses.
 #'
-#' @param query a SQL SELECT statement
+#' @param query a character string containing a SQL \code{SELECT} statement
 #' @return A list object with named elements representing the clauses of the
 #'   query
 #' @examples
