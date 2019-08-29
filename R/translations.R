@@ -166,7 +166,7 @@ translations_direct_tidyverse <- list(
   to_date = quote(lubridate::as_date),
 
   # conditional functions
-  coalesce = quote(coalesce),
+  coalesce = quote(dplyr::coalesce),
   nullif = quote(dplyr::na_if)
 
   # add other lubridate, stringr, and dplyr functions

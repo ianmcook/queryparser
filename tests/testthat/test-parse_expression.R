@@ -68,3 +68,17 @@ test_that("parse_expression(tidy = F) successfully parses test expression #5 wit
     quote((!dplyr::between(as.numeric((x)), (y), (z))))
   )
 })
+
+test_that("parse_expression(tidy = F) successfully parses test expression #7 with coalesce()", {
+  expect_equal(
+    parse_expression("coalesce(w, x, y, z)", tidy = F),
+    quote(if (!is.na(w)) w else if (!is.na(x)) x else if (!is.na(y)) y else if (!is.na(z)) z else NA)
+  )
+})
+
+test_that("parse_expression(tidy = F) successfully parses test expression #7 with coalesce()", {
+  expect_equal(
+    parse_expression("coalesce(w, x, y, z)", tidy = T),
+    quote(dplyr::coalesce(w, x, y, z))
+  )
+})
