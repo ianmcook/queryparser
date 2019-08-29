@@ -33,7 +33,7 @@ are_valid_expressions_in_aggregation <- function(exprs, allowed_names) {
 }
 
 is_valid_expression_in_aggregation <- function(expr, allowed_names, var_names = all_cols(expr), agg = FALSE) {
-  if(deparse(expr) %in% allowed_names) {
+  if (deparse(expr) %in% allowed_names) {
     return(TRUE)
   } else if (length(expr) == 1) {
     if (!agg && deparse(expr) %in% var_names) {

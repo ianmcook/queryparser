@@ -203,7 +203,7 @@ translations_indirect_generic <- list(
   `%<=>%` = function(x, y) {
     # x is not distinct from y
     # is equivalent to
-    # if(x IS NULL OR y IS NULL, (x IS NULL) = (y IS NULL), x = y)
+    # if (x IS NULL OR y IS NULL, (x IS NULL) = (y IS NULL), x = y)
     eval(substitute(quote(
       ifelse(is.na(x) || is.na(y), is.na(x) == is.na(y), x == y)
     )))
@@ -211,7 +211,7 @@ translations_indirect_generic <- list(
   `%<!=>%` = function(x, y) {
     # x is distinct from y
     # is equivalent to
-    # if(x IS NULL OR y IS NULL, x IS NULL != y IS NULL, x != y)
+    # if (x IS NULL OR y IS NULL, x IS NULL != y IS NULL, x != y)
     eval(substitute(quote(
       ifelse(is.na(x) || is.na(y), is.na(x) != is.na(y), x != y)
     )))
@@ -235,7 +235,7 @@ translations_indirect_generic <- list(
     eval(substitute(quote(deg*pi/180)))
   },
   rand = function(seed = NULL) {
-    if(!is.null(seed)) {
+    if (!is.null(seed)) {
       warning("Function rand() currently ignores the seed argument", call. = FALSE)
     }
     eval(substitute(quote(runif(1))))
@@ -244,7 +244,7 @@ translations_indirect_generic <- list(
     eval(substitute(quote(gsub(pattern, replacement, x))))
   },
   trunc = function(x, d = 0) {
-    if(!is_constant(eval(substitute(quote(d))))) {
+    if (!is_constant(eval(substitute(quote(d))))) {
       stop("The second argument to trunc() or truncate() ",
            "must be a constant value", call. = FALSE)
     }
@@ -265,7 +265,7 @@ translations_indirect_generic <- list(
 
 translations_indirect_base <- list(
   cast = function(x, y = NULL) {
-    if(!is_constant(eval(substitute(quote(y))))) {
+    if (!is_constant(eval(substitute(quote(y))))) {
       stop("Invalid data type in CAST", call. = FALSE)
     }
     if (is.null(y)) stop("Unspecified data type in CAST", call. = FALSE)
@@ -299,7 +299,7 @@ translations_indirect_base <- list(
     eval(substitute(quote(ifelse(is.na(x), x, y))))
   },
   lpad = function(str, len, pad) {
-    if(!is_constant(eval(substitute(quote(len)))) ||
+    if (!is_constant(eval(substitute(quote(len)))) ||
        !is_constant(eval(substitute(quote(pad))))) {
       stop("The second and third arguments to lpad() ",
            "must be constant values", call. = FALSE)
@@ -315,7 +315,7 @@ translations_indirect_base <- list(
     eval(substitute(quote(sprintf(format_string, str))))
   },
   rpad = function(str, len, pad) {
-    if(!is_constant(eval(substitute(quote(len)))) ||
+    if (!is_constant(eval(substitute(quote(len)))) ||
        !is_constant(eval(substitute(quote(pad))))) {
       stop("The second and third arguments to rpad() ",
            "must be constant values", call. = FALSE)
@@ -340,7 +340,7 @@ translations_indirect_base <- list(
     eval(substitute(quote(trimws(x, which = "right"))))
   },
   substr = function(x, start, len) {
-    if(!is_constant(eval(substitute(quote(start)))) ||
+    if (!is_constant(eval(substitute(quote(start)))) ||
        !is_constant(eval(substitute(quote(len))))) {
       stop("The second and third arguments to substr() or ",
            "substring() must be constant values", call. = FALSE)
@@ -359,7 +359,7 @@ translations_indirect_base <- list(
 
 translations_indirect_tidyverse <- list(
   cast = function(x, y = NULL) {
-    if(!is_constant(eval(substitute(quote(y))))) {
+    if (!is_constant(eval(substitute(quote(y))))) {
       stop("Invalid data type in CAST", call. = FALSE)
     }
     if (is.null(y)) stop("Unspecified data type in CAST", call. = FALSE)
@@ -392,7 +392,7 @@ translations_indirect_tidyverse <- list(
     eval(substitute(quote(stringr::str_trim(x, side = "right"))))
   },
   substr = function(x, start, len) {
-    if(!is_constant(eval(substitute(quote(start)))) ||
+    if (!is_constant(eval(substitute(quote(start)))) ||
        !is_constant(eval(substitute(quote(len))))) {
       stop("The second and third arguments to substr() or ",
            "substring() must be constant values", call. = FALSE)
