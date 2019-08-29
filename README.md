@@ -157,7 +157,7 @@ parse_query("SELECT x FROM y WHERE system('rm -rf /')")
 
 ## Current Limitations
 
-**queryparser** currently does not support:
+**queryparser** does not currently support:
 
   - Joins
   - Subqueries
@@ -165,10 +165,19 @@ parse_query("SELECT x FROM y WHERE system('rm -rf /')")
   - `CASE` expressions
   - Some SQL functions and operators
 
+The error messages that occur when attempting to parse invalid or
+unrecognized SQL are often non-informative.
+
+Expressions that include logical operators (such as `IS NULL`) might
+generate R expressions that do not follow the same order of operations
+that a SQL engine would follow. When using expressions (not simple
+column references or literals) as operands to logical operators, enclose
+these expressions in parentheses to avoid ambiguity.
+
 ## Non-Goals
 
 **queryparser** does not aspire to:
 
-  - Support other SQL statements (such as `INSERT` or `UPDATE`)
-  - Provide customized translations for different SQL dialects
+  - Translate other SQL statements (such as `INSERT` or `UPDATE`)
+  - Customize translations for different SQL dialects
   - Fully validate the syntax of the `SELECT` statements passed to it
