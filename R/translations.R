@@ -257,6 +257,9 @@ translations_indirect_generic <- list(
   },
   concat_ws = function(sep, ...) {
     eval(substitute(quote(paste(..., sep = sep))))
+  },
+  ifnull = function(x, y) {
+    eval(substitute(quote(ifelse(is.na(x), y, x))))
   }
 )
 
