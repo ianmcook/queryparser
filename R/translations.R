@@ -486,18 +486,17 @@ translations_indirect_tidyverse_agg <- list(
 )
 
 r_aggregate_functions <- c(
-  "mean",
-  "count",
   "max",
+  "mean",
   "median",
   "min",
-  "std",
-  "stddev",
-  "sum",
-  "percentile",
-  "variance",
   "nrow",
+  "sd",
+  "sum",
+  "quantile",
+  "var",
   "dplyr::n",
   "dplyr::n_distinct"
 )
-# paste() with !is.null(collapse) is also an aggregate function
+# paste() and paste0() can also be aggregate functions
+# but only when !is.null(collapse)
