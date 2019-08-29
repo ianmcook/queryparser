@@ -46,6 +46,9 @@ bad_funs <- function(expr) {
   character(0)
 }
 
+# the expression is tested against this list of allowed functions
+# after the string replacements occur but before the
+# environment translations occur
 allowed_funs <- unique(c(
   "::", ":::", "+", "-", "*", "/", "^", "%/%", "%%",
   "!", "&", "&&", "|", "||",

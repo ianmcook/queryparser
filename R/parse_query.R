@@ -65,12 +65,12 @@ parse_query <- function(query, tidyverse = FALSE, secure = TRUE) {
   has_order_by <- !is.null(tree$order_by)
   has_limit <- !is.null(tree$limit)
 
-  tree$select <- parse_select(tree$select, tidyverse, FALSE)
-  tree$from <- parse_from(tree$from, tidyverse, FALSE)
-  tree$where <- parse_where(tree$where, tidyverse, FALSE)
-  tree$group_by <- parse_group_by(tree$group_by, tidyverse, FALSE)
-  tree$having <- parse_having(tree$having, tidyverse, FALSE)
-  tree$order_by <- parse_order_by(tree$order_by, tidyverse, FALSE)
+  tree$select <- parse_select(tree$select, tidyverse)
+  tree$from <- parse_from(tree$from, tidyverse)
+  tree$where <- parse_where(tree$where, tidyverse)
+  tree$group_by <- parse_group_by(tree$group_by, tidyverse)
+  tree$having <- parse_having(tree$having, tidyverse)
+  tree$order_by <- parse_order_by(tree$order_by, tidyverse)
   tree$limit <- parse_limit(tree$limit)
 
   valid_agg_cols <- sapply(tree$group_by, deparse)
@@ -106,8 +106,6 @@ parse_query <- function(query, tidyverse = FALSE, secure = TRUE) {
     stop("The ORDER BY list includes expressions that are invalid in an aggregation context ",
          "or incompatible with the GROUP BY clause", call. = FALSE)
   }
-
-  secure_expressions_list(tree)
 
   tree
 }
