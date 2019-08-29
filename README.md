@@ -11,7 +11,7 @@
 
 ## Installation
 
-Install the released version of queryparser from
+Install the released version of **queryparser** from
 [CRAN](https://CRAN.R-project.org) with:
 
 ``` r
@@ -63,6 +63,7 @@ parse_query(
     round(AVG(arr_delay)) AS avg_delay
   FROM flights
   WHERE distance BETWEEN 200 AND 300
+    AND air_time IS NOT NULL
   GROUP BY origin, dest
   HAVING num_flts > 5000
   ORDER BY num_flts DESC, avg_delay DESC
@@ -92,7 +93,7 @@ parse_query(
 #> 
 #> $where
 #> $where[[1]]
-#> (distance >= 200 & distance <= 300)
+#> (distance >= 200 & distance <= 300) && !is.na(air_time)
 #> 
 #> 
 #> $group_by
@@ -146,8 +147,8 @@ parse_query("SELECT COUNT(*) FROM t WHERE x BETWEEN y AND z", tidyverse = TRUE)
 #> dplyr::between(x, y, z)
 ```
 
-**queryparser** will translate only recognized functions and operators,
-preventing injection of malicious code:
+**queryparser** will translate only explicitly allowed functions and
+operators, preventing injection of malicious code:
 
 ``` r
 parse_query("SELECT x FROM y WHERE system('rm -rf /')")
@@ -170,4 +171,4 @@ parse_query("SELECT x FROM y WHERE system('rm -rf /')")
 
   - Support other SQL statements (such as `INSERT` or `UPDATE`)
   - Provide customized translations for different SQL dialects
-  - Fully validate the `SELECT` statements passed to it
+  - Fully validate the syntax of the `SELECT` statements passed to it
