@@ -429,11 +429,12 @@ find_end_of_boolean_operand_after <- function(rc, len, in_parens) {
       in_parens <- in_parens + 1
     } else if (char == ")") {
       in_parens <- in_parens - 1
-    } else if (in_parens < orig_parens) {
-      return(pos + 1)
+      if (in_parens < orig_parens) {
+        return(pos + 1L)
+      }
     } else if (in_parens == orig_parens &&
                isTRUE(next_thing %in% c(sql_logical_operators_with_left_operands, ","))) {
-      return(pos + 1)
+      return(pos + 1L)
     }
   }
   return(len)
@@ -444,9 +445,9 @@ find_beginning_of_boolean_operand_before <- function(rc, in_parens) {
   on.exit(seek(rc, orig_pos))
   orig_parens <- in_parens
 
-  pos <- orig_pos + 1
-  while(pos > 1) {
-    pos <- pos - 1
+  pos <- orig_pos - 1L
+  while(pos > 0L) {
+    pos <- pos - 1L
     seek(rc, pos)
     char <- readChar(rc, 1L)
 
@@ -456,8 +457,9 @@ find_beginning_of_boolean_operand_before <- function(rc, in_parens) {
       in_parens <- in_parens + 1
     } else if (char == "(") {
       in_parens <- in_parens - 1
-    } else if (in_parens < orig_parens) {
-      return(pos)
+      if (in_parens < orig_parens) {
+        return(pos + 1L)
+      }
     } else if (in_parens == orig_parens &&
                isTRUE(previous_thing %in% c(sql_logical_operators_with_right_operands, ","))) {
       return(pos)
