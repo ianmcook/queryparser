@@ -131,8 +131,6 @@ translations_direct_generic <- list(
   atan2 = quote(atan2),
   cos = quote(cos),
   cosh = quote(cosh),
-  cot = quote(cot),
-  coth = quote(coth),
   sin = quote(sin),
   sinh = quote(sinh),
   tan = quote(tan),
@@ -147,7 +145,11 @@ translations_direct_generic <- list(
 translations_direct_base <- list(
 
   # string functions
+  char_length = quote(nchar),
+  character_length = quote(nchar),
   length = quote(nchar),
+  # consider whether to translate length(x) to nchar(x, type = "bytes")
+  # which would be consistent with MySQL but not with PostgreSQL
   lcase = quote(tolower),
   lower = quote(tolower),
   ucase = quote(toupper),
@@ -160,8 +162,11 @@ translations_direct_base <- list(
 translations_direct_tidyverse <- list(
 
   # string functions
+  char_length = str2lang("stringr::str_length"),
+  character_length = str2lang("stringr::str_length"),
   length = str2lang("stringr::str_length"),
   lower = str2lang("stringr::str_to_lower"),
+  reverse = str2lang("stringi::stri_reverse"),
   upper = str2lang("stringr::str_to_upper"),
   to_date = str2lang("lubridate::as_date"),
   trim = str2lang("stringr::str_trim"),
