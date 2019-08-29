@@ -281,7 +281,6 @@ translations_indirect_base <- list(
   },
   coalesce = function(...) {
     dots <- eval(substitute(alist(...)))
-    assign("dots", dots, envir = .GlobalEnv)
     if (length(dots) < 1) {
       stop("At least one argument must be passed to coalesce()", call. = FALSE)
     }
