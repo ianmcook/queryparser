@@ -121,6 +121,7 @@ translations_direct_generic <- list(
   round = quote(round),
   sign = quote(sign),
   sqrt = quote(sqrt),
+  std = quote(stddev), # stddev is translated below
   truncate = quote(trunc), # trunc is translated below
 
   # trigonometric functions
@@ -432,9 +433,6 @@ translations_indirect_generic_agg <- list(
   },
   min = function(x) {
     eval(substitute(quote(min(x, na.rm = TRUE))))
-  },
-  std = function(x) {
-    eval(substitute(quote(sd(x, na.rm = TRUE))))
   },
   stddev = function(x) {
     eval(substitute(quote(sd(x, na.rm = TRUE))))
