@@ -90,7 +90,6 @@ translations_operators_unary_postfix <- list(
 )
 
 translations_direct_generic <- list(
-
   # operators
   `%xor%` = quote(xor),
 
@@ -138,8 +137,8 @@ translations_direct_generic <- list(
 
   # string functions
   concat = quote(paste0),
-  substring = quote(substr) # substr is translated below
-
+  substring = quote(substr), # substr is translated below
+  to_hex = quote(as.hexmode)
 )
 
 translations_direct_base <- list(
@@ -154,14 +153,21 @@ translations_direct_base <- list(
   lower = quote(tolower),
   ucase = quote(toupper),
   upper = quote(toupper),
-  to_date = quote(as.Date)
+  to_date = quote(as.Date),
 
-
+  # bitwise functions
+  bitnot = quote(bitwNot),
+  bitand = quote(bitwAnd),
+  bitor = quote(bitwOr),
+  bitxor = quote(bitwXor),
+  shiftleft = quote(bitwShiftL),
+  shiftright = quote(bitwShiftR)
 )
 
 translations_direct_tidyverse <- list(
 
   # string functions
+  initcap = str2lang("stringr::str_to_title"),
   char_length = str2lang("stringr::str_length"),
   character_length = str2lang("stringr::str_length"),
   length = str2lang("stringr::str_length"),
@@ -173,9 +179,18 @@ translations_direct_tidyverse <- list(
 
   # conditional functions
   coalesce = str2lang("dplyr::coalesce"),
-  nullif = str2lang("dplyr::na_if")
+  nullif = str2lang("dplyr::na_if"),
 
-  # add other lubridate, stringr, and dplyr functions
+  # date and time
+  year = str2lang("lubridate::year"),
+  month = str2lang("lubridate::month"),
+  weekofyear = str2lang("lubridate::isoweek"),
+  dayofyear = str2lang("lubridate::yday"),
+  day = str2lang("lubridate::mday"),
+  dayofweek = str2lang("lubridate::wday"),
+  hour = str2lang("lubridate::hour"),
+  minute = str2lang("lubridate::minute"),
+  now = str2lang("lubridate::now")
 )
 
 # the return value of these indirect expressions must be in the form:
@@ -415,6 +430,18 @@ translations_indirect_tidyverse <- list(
       fun <- str2lang("stringr::str_sub")
       eval(substitute(quote(fun(x, start, stop))))
     }
+  },
+  dayname = function(x) {
+    fun <- str2lang("lubridate::wday")
+    eval(substitute(quote(fun(x, label = TRUE))))
+  },
+  date_trunc = function(unit, x) {
+    fun <- str2lang("lubridate::floor_date")
+    eval(substitute(quote(fun(x, unit))))
+  },
+  second = function(x) {
+    fun <- str2lang("lubridate::second")
+    eval(substitute(quote(floor(fun(x)))))
   }
 )
 
