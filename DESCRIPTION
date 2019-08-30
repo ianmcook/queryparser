@@ -1,14 +1,13 @@
 Package: queryparser
 Type: Package
-Title: Parse SQL Queries into R Expressions
+Title: Translate SQL Queries into R Expressions
 Version: 0.1.0
 Authors@R: c(
     person("Ian", "Cook", email = "ian@cloudera.com", role = c("aut", "cre")),
     person(family = "Cloudera", role = c("cph"))
     )
 Maintainer: Ian Cook <ian@cloudera.com>
-Description: Translate SQL SELECT statements into lists of R expressions
-    ready for tidy evaluation.
+Description: Translate SQL SELECT statements into lists of R expressions.
 URL: https://github.com/ianmcook/queryparser
 BugReports: https://github.com/ianmcook/queryparser/issues
 NeedsCompilation: no
