@@ -18,6 +18,9 @@
 # this function finds instances of these functions (post-translation) that contain no column references
 # and changes them to behave as they would in a SQL engine
 
+#' @include compat.R
+NULL
+
 translate_agg_scalar <- function(expr, tidyverse) {
   if (length(expr) == 1) {
     return(expr)
