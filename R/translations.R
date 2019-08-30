@@ -451,33 +451,63 @@ translations_indirect_generic_agg <- list(
   # R function names to the list r_aggregate_functions below
 
   avg = function(x) {
+    if (nargs() != 1) {
+      stop("Function AVG() requires one parameter", call. = FALSE)
+    }
     eval(substitute(quote(mean(x, na.rm = TRUE))))
   },
   count = function(x) {
+    if (nargs() != 1) {
+      stop("Function COUNT() requires one parameter", call. = FALSE)
+    }
     eval(substitute(quote(sum(!is.na(x)))))
   },
   group_concat = function(x, sep = ", ") {
+    if (!nargs() %in% c(1,2)) {
+      stop("Function GROUP_CONCAT() requires one or two parameters", call. = FALSE)
+    }
     eval(substitute(quote(paste0(x, collapse = sep))))
   },
   max = function(x) {
+    if (nargs() != 1) {
+      stop("Function MAX() requires one parameter", call. = FALSE)
+    }
     eval(substitute(quote(max(x, na.rm = TRUE))))
   },
   median = function(x) {
+    if (nargs() != 1) {
+      stop("Function MEDIAN() requires one parameter", call. = FALSE)
+    }
     eval(substitute(quote(median(x, na.rm = TRUE))))
   },
   min = function(x) {
+    if (nargs() != 1) {
+      stop("Function MIN() requires one parameter", call. = FALSE)
+    }
     eval(substitute(quote(min(x, na.rm = TRUE))))
   },
   stddev = function(x) {
+    if (nargs() != 1) {
+      stop("Function SD() or STDDEV() requires one parameter", call. = FALSE)
+    }
     eval(substitute(quote(sd(x, na.rm = TRUE))))
   },
   sum = function(x) {
+    if (nargs() != 1) {
+      stop("Function SUM() requires one parameter", call. = FALSE)
+    }
     eval(substitute(quote(sum(x, na.rm = TRUE))))
   },
   percentile = function(x, p) {
+    if (nargs() != 2) {
+      stop("Function PERCENTILE() requires two parameters", call. = FALSE)
+    }
     eval(substitute(quote(quantile(x, p, na.rm = TRUE))))
   },
   variance = function(x) {
+    if (nargs() != 1) {
+      stop("Function VARIANCE() requires one parameter", call. = FALSE)
+    }
     eval(substitute(quote(var(x, na.rm = TRUE))))
   }
 )
@@ -503,6 +533,9 @@ translations_indirect_tidyverse_agg <- list(
     eval(substitute(quote(fun())))
   },
   count_distinct = function(...) {
+    if (nargs() < 1) {
+      stop("Function COUNT(DISTINCT ) requires at least one parameter", call. = FALSE)
+    }
     fun <- str2lang("dplyr::n_distinct")
     eval(substitute(quote(fun(..., na.rm = TRUE))))
   }
