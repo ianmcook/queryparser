@@ -97,3 +97,30 @@ test_that("parse_expression() successfully parses test expression #9 with NOT IN
   )
 })
 
+test_that("parse_expression(tidyverse = FALSE) stops when multiple expressions to non-SUM aggregate distinct", {
+  expect_error(
+    parse_expression("AVG(DISTINCT x, y)", tidyverse = FALSE),
+    "^Multiple arguments"
+  )
+})
+
+test_that("parse_expression(tidyverse = TRUE) stops when multiple expressions to non-SUM aggregate DISTINCT", {
+  expect_error(
+    parse_expression("AVG(DISTINCT x, y)", tidyverse = TRUE),
+    "^Multiple arguments"
+  )
+})
+
+test_that("parse_expression(tidyverse = FALSE) stops when multiple expressions to COUNT DISTINCT", {
+  expect_error(
+    parse_expression("COUNT(DISTINCT x, y)", tidyverse = FALSE),
+    "^Multiple arguments"
+  )
+})
+
+test_that("parse_expression(tidyverse = TRUE) succeeds when multiple expressions to COUNT DISTINCT", {
+  expect_equal(
+    parse_expression("COUNT(DISTINCT x, y)", tidyverse = TRUE),
+    str2lang("dplyr::n_distinct(x, y, na.rm = TRUE)")
+  )
+})

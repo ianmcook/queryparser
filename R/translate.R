@@ -43,10 +43,17 @@ translate_distinct_function <- function(expr, func, tidyverse) {
     return(expr)
   } else {
     if (expr[[1]] == str2lang(paste0(func, "_distinct"))) {
+      if (!func == "count" && length(expr) > 2) {
+        stop(
+          "Multiple arguments to ", toupper(func), "(DISTINCT ) ",
+          "is not supported ",
+          call. = FALSE
+        )
+      }
       if (!tidyverse && length(expr) > 2) {
         stop(
-          "Multiple expressions after DISTINCT in an aggregate",
-          "function is not supported when tidyverse = FALSE",
+          "Multiple arguments to COUNT(DISTINCT ) ",
+          "is not supported when tidyverse = FALSE",
           call. = FALSE
         )
       }
