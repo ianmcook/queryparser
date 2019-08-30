@@ -15,6 +15,7 @@ License: Apache License 2.0 | file LICENSE
 Encoding: UTF-8
 RoxygenNote: 6.1.1
 Collate: 
+    'agg_scalar.R'
     'check_expressions.R'
     'compat.R'
     'common.R'
