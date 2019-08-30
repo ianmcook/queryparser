@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# for compatibility with R 3.6.0 and earlier
+# for compatibility with R versions earlier than 3.6.0
 if (!exists("str2lang")) {
   str2lang <- function(s) {
     parse(text = s, keep.source = FALSE)[[1]]
