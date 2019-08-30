@@ -7,7 +7,8 @@
 
 <!-- badges: end -->
 
-**queryparser** parses SQL queries into lists of R expressions.
+**queryparser** translates SQL queries into lists of unevaluated R
+expressions.
 
 ## Installation
 
@@ -131,7 +132,7 @@ Set the argument `tidyverse` to `TRUE` to use functions from
 [lubridate](https://lubridate.tidyverse.org) in the R expressions:
 
 ``` r
-parse_query("SELECT COUNT(*) FROM t WHERE x BETWEEN y AND z", tidyverse = TRUE)
+parse_query("SELECT COUNT(*) FROM t WHERE x BETWEEN y AND z ORDER BY q DESC", tidyverse = TRUE)
 #> $select
 #> $select[[1]]
 #> dplyr::n()
@@ -145,6 +146,11 @@ parse_query("SELECT COUNT(*) FROM t WHERE x BETWEEN y AND z", tidyverse = TRUE)
 #> $where
 #> $where[[1]]
 #> dplyr::between(x, y, z)
+#> 
+#> 
+#> $order_by
+#> $order_by[[1]]
+#> dplyr::desc(q)
 ```
 
 **queryparser** will translate only explicitly allowed functions and
@@ -161,23 +167,26 @@ parse_query("SELECT x FROM y WHERE system('rm -rf /')")
 
   - Joins
   - Subqueries
-  - `OVER` expressions
+  - The `WITH` clause (common table expressions)
+  - `OVER` expressions (window or analytic functions)
   - `CASE` expressions
   - Some SQL functions and operators
 
-The error messages that occur when attempting to parse invalid or
-unrecognized SQL are often non-informative.
+**queryparser** currently has the following limitations:
 
-Expressions that include logical operators (such as `IS NULL`) might
-generate R expressions that do not follow the same order of operations
-that a SQL engine would follow. When using expressions (not simple
-column references or literals) as operands to logical operators, enclose
-these expressions in parentheses to avoid ambiguity.
+  - When logical operators (such as `IS NULL`) have unparenthesized
+    expressions as their operands, R will interpret the resulting code
+    using a different order of operations than a SQL engine would. When
+    using an expression as the operand to a logical operator, always
+    enclose the expression in parentheses.
+  - The error messages that occur when attempting to parse invalid or
+    unrecognized SQL are often non-informative.
 
 ## Non-Goals
 
-**queryparser** does not aspire to:
+**queryparser** is not intended to:
 
-  - Translate other SQL statements (such as `INSERT` or `UPDATE`)
-  - Customize translations for different SQL dialects
+  - Translate other types of SQL statements (such as `INSERT` or
+    `UPDATE`)
+  - Customize translations for specific SQL dialects
   - Fully validate the syntax of the `SELECT` statements passed to it
