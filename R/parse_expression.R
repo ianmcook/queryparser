@@ -46,7 +46,7 @@ parse_expression <- function(expr, tidyverse = FALSE, secure = TRUE) {
     stop("Unexpected input to parse_expression()", call. = FALSE)
   }
 
-  expr <- trimws(expr, whitespace = ws_regex)
+  expr <- trimws(expr)
 
   # mask text enclosed in quotations
   rc_in <- rawConnection(raw(0L), "r+")

@@ -589,7 +589,7 @@ preceded_by_keyword <- function(rc, keyword, useBytes = FALSE) {
 }
 
 ends_with_operator_expecting_right_operand <- function(expr, except = c()) {
-  expr <- trimws(expr, whitespace = ws_regex)
+  expr <- trimws(expr)
   expr_length <- nchar(expr, type = "bytes")
   original_encoding <- Encoding(expr)
   Encoding(expr) <- "bytes"

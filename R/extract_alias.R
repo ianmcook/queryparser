@@ -34,7 +34,7 @@ extract_alias <- function(expr) {
     stop("Unexpected input to extract_alias()", call. = FALSE)
   }
 
-  expr <- trimws(expr, whitespace = ws_regex)
+  expr <- trimws(expr)
 
   bytes_in_chars <- nchar(strsplit(expr, "")[[1]], type = "bytes")
 
@@ -100,13 +100,13 @@ extract_alias <- function(expr) {
     if (look_for_char_before_alias) {
       if (quoted_string_at_end && !found_as_before_alias) {
         seek(rc, 0)
-        expr_without_alias <- trimws(readChar(rc, pos + 1, useBytes = TRUE), whitespace = ws_regex)
+        expr_without_alias <- trimws(readChar(rc, pos + 1, useBytes = TRUE))
       } else if (is_non_word_character(char)) {
         seek(rc, 0)
-        expr_without_alias <- trimws(readChar(rc, pos + 1, useBytes = TRUE), whitespace = ws_regex)
+        expr_without_alias <- trimws(readChar(rc, pos + 1, useBytes = TRUE))
       } else if (found_as_before_alias) {
         seek(rc, 0)
-        expr_without_alias <- trimws(readChar(rc, pos + 3, useBytes = TRUE), whitespace = ws_regex)
+        expr_without_alias <- trimws(readChar(rc, pos + 3, useBytes = TRUE))
       }
       break;
     }

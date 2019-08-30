@@ -43,7 +43,7 @@ split_query <- function(query) {
 
   original_encoding <- Encoding(query)
 
-  query <- trimws(query, whitespace = ws_regex)
+  query <- trimws(query)
   query <- squish_sql(query)
   query <- sub(";$", "", query)
 
@@ -265,7 +265,7 @@ split_limit <- function(clause) {
 
 split_clause <- function(clause, keyword) {
   if (is.null(clause)) return(NULL)
-  clause <- trimws(clause, whitespace = ws_regex)
+  clause <- trimws(clause)
   keyword_regex <- paste0("^", keyword, ws_regex, "*")
   clause <- sub(keyword_regex, "", clause, ignore.case = TRUE, useBytes = TRUE)
   clause
@@ -328,13 +328,12 @@ split_comma_list <- function(comma_list) {
   pos_comma <- pos_comma + 1
 
   if (is.null(pos_comma)) {
-    trimws(comma_list, whitespace = ws_regex)
+    trimws(comma_list)
   } else {
     original_encoding <- Encoding(comma_list)
     Encoding(comma_list) <- "bytes"
     out <- trimws(
-      substring(comma_list, c(1, pos_comma + 1), c(pos_comma - 1, len)),
-      whitespace = ws_regex
+      substring(comma_list, c(1, pos_comma + 1), c(pos_comma - 1, len))
     )
     Encoding(out) <- original_encoding
     out
