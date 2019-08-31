@@ -54,12 +54,15 @@ bad_funs <- function(expr, tidyverse) {
 # functions after the string replacements occur but before the
 # environment translations occur
 
+# do not include "%>%"  in any of these lists
+# (see issue #7)
+
 allowed_funs_generic <- c(
   "::", ":::", "+", "-", "*", "/", "^", "%/%", "%%",
   "!", "&", "&&", "|", "||",
   "!=",  "<", "<=", "=", "==", ">", ">=",
   "cast", "count_star", "is.na",
-  "as.logical", "%>%", "%in%", "%nin%",  "ifelse",
+  "as.logical", "%in%", "%nin%",  "ifelse",
   "(", "c", "between",
   sql_data_types_with_args,
   unname(unlist(translations_operators_binary_symbolic)),
