@@ -17,7 +17,7 @@ test_that("parse_query(tidy = TRUE) works on 'flights' example query", {
     list(select = list(quote(origin), quote(dest), num_flts = quote(sum(!is.na(flight))),
       dist = quote(round(mean(distance, na.rm = TRUE))), avg_delay = quote(round(mean(arr_delay,
       na.rm = TRUE)))), from = list(quote(flights)), where = list(
-      str2lang("dplyr::between(distance, 200, 300) && !is.na(air_time)")), group_by = list(
+      str2lang("dplyr::between(distance, 200, 300) & !is.na(air_time)")), group_by = list(
       quote(origin), quote(dest)), having = list(quote(num_flts >
       5000)), order_by = list(str2lang("dplyr::desc(num_flts)"), str2lang("dplyr::desc(avg_delay)")),
       limit = list(100L))
@@ -43,7 +43,7 @@ test_that("parse_query(tidy = FALSE) works on 'flights' example query", {
     list(select = list(quote(origin), quote(dest), num_flts = quote(sum(!is.na(flight))),
       dist = quote(round(mean(distance, na.rm = TRUE))), avg_delay = quote(round(mean(arr_delay,
       na.rm = TRUE)))), from = list(quote(flights)), where = list(
-      quote((distance >= 200 & distance <= 300) && !is.na(air_time))), group_by = list(
+      quote((distance >= 200 & distance <= 300) & !is.na(air_time))), group_by = list(
       quote(origin), quote(dest)), having = list(quote(num_flts >
       5000)), order_by = structure(list(quote(num_flts), quote(avg_delay)), descreasing = c(TRUE,
       TRUE)), limit = list(100L))

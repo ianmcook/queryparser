@@ -52,8 +52,8 @@ translations_operators_binary_symbolic <- list(
 )
 
 translations_operators_binary_word <- list(
-  `and` = "&&",
-  `or` = "||",
+  `and` = "&",
+  `or` = "|",
   `div` = "%/%",
 
   # variants negated by prefixing "not " must come BEFORE their positive equivalents
@@ -226,7 +226,7 @@ translations_indirect_generic <- list(
     # is equivalent to
     # if (x IS NULL OR y IS NULL, (x IS NULL) = (y IS NULL), x = y)
     eval(substitute(quote(
-      ifelse(is.na(x) || is.na(y), is.na(x) == is.na(y), x == y)
+      ifelse(is.na(x) | is.na(y), is.na(x) == is.na(y), x == y)
     )))
   },
   `%<!=>%` = function(x, y) {
@@ -234,7 +234,7 @@ translations_indirect_generic <- list(
     # is equivalent to
     # if (x IS NULL OR y IS NULL, x IS NULL != y IS NULL, x != y)
     eval(substitute(quote(
-      ifelse(is.na(x) || is.na(y), is.na(x) != is.na(y), x != y)
+      ifelse(is.na(x) | is.na(y), is.na(x) != is.na(y), x != y)
     )))
   },
   degrees = function(rad) {
