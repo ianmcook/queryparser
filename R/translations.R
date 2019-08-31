@@ -462,7 +462,7 @@ translations_indirect_tidyverse <- list(
 translations_indirect_generic_agg <- list(
 
   # when adding functions here, also add their tranlated
-  # R function names to the list r_aggregate_functions below
+  # R function names to r_aggregate_functions below
 
   avg = function(x) {
     if (nargs() != 1) {
@@ -529,7 +529,7 @@ translations_indirect_generic_agg <- list(
 translations_indirect_base_agg <- list(
 
   # when adding functions here, also add their tranlated
-  # R function names to the list r_aggregate_functions below
+  # R function names to r_aggregate_functions below
 
   count_star = function() {
     eval(substitute(quote(nrow(.))))
@@ -540,7 +540,7 @@ translations_indirect_base_agg <- list(
 translations_indirect_tidyverse_agg <- list(
 
   # when adding functions here, also add their tranlated
-  # R function names to the list r_aggregate_functions below
+  # R function names to r_aggregate_functions below
 
   count_star = function() {
     fun <- str2lang("dplyr::n")
