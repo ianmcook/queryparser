@@ -117,7 +117,6 @@ parse_expression <- function(expr, tidyverse = FALSE, secure = TRUE) {
   expr_quotes_masked <- replace_in_operator(expr_quotes_masked)
   expr_quotes_masked <- replace_operators_binary_word(expr_quotes_masked)
   expr_quotes_masked <- replace_operators_unary_prefix(expr_quotes_masked)
-  expr_quotes_masked <- quote_data_types(expr_quotes_masked) # this must be last
 
   # unmask text enclosed in quotations
   if (length(masked_chars) < 1 || nchar(masked_chars) < 1) {

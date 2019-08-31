@@ -16,9 +16,13 @@
 NULL
 
 translations_data_types_generic <- list(
+
+  # when adding data types here, if their SQL forms take arguments,
+  # then also add them to sql_data_types_with_args in common.R
+
   `string` = "character",
-  `char` = "character",
-  `varchar` = "character",
+  `char` = "character", # takes arguments
+  `varchar` = "character", # takes arguments
   `boolean` = "logical",
   `int` = "integer",
   `integer` = "integer",
@@ -28,7 +32,7 @@ translations_data_types_generic <- list(
   `double` = "double",
   `real` = "double",
   `float` = "single",
-  `decimal` = "numeric"
+  `decimal` = "numeric" # takes arguments
 )
 
 translations_data_types_base <- list(
@@ -286,11 +290,16 @@ translations_indirect_generic <- list(
 
 translations_indirect_base <- list(
   cast = function(x, y = NULL) {
-    if (!is_constant(eval(substitute(quote(y))))) {
+    y <- eval(substitute(quote(y)))
+    if (is.call(y) && !is_constant(y)) {
       stop("Invalid data type in CAST", call. = FALSE)
     }
     if (is.null(y)) stop("Unspecified data type in CAST", call. = FALSE)
-    data_type <- data_type_translations_for_base[[gsub(" ?\\(.+", "", y)]]
+    if (is.call(y)) {
+      data_type <- data_type_translations_for_base[[tolower(deparse(y[[1]]))]]
+    } else {
+      data_type <- data_type_translations_for_base[[tolower(deparse(y))]]
+    }
     if (is.null(data_type)) stop("Unrecognized data type in CAST", call. = FALSE)
     func_name <- attr(data_type, "function")
     if (is.null(func_name)) {
@@ -380,11 +389,16 @@ translations_indirect_base <- list(
 
 translations_indirect_tidyverse <- list(
   cast = function(x, y = NULL) {
-    if (!is_constant(eval(substitute(quote(y))))) {
+    y <- eval(substitute(quote(y)))
+    if (is.call(y) && !is_constant(y)) {
       stop("Invalid data type in CAST", call. = FALSE)
     }
     if (is.null(y)) stop("Unspecified data type in CAST", call. = FALSE)
-    data_type <- data_type_translations_for_tidyverse[[gsub(" ?\\(.+", "", y)]]
+    if (is.call(y)) {
+      data_type <- data_type_translations_for_tidyverse[[tolower(deparse(y[[1]]))]]
+    } else {
+      data_type <- data_type_translations_for_tidyverse[[tolower(deparse(y))]]
+    }
     if (is.null(data_type)) stop("Unrecognized data type in CAST", call. = FALSE)
     func_name <- attr(data_type, "function")
     if (is.null(func_name)) {

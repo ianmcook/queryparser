@@ -209,13 +209,3 @@ replace_star <- function(expr_quotes_masked, tidyverse) {
     ignore.case = TRUE
   )
 }
-
-quote_data_types <- function(expr_quotes_masked) {
-  data_type_names <- paste(sql_data_types, collapse = "|")
-  gsub(
-    paste0("\\b((",data_type_names,")\\b( ?\\([0-9, ]*\\))?)"),
-    "'\\1'",
-    expr_quotes_masked,
-    ignore.case = TRUE
-  )
-}

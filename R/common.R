@@ -61,6 +61,10 @@ sql_logical_operators_with_right_operands <- c(
   "and", "or", "xor", "not"
 )
 
+sql_data_types_with_args <- c(
+  "decimal", "char", "varchar"
+)
+
 sql_reserved_words <- c(
   "add",
   "aggregate",
