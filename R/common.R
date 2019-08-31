@@ -21,9 +21,9 @@ quote_chars <- c("\"", "'", "`")
 
 ws_regex <- "[ \t\r\n]"
 
-word_char_regex <- "\\w"
+word_char_regex <- "[[:alnum:]_.]"
 
-non_word_char_regex <- "\\W"
+non_word_char_regex <- "[^[:alnum:]_.]"
 
 digit_regex <- "[0-9]"
 
