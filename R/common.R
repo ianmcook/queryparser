@@ -436,7 +436,7 @@ find_end_of_boolean_operand_after <- function(rc, len, in_parens) {
         return(pos + 1L)
       }
     } else if (in_parens == orig_parens &&
-               isTRUE(next_thing %in% c(sql_logical_operators_with_left_operands, ","))) {
+               isTRUE(tolower(next_thing) %in% c(sql_logical_operators_with_left_operands, ","))) {
       return(pos + 1L)
     }
   }
@@ -464,7 +464,7 @@ find_beginning_of_boolean_operand_before <- function(rc, in_parens) {
         return(pos + 1L)
       }
     } else if (in_parens == orig_parens &&
-               isTRUE(previous_thing %in% c(sql_logical_operators_with_right_operands, ","))) {
+               isTRUE(tolower(previous_thing) %in% c(sql_logical_operators_with_right_operands, ","))) {
       return(pos)
     }
   }

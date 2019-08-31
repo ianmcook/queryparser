@@ -42,9 +42,9 @@ stop_if_bad_funs <- function(bad_funs) {
 bad_funs <- function(expr, tidyverse) {
   if (identical(typeof(expr), "language")) {
     if (tidyverse) {
-      return(setdiff(all_funs(expr), allowed_funs_tidyverse))
+      return(setdiff(tolower(all_funs(expr)), allowed_funs_tidyverse))
     } else {
-      return(setdiff(all_funs(expr), allowed_funs_base))
+      return(setdiff(tolower(all_funs(expr)), allowed_funs_base))
     }
   }
   character(0)

@@ -210,23 +210,6 @@ replace_star <- function(expr_quotes_masked, tidyverse) {
   )
 }
 
-make_function_names_and_keywords_lowercase <- function(expr_quotes_masked) {
-  all_names <- paste(unique(c(
-    sql_data_types,
-    names(translations_operators_binary_word),
-    names(translations_operators_unary_prefix),
-    names(translations_operators_unary_postfix),
-    names(translations_direct_generic),
-    names(translations_direct_base),
-    names(translations_direct_tidyverse),
-    names(translations_indirect_generic),
-    names(translations_indirect_base),
-    names(translations_indirect_tidyverse),
-    sql_aggregate_functions
-  )), collapse = "|")
-  gsub(paste0("\\b(", all_names, ")\\b"), "\\L\\1", expr_quotes_masked, ignore.case = TRUE, perl = TRUE)
-}
-
 quote_data_types <- function(expr_quotes_masked) {
   data_type_names <- paste(sql_data_types, collapse = "|")
   gsub(

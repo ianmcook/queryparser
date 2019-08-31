@@ -42,7 +42,7 @@ translate_distinct_function <- function(expr, func, tidyverse) {
   if (length(expr) == 1) {
     return(expr)
   } else {
-    if (expr[[1]] == str2lang(paste0(func, "_distinct"))) {
+    if (tolower(deparse(expr[[1]])) == paste0(func, "_distinct")) {
       if (!func == "count" && length(expr) > 2) {
         stop(
           "Multiple arguments to ", toupper(func), "(DISTINCT ) ",
@@ -82,7 +82,8 @@ translate_direct <- function(expr, tidyverse) {
 }
 
 subfuns <- function(expr, envir) {
-  if (is.call(expr) && deparse(expr[[1]]) %in% ls(envir = envir)) {
+  if (is.call(expr) && tolower(deparse(expr[[1]])) %in% ls(envir = envir)) {
+    expr[[1]] <- str2lang(tolower(deparse(expr[[1]]))) # make function name lowercase
     expr[[1]] <- do.call(substitute, list(expr[[1]], envir))
   }
   if (length(expr) == 1) {
@@ -102,7 +103,8 @@ translate_indirect <- function(expr, tidyverse) {
 }
 
 quasieval <- function(expr, envir) {
-  if (is.call(expr) && deparse(expr[[1]]) %in% ls(envir = envir)) {
+  if (is.call(expr) && tolower(deparse(expr[[1]])) %in% ls(envir = envir)) {
+    expr[[1]] <- str2lang(tolower(deparse(expr[[1]]))) # make function name lowercase
     expr <- eval(expr, envir)
   }
   if (length(expr) == 1) {

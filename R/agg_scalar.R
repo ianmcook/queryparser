@@ -25,7 +25,7 @@ translate_agg_scalar <- function(expr, tidyverse) {
   if (length(expr) == 1) {
     return(expr)
   } else {
-    if (expr[[1]] == quote(sum) && is.call(expr) && length(all_cols(expr)) == 0) {
+    if (deparse(expr[[1]]) == "sum" && is.call(expr) && length(all_cols(expr)) == 0) {
       if (tidyverse) {
         fun <- str2lang("dplyr::n()")
       } else {

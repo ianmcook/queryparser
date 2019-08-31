@@ -107,9 +107,8 @@ parse_expression <- function(expr, tidyverse = FALSE, secure = TRUE) {
   close(rc_quo)
 
   # make the SQL query into a valid R expression
-  expr_quotes_masked <- make_function_names_and_keywords_lowercase(expr_quotes_masked) # this must be first
-  expr_quotes_masked <- replace_all_distinct_keyword(expr_quotes_masked) # this must be second
-  expr_quotes_masked <- replace_operators_unary_postfix(expr_quotes_masked) # this must be third
+  expr_quotes_masked <- replace_all_distinct_keyword(expr_quotes_masked) # this must be first
+  expr_quotes_masked <- replace_operators_unary_postfix(expr_quotes_masked) # this must be second
   expr_quotes_masked <- replace_star(expr_quotes_masked, tidyverse)
   expr_quotes_masked <- replace_operators_binary_symbolic(expr_quotes_masked)
   expr_quotes_masked <- replace_special_functions(expr_quotes_masked)
