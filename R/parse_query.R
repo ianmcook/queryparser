@@ -96,7 +96,7 @@ parse_query <- function(query, tidyverse = FALSE, secure = TRUE) {
 
   # use tree$group_by (not valid_agg_cols) in this test
   #because we can't refer to aliases in the select list itself
-  if (has_aggregates_in_select_list &&
+  if ((has_group_by || has_aggregates_in_select_list || has_having) &&
       !all(are_valid_expressions_in_aggregation(tree$select, tree$group_by))) {
     stop("The SELECT list includes expressions that are invalid in an aggregation context ",
          "or incompatible with the GROUP BY clause", call. = FALSE)
