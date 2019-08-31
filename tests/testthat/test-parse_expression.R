@@ -124,3 +124,17 @@ test_that("parse_expression(tidyverse = TRUE) succeeds when multiple expressions
     str2lang("dplyr::n_distinct(x, y, na.rm = TRUE)")
   )
 })
+
+test_that("parse_expression(tidyverse = FALSE) does not translate column names that match direct translated function names", {
+  expect_equal(
+    parse_expression("concat = 3", tidyverse = FALSE),
+    str2lang("concat == 3")
+  )
+})
+
+test_that("parse_expression(tidyverse = TRUE) does not translate column names that match direct translated function names", {
+  expect_equal(
+    parse_expression("upper(initcap)", tidyverse = TRUE),
+    str2lang("stringr::str_to_upper(initcap)")
+  )
+})

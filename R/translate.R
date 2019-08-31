@@ -78,7 +78,18 @@ translate_direct <- function(expr, tidyverse) {
   } else {
     envir <- translation_environment_direct_base
   }
-  do.call(substitute, list(expr, envir))
+  subfuns(expr, envir)
+}
+
+subfuns <- function(expr, envir) {
+  if (is.call(expr) && deparse(expr[[1]]) %in% ls(envir = envir)) {
+    expr[[1]] <- do.call(substitute, list(expr[[1]], envir))
+  }
+  if (length(expr) == 1) {
+    return(expr)
+  } else {
+    return(as.call(lapply(expr, subfuns, envir)))
+  }
 }
 
 translate_indirect <- function(expr, tidyverse) {
