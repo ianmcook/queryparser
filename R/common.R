@@ -607,8 +607,21 @@ is_one_valid_r_name <- function(x) {
   length(names) == 1 && names == x
 }
 
+is_function <- function(expr, name) {
+  if (!is.call(expr)) {
+    return(FALSE)
+  } else {
+    if (deparse(expr[[1]]) == name) {
+      return(TRUE)
+    }
+    out <- lapply(expr, is_function, name)
+  }
+  any(sapply(out, isTRUE))
+}
+
 all_funs <- function(expr) {
-  setdiff(all_names(expr), all_cols(expr))
+  names <- all_names(expr)
+  names[vapply(names, function(name) {is_function(expr, name)}, TRUE)]
 }
 
 all_cols <- function(expr) {
