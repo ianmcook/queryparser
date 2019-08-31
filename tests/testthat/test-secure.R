@@ -5,6 +5,14 @@ test_that("parse_expression() fails on illegal function", {
   )
 })
 
+test_that("parse_expression() fails on illegal function when function also used as a column name", {
+  expect_error(
+    parse_expression("system + system('ls')"),
+    "^Unrecognized"
+  )
+})
+
+
 test_that("parse_expression(secure = FALSE) does not fail on illegal function", {
   expect_error(
     parse_expression("system('ls')", secure = FALSE),
