@@ -133,7 +133,7 @@ replace_special_keywords <- function(expr_quotes_masked, tidyverse) {
 replace_operators_binary_symbolic <- function(expr_quotes_masked) {
   for (i in seq_along(translations_operators_binary_symbolic)) {
     expr_quotes_masked <- gsub(
-      paste0("(",non_operator_regex, "+)(",names(translations_operators_binary_symbolic)[i],")(", non_operator_regex, "+)"),
+      paste0("(",non_operator_regex, ")(",names(translations_operators_binary_symbolic)[i],")(", non_operator_regex, ")"),
       paste0("\\1",translations_operators_binary_symbolic[i],"\\3"),
       expr_quotes_masked
     )
