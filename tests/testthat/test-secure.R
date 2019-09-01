@@ -12,6 +12,12 @@ test_that("parse_expression() fails on illegal function when function also used 
   )
 })
 
+test_that("parse_expression() fails on illegal function called without parentheses using %>%", {
+  expect_error(
+    parse_expression("'ls' %>% system"),
+    "^Unrecognized"
+  )
+})
 
 test_that("parse_expression(secure = FALSE) does not fail on illegal function", {
   expect_error(
