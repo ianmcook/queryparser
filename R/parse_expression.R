@@ -137,6 +137,9 @@ parse_expression <- function(expr, tidyverse = FALSE, secure = TRUE) {
   # parse the string and return an unevaluated R expression
   call_out <- str2lang(expr_out) # most errors will happen on this line! try-catch here?
 
+  # convert expressions that use %>%
+  call_out <- unpipe(call_out)
+
   # stop if contains illegal functions or operators
   if (secure) {
     secure_expression(call_out, tidyverse)
@@ -161,7 +164,6 @@ parse_expression <- function(expr, tidyverse = FALSE, secure = TRUE) {
   call_out <- translate_nin(call_out)
   call_out <- translate_direct(call_out, tidyverse)
   call_out <- translate_indirect(call_out, tidyverse)
-  call_out <- unpipe(call_out) # this must be third to last
   call_out <- translate_agg_scalar(call_out, tidyverse) # this must be second to last
   call_out <- wrap_bangs(call_out) # this must be last
 
