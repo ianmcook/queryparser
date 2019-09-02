@@ -74,51 +74,50 @@ parse_query <- function(query, tidyverse = FALSE, secure = TRUE) {
   tree$order_by <- parse_order_by(tree$order_by, tidyverse, secure)
   tree$limit <- parse_limit(tree$limit)
 
-  valid_agg_cols <- vapply(tree$group_by, deparse, "")
-
-  is_aggregate_expression <- are_aggregate_expressions(tree$select)
-  has_aggregates_in_select_list <- any(is_aggregate_expression)
-  if (has_aggregates_in_select_list) { # add aliases of aggregate
-    valid_agg_cols <- setdiff(c(valid_agg_cols, names(tree$select)[is_aggregate_expression]), "")
-  }
-
-  if (has_having && !is_valid_expression_in_aggregation(tree$having[[1]], valid_agg_cols)) {
-    stop("The expression in the HAVING clause is invalid in an aggregation context ",
-         "or incompatible with the GROUP BY clause", call. = FALSE)
-  }
-
+  has_aggregates_in_select_list <- any(are_aggregate_expressions(tree$select))
   has_aggregates_in_order_by_clause <- any(are_aggregate_expressions(tree$order_by))
 
   is_aggregating_query <- has_group_by || has_having || has_aggregates_in_select_list || has_aggregates_in_order_by_clause
 
-  if (is_select_distinct && is_aggregating_query) {
-    stop("SELECT DISTINCT cannot be used together with ",
-         "aggregate expressions or a GROUP BY clause", call. = FALSE)
-  }
+  if (is_aggregating_query) {
 
-  # use tree$group_by (not valid_agg_cols) in this test
-  #because we can't refer to aliases in the select list itself
-  group_by_cols <- vapply(tree$group_by, deparse, "")
-  if (is_aggregating_query && !all(are_valid_expressions_in_aggregation(tree$select, group_by_cols))) {
-    stop("The SELECT list includes expressions that are invalid in an aggregation context ",
-         "or incompatible with the GROUP BY clause", call. = FALSE)
-  }
+    if (is_select_distinct) {
+      stop("SELECT DISTINCT cannot be used together with ",
+           "aggregate expressions or a GROUP BY clause", call. = FALSE)
+    }
 
-  if (tidyverse && length(valid_agg_cols) > 0) {
-    valid_agg_cols_for_order_by <- c(valid_agg_cols, paste0("dplyr::desc(",valid_agg_cols,")"))
-  } else {
-    valid_agg_cols_for_order_by <- valid_agg_cols
-  }
-  if (has_order_by && is_aggregating_query &&
-      !all(are_valid_expressions_in_aggregation(tree$order_by, valid_agg_cols_for_order_by))) {
-    stop("The ORDER BY list includes expressions that are invalid in an aggregation context ",
-         "or incompatible with the GROUP BY clause", call. = FALSE)
-  }
+    group_by_cols <- vapply(tree$group_by, deparse, "")
+    agg_aliases <- names(tree$select)
+    valid_agg_cols <- setdiff(c(group_by_cols, agg_aliases), "")
 
-  if (is_select_distinct) {
-    attr(tree$select, "distinct") <- TRUE
-  } else if (is_aggregating_query) {
+    if (has_having && !is_valid_expression_in_aggregation(tree$having[[1]], valid_agg_cols)) {
+      stop("The expression in the HAVING clause is invalid in an aggregation context ",
+           "or incompatible with the GROUP BY clause", call. = FALSE)
+    }
+
+    # use group_by_cols (not valid_agg_cols) in this test
+    # because we can't refer to aliases in the select list itself
+    if (!all(are_valid_expressions_in_aggregation(tree$select, group_by_cols))) {
+      stop("The SELECT list includes expressions that are invalid in an aggregation context ",
+           "or incompatible with the GROUP BY clause", call. = FALSE)
+    }
+
+    if (tidyverse && length(valid_agg_cols) > 0) {
+      valid_agg_cols_for_order_by <- c(valid_agg_cols, paste0("dplyr::desc(",valid_agg_cols,")"))
+    } else {
+      valid_agg_cols_for_order_by <- valid_agg_cols
+    }
+    if (has_order_by && !all(are_valid_expressions_in_aggregation(tree$order_by, valid_agg_cols_for_order_by))) {
+      stop("The ORDER BY list includes expressions that are invalid in an aggregation context ",
+           "or incompatible with the GROUP BY clause", call. = FALSE)
+    }
+
     attr(tree, "aggregate") <- TRUE
+
+  } else if (is_select_distinct) {
+
+    attr(tree$select, "distinct") <- TRUE
+
   }
 
   tree
