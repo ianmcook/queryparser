@@ -17,12 +17,12 @@ are_aggregate_expressions <- function(exprs) {
 }
 
 is_aggregate_expression <- function(expr) {
+  if (is_aggregate_function_call(expr)) {
+    return(TRUE)
+  }
   if (length(expr) == 1) {
     return(FALSE)
   } else {
-    if (is_aggregate_function_call(expr)) {
-      return(TRUE)
-    }
     out <- lapply(expr, is_aggregate_expression)
   }
   any(vapply(out, isTRUE, TRUE))
@@ -51,7 +51,7 @@ is_valid_expression_in_aggregation <- function(expr, allowed_names, var_names = 
 }
 
 is_aggregate_function_call <- function(expr) {
-  identical(typeof(expr), "language") && length(expr) > 1 &&
+  identical(typeof(expr), "language") && is.call(expr) &&
     (deparse(expr[[1]]) %in% r_aggregate_functions ||
        (deparse(expr[[1]]) %in% c("paste","paste0") && "collapse" %in% names(expr) &&
           !is.null(expr[[which(names(expr) == "collapse")]])))
