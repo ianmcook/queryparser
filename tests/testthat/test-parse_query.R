@@ -140,3 +140,170 @@ test_that("parse_query(tidy = FALSE) works on 'arcos' example query", {
       where = list(quote(!(buyer_state %in% c("AE", "GU", "PW", "MP", "VI")))))
   )
 })
+
+test_that("parse_query(tidy = TRUE) works on 'flights' aggregate example query #1", {
+  expect_equal(
+    {
+      query <- "SELECT year, month, day, origin, dest, carrier, flight
+      FROM flights
+      GROUP BY year, month, day, origin, dest, carrier, flight
+      ORDER BY year, month, day, origin, dest, carrier, flight
+      LIMIT 100"
+      parse_query(query, tidy = TRUE)
+    },
+    structure(list(select = structure(list(quote(year), quote(month),
+      quote(day), quote(origin), quote(dest), quote(carrier), quote(flight)), aggregate = c(FALSE,
+      FALSE, FALSE, FALSE, FALSE, FALSE, FALSE)), from = list(quote(flights)),
+      group_by = list(quote(year), quote(month), quote(day), quote(origin),
+      quote(dest), quote(carrier), quote(flight)), order_by = list(
+      quote(year), quote(month), quote(day), quote(origin),
+      quote(dest), quote(carrier), quote(flight)), limit = list(
+      100L)), aggregate = TRUE)
+  )
+})
+
+test_that("parse_query(tidy = TRUE) works on 'flights' aggregate example query #2", {
+  expect_equal(
+    {
+      query <- "SELECT year, month, day, origin, dest, carrier, flight
+      FROM flights
+      GROUP BY year, month, day, origin, dest, carrier, flight
+      ORDER BY year * 10000 + month * 100 + day, origin, dest, carrier, flight
+      LIMIT 100"
+      parse_query(query, tidy = TRUE)
+    },
+    structure(list(select = structure(list(quote(year), quote(month),
+      quote(day), quote(origin), quote(dest), quote(carrier), quote(flight)), aggregate = c(FALSE,
+      FALSE, FALSE, FALSE, FALSE, FALSE, FALSE)), from = list(quote(flights)),
+      group_by = list(quote(year), quote(month), quote(day), quote(origin),
+      quote(dest), quote(carrier), quote(flight)), order_by = list(
+      quote(year * 10000 + month * 100 + day), quote(origin),
+      quote(dest), quote(carrier), quote(flight)), limit = list(
+      100L)), aggregate = TRUE)
+  )
+})
+
+test_that("parse_query(tidy = TRUE) works on 'flights' aggregate example query #3", {
+  expect_equal(
+    {
+      query <- "SELECT year * 10000 + month * 100 + day, origin, dest, carrier, flight
+      FROM flights
+      GROUP BY year, month, day, origin, dest, carrier, flight
+      ORDER BY year * 10000 + month * 100 + day, origin, dest, carrier, flight
+      LIMIT 100"
+      parse_query(query, tidy = TRUE)
+    },
+    structure(list(select = structure(list(quote(year * 10000 + month *
+      100 + day), quote(origin), quote(dest), quote(carrier), quote(flight)), aggregate = c(FALSE,
+      FALSE, FALSE, FALSE, FALSE)), from = list(quote(flights)), group_by = list(
+      quote(year), quote(month), quote(day), quote(origin), quote(dest),
+      quote(carrier), quote(flight)), order_by = list(quote(year *
+      10000 + month * 100 + day), quote(origin), quote(dest), quote(carrier),
+      quote(flight)), limit = list(100L)), aggregate = TRUE)
+  )
+})
+
+test_that("parse_query(tidy = TRUE) works on 'flights' aggregate example query #4", {
+  expect_equal(
+    {
+      query <- "SELECT year y, year * 1000 + month * 100 + day, origin, dest, carrier, flight
+      FROM flights
+      GROUP BY year, month, day, origin, dest, carrier, flight
+      ORDER BY y * 10000 + month * 100 + day, origin, dest, carrier, flight
+      LIMIT 100"
+      parse_query(query, tidy = TRUE)
+    },
+    structure(list(select = structure(list(y = quote(year), quote(year *
+      1000 + month * 100 + day), quote(origin), quote(dest), quote(carrier),
+      quote(flight)), aggregate = c(y = FALSE, FALSE, FALSE, FALSE,
+      FALSE, FALSE)), from = list(quote(flights)), group_by = list(
+      quote(year), quote(month), quote(day), quote(origin), quote(dest),
+      quote(carrier), quote(flight)), order_by = list(quote(y *
+      10000 + month * 100 + day), quote(origin), quote(dest), quote(carrier),
+      quote(flight)), limit = list(100L)), aggregate = TRUE)
+  )
+})
+
+test_that("parse_query(tidy = TRUE) works on 'flights' SELECT DISTINCT example query #1", {
+  expect_equal(
+    {
+      query <- "SELECT DISTINCT year, month, day, origin, dest, carrier, flight
+        FROM flights
+        ORDER BY year * 10000 + month * 100 + day, origin, dest, carrier, flight
+        LIMIT 100"
+      parse_query(query, tidy = TRUE)
+    },
+    list(select = structure(list(quote(year), quote(month), quote(day),
+      quote(origin), quote(dest), quote(carrier), quote(flight)), distinct = TRUE),
+      from = list(quote(flights)), order_by = list(quote(year *
+      10000 + month * 100 + day), quote(origin), quote(dest),
+      quote(carrier), quote(flight)), limit = list(100L))
+  )
+})
+
+test_that("parse_query(tidy = TRUE) works on 'flights' SELECT DISTINCT example query #2", {
+  expect_equal(
+    {
+      query <- "SELECT DISTINCT year y, month m, day d, origin, dest, carrier, flight
+        FROM flights
+        ORDER BY year * 10000 + month * 100 + day, origin, dest, carrier, flight
+        LIMIT 100"
+      parse_query(query, tidy = TRUE)
+    },
+    list(select = structure(list(y = quote(year), m = quote(month),
+      d = quote(day), quote(origin), quote(dest), quote(carrier),
+      quote(flight)), distinct = TRUE), from = list(quote(flights)),
+      order_by = list(quote(year * 10000 + month * 100 + day),
+      quote(origin), quote(dest), quote(carrier), quote(flight)),
+      limit = list(100L))
+  )
+})
+
+test_that("parse_query(tidy = TRUE) works on 'flights' SELECT DISTINCT example query #3", {
+  expect_equal(
+    {
+      query <- "SELECT DISTINCT year y, year * 10000 + month * 100 + day, origin, dest, carrier, flight
+        FROM flights
+        ORDER BY year * 10000 + month * 100 + day, origin, dest, carrier, flight
+        LIMIT 100"
+      parse_query(query, tidy = TRUE)
+    },
+    list(select = structure(list(y = quote(year), quote(year * 10000 +
+      month * 100 + day), quote(origin), quote(dest), quote(carrier),
+      quote(flight)), distinct = TRUE), from = list(quote(flights)),
+      order_by = list(quote(year * 10000 + month * 100 + day),
+      quote(origin), quote(dest), quote(carrier), quote(flight)),
+      limit = list(100L))
+
+  )
+})
+
+test_that("parse_query(tidy = TRUE) works on 'flights' SELECT DISTINCT example query #4", {
+  expect_equal(
+    {
+      query <- "SELECT DISTINCT year * 10000 + month * 100 + day, origin, dest, carrier, flight
+      FROM flights
+      ORDER BY year * 10000 + month * 100 + day, origin, dest, carrier, flight
+      LIMIT 100"
+      parse_query(query, tidy = TRUE)
+    },
+    list(select = structure(list(quote(year * 10000 + month * 100 +
+      day), quote(origin), quote(dest), quote(carrier), quote(flight)), distinct = TRUE),
+      from = list(quote(flights)), order_by = list(quote(year *
+      10000 + month * 100 + day), quote(origin), quote(dest),
+      quote(carrier), quote(flight)), limit = list(100L))
+  )
+})
+
+test_that("parse_query(tidy = TRUE) works on 'flights' SELECT DISTINCT example query #5", {
+  skip("currently unsupported")
+  expect_success(
+    {
+      query <- "SELECT DISTINCT year y, year * 10000 + month * 100 + day, origin, dest, carrier, flight
+      FROM flights
+      ORDER BY y * 10000 + month * 100 + day, origin, dest, carrier, flight
+      LIMIT 100"
+      parse_query(query, tidy = TRUE)
+    }
+  )
+})
