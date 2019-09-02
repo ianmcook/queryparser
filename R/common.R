@@ -319,7 +319,8 @@ keyword_starts_here <- function(rc, keyword, useBytes = FALSE, look_back = TRUE)
   isTRUE(grepl(keyword_regex,  chars, ignore.case = TRUE, useBytes = useBytes))
 }
 
-find_keyword_pairs <- function(expr_quotes_masked, keyword_1, keyword_2, operands = FALSE, parens_diff = 0) {
+find_keyword_pairs <- function(expr_quotes_masked, keyword_1, keyword_2, operands = FALSE, parens_diff = 0,
+                               error_message = "Unmatched keywords") {
   # returns the positions of the start of each keyword
   # in every instance of the specified matching pair of keywords
   # both at the same parentheses nesting level
@@ -368,7 +369,9 @@ find_keyword_pairs <- function(expr_quotes_masked, keyword_1, keyword_2, operand
       keyword_1_pos <- pos
       seek(rc, keyword_1_pos + keyword_1_length)
       keyword_2_pos <- find_this_keyword_after(rc, len, keyword_2, in_parens, parens_diff)
-      if (!is.null(keyword_2_pos)) {
+      if (is.null(keyword_2_pos)) {
+        stop(error_message, call. = FALSE)
+      } else {
         if (operands) {
           seek(rc, keyword_2_pos + keyword_2_length + 1L)
           right_operand_end <- find_end_of_boolean_operand_after(rc, len, in_parens)
@@ -399,6 +402,9 @@ find_this_keyword_after <- function(rc, len, keyword, in_parens, parens_diff = 0
   # returns the position of the start of the specified keyword
   # at the specified parentheses nesting level
 
+  # returns NULL if the parentheses nesting level increases
+  # and then decreases to too low
+
   # only for use on expressions with quoted text masked
 
   orig_pos <- seek(rc, NA)
@@ -411,6 +417,10 @@ find_this_keyword_after <- function(rc, len, keyword, in_parens, parens_diff = 0
       in_parens <- in_parens + 1
     } else if (char == ")") {
       in_parens <- in_parens - 1
+
+      if (in_parens < orig_parens + parens_diff) {
+        return(NULL)
+      }
     }
 
     if (in_parens == orig_parens + parens_diff && keyword_starts_here(rc, keyword)) {
@@ -526,8 +536,7 @@ get_previous_character_word_or_number <- function(rc) {
   orig_pos <- seek(rc, NA)
   on.exit(seek(rc, orig_pos))
 
-  pos <- orig_pos
-  while(pos > 1) {
+  while((pos <- seek(rc, NA)) > 1L) {
     seek(rc, -2L, "current")
     char <- readChar(rc, 1L)
 
