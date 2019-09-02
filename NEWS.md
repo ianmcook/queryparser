@@ -1,3 +1,8 @@
+# queryparser (development version)
+
+* List returned by `parse_query()` has attribute `aggregate` set to `TRUE` if query aggregates ([#8](https://github.com/ianmcook/queryparser/issues/8))
+* Minor bugfixes and improvements
+
 # queryparser 0.1.0
 
 * First CRAN release
