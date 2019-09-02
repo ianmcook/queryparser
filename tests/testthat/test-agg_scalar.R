@@ -36,7 +36,7 @@ test_that("parse_expression(tidy = FALSE) successfully parses an expression with
 test_that("parse_expression(tidy = TRUE) successfully parses an expression with GROUP_CONCAT(scalar)", {
   expect_equal(
     parse_expression("GROUP_CONCAT(concat(cast(123 AS string), 'abc'), '|')", tidy = TRUE),
-    str2lang("paste0(rep(paste0(as.character(123), 'abc'), times = dplyr::n()), collapse = '|')")
+    str2lang("stringr::str_flatten(rep(stringr::str_c(as.character(123), 'abc'), times = dplyr::n()), collapse = '|')")
   )
 })
 
@@ -50,6 +50,6 @@ test_that("parse_expression(tidy = FALSE) successfully parses an expression with
 test_that("parse_expression(tidy = TRUE) successfully parses an expression with GROUP_CONCAT(non-scalar)", {
   expect_equal(
     parse_expression("GROUP_CONCAT(concat(cast(x AS string), 'abc'), '|')", tidy = TRUE),
-    str2lang("paste0(paste0(as.character(x), 'abc'), collapse = '|')")
+    str2lang("stringr::str_flatten(stringr::str_c(as.character(x), 'abc'), collapse = '|')")
   )
 })

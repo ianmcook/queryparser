@@ -36,7 +36,7 @@ translate_agg_scalar <- function(expr, tidyverse) {
         translate_agg_scalar,
         tidyverse
       )))
-    } else if (deparse(expr[[1]]) %in% c("paste","paste0") &&
+    } else if (deparse(expr[[1]]) %in% c("paste","paste0","stringr::str_flatten") &&
                is.call(expr) && length(all_cols(expr)) == 0 &&
                "collapse" %in% names(expr) && !is.null(expr[[which(names(expr) == "collapse")]])) {
       if (tidyverse) {

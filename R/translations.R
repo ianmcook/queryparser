@@ -140,7 +140,6 @@ translations_direct_generic <- list(
   tanh = quote(tanh),
 
   # string functions
-  concat = quote(paste0),
   substring = quote(substr), # substr is translated below
   to_hex = quote(as.hexmode)
 )
@@ -150,6 +149,7 @@ translations_direct_base <- list(
   # string functions
   char_length = quote(nchar),
   character_length = quote(nchar),
+  concat = quote(paste0),
   length = quote(nchar),
   # consider whether to translate length(x) to nchar(x, type = "bytes")
   # which would be consistent with MySQL but not with PostgreSQL
@@ -174,6 +174,7 @@ translations_direct_tidyverse <- list(
   initcap = str2lang("stringr::str_to_title"),
   char_length = str2lang("stringr::str_length"),
   character_length = str2lang("stringr::str_length"),
+  concat = str2lang("stringr::str_c"),
   length = str2lang("stringr::str_length"),
   lower = str2lang("stringr::str_to_lower"),
   reverse = str2lang("stringi::stri_reverse"),
@@ -280,9 +281,6 @@ translations_indirect_generic <- list(
       eval(substitute(quote(trunc(x, d))))
     }
   },
-  concat_ws = function(sep, ...) {
-    eval(substitute(quote(paste(..., sep = sep))))
-  },
   ifnull = function(x, y) {
     eval(substitute(quote(ifelse(is.na(x), y, x))))
   }
@@ -324,6 +322,9 @@ translations_indirect_base <- list(
     }
     expr <- paste0(expr, "else NA")
     eval(substitute(str2lang(expr)))
+  },
+  concat_ws = function(sep, ...) {
+    eval(substitute(quote(paste(..., sep = sep))))
   },
   nullif = function(x, y) {
     eval(substitute(quote(ifelse(is.na(x), x, y))))
@@ -411,6 +412,10 @@ translations_indirect_tidyverse <- list(
     func <- str2lang(func_name)
     eval(substitute(quote(func(x))))
   },
+  concat_ws = function(sep, ...) {
+    fun <- str2lang("stringr::str_c")
+    eval(substitute(quote(fun(..., sep = sep))))
+  },
   lpad = function(str, len, pad) {
     fun <- str2lang("stringr::str_pad")
     eval(substitute(quote(fun(str, len, side = "left", pad = pad))))
@@ -476,12 +481,6 @@ translations_indirect_generic_agg <- list(
     }
     eval(substitute(quote(sum(!is.na(x)))))
   },
-  group_concat = function(x, sep = ", ") {
-    if (!nargs() %in% c(1,2)) {
-      stop("Function GROUP_CONCAT() requires one or two parameters", call. = FALSE)
-    }
-    eval(substitute(quote(paste0(x, collapse = sep))))
-  },
   max = function(x) {
     if (nargs() != 1) {
       stop("Function MAX() requires one parameter", call. = FALSE)
@@ -533,8 +532,14 @@ translations_indirect_base_agg <- list(
 
   count_star = function() {
     eval(substitute(quote(nrow(.))))
-  }
+  },
   # count_distinct for base R is translated elsewhere
+  group_concat = function(x, sep = ", ") {
+    if (!nargs() %in% c(1,2)) {
+      stop("Function GROUP_CONCAT() requires one or two parameters", call. = FALSE)
+    }
+    eval(substitute(quote(paste0(x, collapse = sep))))
+  }
 )
 
 translations_indirect_tidyverse_agg <- list(
@@ -552,6 +557,13 @@ translations_indirect_tidyverse_agg <- list(
     }
     fun <- str2lang("dplyr::n_distinct")
     eval(substitute(quote(fun(..., na.rm = TRUE))))
+  },
+  group_concat = function(x, sep = ", ") {
+    if (!nargs() %in% c(1,2)) {
+      stop("Function GROUP_CONCAT() requires one or two parameters", call. = FALSE)
+    }
+    fun <- str2lang("stringr::str_flatten")
+    eval(substitute(quote(fun(x, collapse = sep))))
   }
 )
 
@@ -566,7 +578,8 @@ r_aggregate_functions <- c(
   "quantile",
   "var",
   "dplyr::n",
-  "dplyr::n_distinct"
+  "dplyr::n_distinct",
+  "stringr::str_flatten"
 )
 # paste() and paste0() can also be aggregate functions
 # but only when !is.null(collapse)
