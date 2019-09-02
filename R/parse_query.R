@@ -74,7 +74,8 @@ parse_query <- function(query, tidyverse = FALSE, secure = TRUE) {
   tree$order_by <- parse_order_by(tree$order_by, tidyverse, secure)
   tree$limit <- parse_limit(tree$limit)
 
-  has_aggregates_in_select_list <- any(are_aggregate_expressions(tree$select))
+  is_aggregate_expression <- are_aggregate_expressions(tree$select)
+  has_aggregates_in_select_list <- any(is_aggregate_expression)
   has_aggregates_in_order_by_clause <- any(are_aggregate_expressions(tree$order_by))
 
   is_aggregating_query <- has_group_by || has_having || has_aggregates_in_select_list || has_aggregates_in_order_by_clause
@@ -88,6 +89,9 @@ parse_query <- function(query, tidyverse = FALSE, secure = TRUE) {
 
     group_by_cols <- vapply(tree$group_by, deparse, "")
     agg_aliases <- names(tree$select)
+    if (is.null(agg_aliases)) {
+      agg_aliases <- rep("", length(tree$select))
+    }
     valid_agg_cols <- setdiff(c(group_by_cols, agg_aliases), "")
 
     if (has_having && !is_valid_expression_in_aggregation(tree$having[[1]], valid_agg_cols)) {
@@ -97,9 +101,16 @@ parse_query <- function(query, tidyverse = FALSE, secure = TRUE) {
 
     # use group_by_cols (not valid_agg_cols) in this test
     # because we can't refer to aliases in the select list itself
-    if (!all(are_valid_expressions_in_aggregation(tree$select, group_by_cols))) {
+
+    select_cols_to_check <- tree$select[!agg_aliases %in% group_by_cols & !tree$select %in% group_by_cols]
+    if (!all(are_valid_expressions_in_aggregation(select_cols_to_check, group_by_cols))) {
       stop("The SELECT list includes expressions that are invalid in an aggregation context ",
            "or incompatible with the GROUP BY clause", call. = FALSE)
+    }
+
+    agg_expr_aliases <- agg_aliases[is_aggregate_expression]
+    if (any(agg_expr_aliases %in% group_by_cols)) {
+      stop("Aliases of aggregate expressions are not allowed in the GROUP BY clause", call. = FALSE)
     }
 
     if (tidyverse && length(valid_agg_cols) > 0) {
