@@ -94,7 +94,7 @@ parse_query(
 #> 
 #> $where
 #> $where[[1]]
-#> (distance >= 200 & distance <= 300) && !is.na(air_time)
+#> (distance >= 200 & distance <= 300) & !is.na(air_time)
 #> 
 #> 
 #> $group_by
@@ -123,6 +123,10 @@ parse_query(
 #> $limit
 #> $limit[[1]]
 #> [1] 100
+#> 
+#> 
+#> attr(,"aggregate")
+#> [1] TRUE
 ```
 
 Set the argument `tidyverse` to `TRUE` to use functions from
