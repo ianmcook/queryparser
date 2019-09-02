@@ -29,7 +29,7 @@ is_aggregate_expression <- function(expr) {
 }
 
 are_valid_expressions_in_aggregation <- function(exprs, allowed_names) {
-  sapply(exprs, is_valid_expression_in_aggregation, allowed_names = sapply(allowed_names, deparse))
+  vapply(exprs, is_valid_expression_in_aggregation, TRUE, allowed_names = allowed_names)
 }
 
 is_valid_expression_in_aggregation <- function(expr, allowed_names, var_names = all_cols(expr), agg = FALSE) {
