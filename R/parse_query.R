@@ -122,9 +122,14 @@ parse_query <- function(query, tidyverse = FALSE, secure = TRUE) {
            "or incompatible with the GROUP BY clause", call. = FALSE)
     }
 
+    attr(tree$select, "aggregate") <- is_aggregate_expression
+
     attr(tree, "aggregate") <- TRUE
 
   } else if (is_select_distinct) {
+
+    # in a SELECT DISTINCT query, we need to
+    # guarantee that only columns / expressions / aliases in the SELECT list appear in the ORDER BY list
 
     attr(tree$select, "distinct") <- TRUE
 
