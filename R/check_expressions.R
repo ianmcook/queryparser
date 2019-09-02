@@ -13,7 +13,7 @@
 # limitations under the License.
 
 are_aggregate_expressions <- function(exprs) {
-  sapply(exprs, is_aggregate_expression)
+  vapply(exprs, is_aggregate_expression, TRUE)
 }
 
 is_aggregate_expression <- function(expr) {
@@ -25,7 +25,7 @@ is_aggregate_expression <- function(expr) {
     }
     out <- lapply(expr, is_aggregate_expression)
   }
-  any(sapply(out, isTRUE))
+  any(vapply(out, isTRUE, TRUE))
 }
 
 are_valid_expressions_in_aggregation <- function(exprs, allowed_names) {
@@ -47,7 +47,7 @@ is_valid_expression_in_aggregation <- function(expr, allowed_names, var_names = 
     }
     out <- lapply(expr, is_valid_expression_in_aggregation, allowed_names, var_names, agg)
   }
-  all(sapply(out, isTRUE))
+  all(vapply(out, isTRUE, TRUE))
 }
 
 is_aggregate_function_call <- function(expr) {

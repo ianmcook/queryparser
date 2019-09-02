@@ -19,7 +19,7 @@ NULL
 #parse_query("SELECT system('rm -rf /')")
 
 secure_expressions_list <- function(tree, tidyverse) {
-  stop_if_bad_funs(unique(unlist(sapply(unlist(tree), bad_funs, tidyverse))))
+  stop_if_bad_funs(unique(unlist(vapply(unlist(tree), bad_funs, "", tidyverse = tidyverse))))
 }
 
 secure_expression <- function(expr, tidyverse) {

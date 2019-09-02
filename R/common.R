@@ -620,7 +620,7 @@ is_function <- function(expr, name) {
     }
     out <- lapply(expr, is_function, name)
   }
-  any(sapply(out, isTRUE))
+  any(vapply(out, isTRUE, TRUE))
 }
 
 all_funs <- function(expr) {

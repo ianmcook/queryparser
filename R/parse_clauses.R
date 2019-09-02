@@ -35,9 +35,10 @@ parse_from <- function(exprs, tidyverse, secure = TRUE) {
   expr_parts <- strsplit(deparse(expr), "::")[[1]]
 
   if (length(expr_parts) == 2) {
-    if (!all(sapply(
+    if (!all(vapply(
       expr_parts,
-      is_one_valid_r_name
+      is_one_valid_r_name,
+      TRUE
     ))) {
       stop("Invalid name in FROM clause", call. = FALSE)
     }
