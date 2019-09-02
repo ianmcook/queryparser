@@ -97,6 +97,55 @@ test_that("parse_expression() successfully parses test expression #9 with NOT IN
   )
 })
 
+test_that("parse_expression() successfully parses test expression #10 with three CASTs", {
+  expect_equal(
+    parse_expression("concat(cast(year as string), '-', cast(month as string), '-', cast(day as string))"),
+    quote(paste0(as.character(year), "-", as.character(month), "-", as.character(day)))
+  )
+})
+
+test_that("parse_expression(tidy = FALSE) successfully parses test expression #11 with three BETWEENs", {
+  expect_equal(
+    parse_expression("x between y and z and a between b and c and x + 2 between y - 1 and z + 5", tidy = FALSE),
+    quote((x >= y & x <= z) & (a >= b & a <= c) & (x + 2 >= y - 1 & x + 2 <= z + 5))
+  )
+})
+
+test_that("parse_expression(tidy = TRUE) successfully parses test expression #11 with three BETWEENs", {
+  expect_equal(
+    parse_expression("x between y and z and a between b and c and x + 2 between y - 1 and z + 5", tidy = TRUE),
+    str2lang("dplyr::between(x, y, z) & dplyr::between(a, b, c) & dplyr::between(x + 2, y - 1, z + 5)")
+  )
+})
+
+test_that("parse_expression(tidy = FALSE) successfully parses test expression #12 with three NOT BETWEENs", {
+  expect_equal(
+    parse_expression("x not between y and z and a not between b and c and x + 2 not between y - 1 and z + 5", tidy = FALSE),
+    quote((x < y | x > z) & (a < b | a > c) & (x + 2 < y - 1 | x + 2 > z + 5))
+  )
+})
+
+test_that("parse_expression(tidy = TRUE) successfully parses test expression #12 with three NOT BETWEENs", {
+  expect_equal(
+    parse_expression("x not between y and z and a not between b and c and x + 2 not between y - 1 and z + 5", tidy = TRUE),
+    str2lang("!dplyr::between(x, y, z) & !dplyr::between(a, b, c) & !dplyr::between(x + 2, y - 1, z + 5)")
+  )
+})
+
+test_that("parse_expression(tidy = FALSE) successfully parses test expression #13 with BETWEEN and NOT BETWEEN", {
+  expect_equal(
+    parse_expression("x not between y and z and a between b and c", tidy = FALSE),
+    quote((x < y | x > z) & (a >= b & a <= c))
+  )
+})
+
+test_that("parse_expression(tidy = TRUE) successfully parses test expression #13 with BETWEEN and NOT BETWEEN", {
+  expect_equal(
+    parse_expression("x not between y and z and a between b and c", tidy = TRUE),
+    str2lang("!dplyr::between(x, y, z) & dplyr::between(a, b, c)")
+  )
+})
+
 test_that("parse_expression(tidyverse = FALSE) stops when multiple expressions to non-SUM aggregate distinct", {
   expect_error(
     parse_expression("AVG(DISTINCT x, y)", tidyverse = FALSE),
