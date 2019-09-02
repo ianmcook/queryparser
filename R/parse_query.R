@@ -99,11 +99,10 @@ parse_query <- function(query, tidyverse = FALSE, secure = TRUE) {
            "or incompatible with the GROUP BY clause", call. = FALSE)
     }
 
-    # use group_by_cols (not valid_agg_cols) in this test
-    # because we can't refer to aliases in the select list itself
-
     select_cols_to_check <- tree$select[!agg_aliases %in% group_by_cols & !tree$select %in% group_by_cols]
-    if (!all(are_valid_expressions_in_aggregation(select_cols_to_check, group_by_cols))) {
+    group_by_col_alias_refs <- vapply(tree$select[agg_aliases %in% group_by_cols], deparse, "")
+    group_by_cols_and_refs <- c(group_by_cols, group_by_col_alias_refs)
+    if (!all(are_valid_expressions_in_aggregation(select_cols_to_check, group_by_cols_and_refs))) {
       stop("The SELECT list includes expressions that are invalid in an aggregation context ",
            "or incompatible with the GROUP BY clause", call. = FALSE)
     }
