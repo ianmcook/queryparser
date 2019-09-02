@@ -56,3 +56,22 @@ is_aggregate_function_call <- function(expr) {
        (deparse(expr[[1]]) %in% c("paste","paste0") && "collapse" %in% names(expr) &&
           !is.null(expr[[which(names(expr) == "collapse")]])))
 }
+
+are_valid_expressions_in_distinct <- function(exprs, allowed_names) {
+  vapply(exprs, is_valid_expression_in_distinct, TRUE, allowed_names = allowed_names)
+}
+
+is_valid_expression_in_distinct <- function(expr, allowed_names, var_names = all_cols(expr)) {
+  if (deparse(expr) %in% allowed_names) {
+    return(TRUE)
+  } else if (length(expr) == 1) {
+    if (deparse(expr) %in% var_names) {
+      return(FALSE)
+    } else {
+      return(TRUE)
+    }
+  } else {
+    out <- lapply(expr, is_valid_expression_in_distinct, allowed_names, var_names)
+  }
+  all(vapply(out, isTRUE, TRUE))
+}

@@ -134,8 +134,22 @@ parse_query <- function(query, tidyverse = FALSE, secure = TRUE) {
 
   } else if (is_select_distinct) {
 
-    # in a SELECT DISTINCT query, we need to
-    # guarantee that only columns / expressions / aliases in the SELECT list appear in the ORDER BY list
+    distinct_cols <- vapply(tree$select, deparse, "")
+    distinct_aliases <- names(tree$select)
+    if (is.null(distinct_aliases)) {
+      distinct_aliases <- rep("", length(tree$select))
+    }
+    valid_distinct_cols <- setdiff(c(distinct_cols, distinct_aliases), "")
+
+    if (tidyverse && length(valid_distinct_cols) > 0) {
+      valid_distinct_cols_for_order_by <- c(valid_distinct_cols, paste0("dplyr::desc(",valid_distinct_cols,")"))
+    } else {
+      valid_distinct_cols_for_order_by <- valid_distinct_cols
+    }
+    if (!all(are_valid_expressions_in_distinct(tree$order_by, valid_distinct_cols_for_order_by))) {
+      stop("The ORDER BY list includes expressions that are invalid ",
+           "in a SELECT DISTINCT query", call. = FALSE)
+    }
 
     attr(tree$select, "distinct") <- TRUE
 
