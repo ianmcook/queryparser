@@ -58,6 +58,7 @@ parse_query <- function(query, tidyverse = FALSE, secure = TRUE) {
   tree <- split_query(query)
 
   is_select_distinct <- isTRUE(attr(tree$select, "distinct"))
+  is_select_star <- any(tree$select == "*")
 
   has_from <- !is.null(tree$from)
   has_where <- !is.null(tree$where)
@@ -84,6 +85,11 @@ parse_query <- function(query, tidyverse = FALSE, secure = TRUE) {
 
     if (is_select_distinct) {
       stop("SELECT DISTINCT cannot be used together with ",
+           "aggregate expressions or a GROUP BY clause", call. = FALSE)
+    }
+
+    if(is_select_star) {
+      stop("SELECT * cannot be used together with ",
            "aggregate expressions or a GROUP BY clause", call. = FALSE)
     }
 
