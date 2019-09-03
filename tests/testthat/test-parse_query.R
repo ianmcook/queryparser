@@ -311,3 +311,10 @@ test_that("parse_query(tidy = TRUE) works on 'flights' SELECT DISTINCT example q
     }
   )
 })
+
+test_that("parse_query() stops on positional column references in ORDER BY clause", {
+  expect_error(
+    parse_query("SELECT x, y, z FROM t ORDER BY 1 DESC, 2"),
+    "^Positional"
+  )
+})

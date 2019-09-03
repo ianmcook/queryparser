@@ -104,6 +104,11 @@ parse_order_by <- function(exprs, tidyverse, secure = TRUE) {
 
   exprs <- remove_asc_desc(exprs)
 
+  suppressWarnings(int_positions <- as.integer(exprs))
+  if (any(!is.na(int_positions))) {
+    stop("Positional column references in the ORDER BY clause are not supported")
+  }
+
   if (tidyverse) {
     for (i in which(descending_cols)) {
       exprs[[i]] <- paste0("dplyr::desc(", exprs[[i]], ")")
