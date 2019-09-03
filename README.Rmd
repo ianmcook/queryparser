@@ -65,7 +65,7 @@ parse_query(
 Set the argument `tidyverse` to `TRUE` to use functions from [tidyverse](https://www.tidyverse.org) packages including [dplyr](https://dplyr.tidyverse.org), [stringr](https://stringr.tidyverse.org), and [lubridate](https://lubridate.tidyverse.org) in the R expressions:
 
 ```{r}
-parse_query("SELECT COUNT(*) FROM t WHERE x BETWEEN y AND z ORDER BY q DESC", tidyverse = TRUE)
+parse_query("SELECT COUNT(*) AS n FROM t WHERE x BETWEEN y AND z ORDER BY n DESC", tidyverse = TRUE)
 ```
 
 **queryparser** will translate only explicitly allowed functions and operators, preventing injection of malicious code:

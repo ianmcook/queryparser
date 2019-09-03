@@ -86,6 +86,9 @@ parse_query(
 #> $select$avg_delay
 #> round(mean(arr_delay, na.rm = TRUE))
 #> 
+#> attr(,"aggregate")
+#>                      num_flts      dist avg_delay 
+#>     FALSE     FALSE      TRUE      TRUE      TRUE 
 #> 
 #> $from
 #> $from[[1]]
@@ -119,6 +122,8 @@ parse_query(
 #> 
 #> attr(,"descreasing")
 #> [1] TRUE TRUE
+#> attr(,"aggregate")
+#> [1] FALSE FALSE
 #> 
 #> $limit
 #> $limit[[1]]
@@ -136,11 +141,14 @@ Set the argument `tidyverse` to `TRUE` to use functions from
 [lubridate](https://lubridate.tidyverse.org) in the R expressions:
 
 ``` r
-parse_query("SELECT COUNT(*) FROM t WHERE x BETWEEN y AND z ORDER BY q DESC", tidyverse = TRUE)
+parse_query("SELECT COUNT(*) AS n FROM t WHERE x BETWEEN y AND z ORDER BY n DESC", tidyverse = TRUE)
 #> $select
-#> $select[[1]]
+#> $select$n
 #> dplyr::n()
 #> 
+#> attr(,"aggregate")
+#>    n 
+#> TRUE 
 #> 
 #> $from
 #> $from[[1]]
@@ -154,7 +162,13 @@ parse_query("SELECT COUNT(*) FROM t WHERE x BETWEEN y AND z ORDER BY q DESC", ti
 #> 
 #> $order_by
 #> $order_by[[1]]
-#> dplyr::desc(q)
+#> dplyr::desc(n)
+#> 
+#> attr(,"aggregate")
+#> [1] FALSE
+#> 
+#> attr(,"aggregate")
+#> [1] TRUE
 ```
 
 **queryparser** will translate only explicitly allowed functions and
