@@ -99,7 +99,8 @@ parse_query <- function(query, tidyverse = FALSE, secure = TRUE) {
     if (is.null(agg_aliases)) {
       agg_aliases <- rep("", length(tree$select))
     }
-    valid_agg_cols <- setdiff(c(group_by_cols, agg_aliases), "")
+    group_by_refs <- as.character(tree$select[agg_aliases %in% as.character(tree$group_by)])
+    valid_agg_cols <- setdiff(c(group_by_cols, agg_aliases, group_by_refs), "")
 
     if (has_having && !is_valid_expression_in_aggregation(tree$having[[1]], valid_agg_cols)) {
       stop("The expression in the HAVING clause is invalid in an aggregation context ",
