@@ -89,7 +89,7 @@ parse_query <- function(query, tidyverse = FALSE, secure = TRUE) {
            "aggregate expressions or a GROUP BY clause", call. = FALSE)
     }
 
-    if(is_select_star) {
+    if (is_select_star) {
       stop("SELECT * cannot be used together with ",
            "aggregate expressions or a GROUP BY clause", call. = FALSE)
     }
@@ -131,7 +131,7 @@ parse_query <- function(query, tidyverse = FALSE, secure = TRUE) {
 
     attr(tree$select, "aggregate") <- is_aggregate_expression_in_select_list
 
-    if(has_order_by) {
+    if (has_order_by) {
       attr(tree$order_by, "aggregate") <- is_aggregate_expression_in_order_by_list
     }
 
