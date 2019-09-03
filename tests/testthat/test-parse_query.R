@@ -14,15 +14,16 @@ test_that("parse_query(tidy = TRUE) works on 'flights' example query", {
         LIMIT 100;"
       parse_query(query, tidy = TRUE)
     },
-    structure(list(select = structure(list(quote(origin), quote(dest),
-      num_flts = quote(sum(!is.na(flight))), dist = quote(round(mean(distance,
-      na.rm = TRUE))), avg_delay = quote(round(mean(arr_delay,
-      na.rm = TRUE)))), aggregate = c(FALSE, FALSE, num_flts = TRUE,
-      dist = TRUE, avg_delay = TRUE)), from = list(quote(flights)),
-      where = list(str2lang("dplyr::between(distance, 200, 300) & !is.na(air_time)")),
-      group_by = list(quote(origin), quote(dest)), having = list(
-      quote(num_flts > 5000)), order_by = list(str2lang("dplyr::desc(num_flts)"),
-      str2lang("dplyr::desc(avg_delay)")), limit = list(100L)), aggregate = TRUE)
+  structure(list(select = structure(list(quote(origin), quote(dest),
+    num_flts = quote(sum(!is.na(flight))), dist = quote(round(mean(distance,
+    na.rm = TRUE))), avg_delay = quote(round(mean(arr_delay,
+    na.rm = TRUE)))), aggregate = c(FALSE, FALSE, num_flts = TRUE,
+    dist = TRUE, avg_delay = TRUE)), from = list(quote(flights)),
+    where = list(quote(dplyr::between(distance, 200, 300) & !is.na(air_time))),
+    group_by = list(quote(origin), quote(dest)), having = list(
+    quote(num_flts > 5000)), order_by = structure(list(quote(dplyr::desc(num_flts)),
+    quote(dplyr::desc(avg_delay))), aggregate = c(FALSE,
+    FALSE)), limit = list(100L)), aggregate = TRUE)
   )
 })
 
@@ -51,7 +52,7 @@ test_that("parse_query(tidy = FALSE) works on 'flights' example query", {
       !is.na(air_time))), group_by = list(quote(origin), quote(dest)),
       having = list(quote(num_flts > 5000)), order_by = structure(list(
       quote(num_flts), quote(avg_delay)), descreasing = c(TRUE,
-      TRUE)), limit = list(100L)), aggregate = TRUE)
+      TRUE), aggregate = c(FALSE, FALSE)), limit = list(100L)), aggregate = TRUE)
   )
 })
 
@@ -145,19 +146,20 @@ test_that("parse_query(tidy = TRUE) works on 'flights' aggregate example query #
   expect_equal(
     {
       query <- "SELECT year, month, day, origin, dest, carrier, flight
-      FROM flights
-      GROUP BY year, month, day, origin, dest, carrier, flight
-      ORDER BY year, month, day, origin, dest, carrier, flight
-      LIMIT 100"
+        FROM flights
+        GROUP BY year, month, day, origin, dest, carrier, flight
+        ORDER BY year, month, day, origin, dest, carrier, flight
+        LIMIT 100"
       parse_query(query, tidy = TRUE)
     },
     structure(list(select = structure(list(quote(year), quote(month),
       quote(day), quote(origin), quote(dest), quote(carrier), quote(flight)), aggregate = c(FALSE,
       FALSE, FALSE, FALSE, FALSE, FALSE, FALSE)), from = list(quote(flights)),
       group_by = list(quote(year), quote(month), quote(day), quote(origin),
-      quote(dest), quote(carrier), quote(flight)), order_by = list(
+      quote(dest), quote(carrier), quote(flight)), order_by = structure(list(
       quote(year), quote(month), quote(day), quote(origin),
-      quote(dest), quote(carrier), quote(flight)), limit = list(
+      quote(dest), quote(carrier), quote(flight)), aggregate = c(FALSE,
+      FALSE, FALSE, FALSE, FALSE, FALSE, FALSE)), limit = list(
       100L)), aggregate = TRUE)
   )
 })
@@ -166,20 +168,20 @@ test_that("parse_query(tidy = TRUE) works on 'flights' aggregate example query #
   expect_equal(
     {
       query <- "SELECT year, month, day, origin, dest, carrier, flight
-      FROM flights
-      GROUP BY year, month, day, origin, dest, carrier, flight
-      ORDER BY year * 10000 + month * 100 + day, origin, dest, carrier, flight
-      LIMIT 100"
+        FROM flights
+        GROUP BY year, month, day, origin, dest, carrier, flight
+        ORDER BY year * 10000 + month * 100 + day, origin, dest, carrier, flight
+        LIMIT 100"
       parse_query(query, tidy = TRUE)
     },
     structure(list(select = structure(list(quote(year), quote(month),
       quote(day), quote(origin), quote(dest), quote(carrier), quote(flight)), aggregate = c(FALSE,
       FALSE, FALSE, FALSE, FALSE, FALSE, FALSE)), from = list(quote(flights)),
       group_by = list(quote(year), quote(month), quote(day), quote(origin),
-      quote(dest), quote(carrier), quote(flight)), order_by = list(
+      quote(dest), quote(carrier), quote(flight)), order_by = structure(list(
       quote(year * 10000 + month * 100 + day), quote(origin),
-      quote(dest), quote(carrier), quote(flight)), limit = list(
-      100L)), aggregate = TRUE)
+      quote(dest), quote(carrier), quote(flight)), aggregate = c(FALSE,
+      FALSE, FALSE, FALSE, FALSE)), limit = list(100L)), aggregate = TRUE)
   )
 })
 
@@ -187,19 +189,20 @@ test_that("parse_query(tidy = TRUE) works on 'flights' aggregate example query #
   expect_equal(
     {
       query <- "SELECT year * 10000 + month * 100 + day, origin, dest, carrier, flight
-      FROM flights
-      GROUP BY year, month, day, origin, dest, carrier, flight
-      ORDER BY year * 10000 + month * 100 + day, origin, dest, carrier, flight
-      LIMIT 100"
+        FROM flights
+        GROUP BY year, month, day, origin, dest, carrier, flight
+        ORDER BY year * 10000 + month * 100 + day, origin, dest, carrier, flight
+        LIMIT 100"
       parse_query(query, tidy = TRUE)
     },
     structure(list(select = structure(list(quote(year * 10000 + month *
       100 + day), quote(origin), quote(dest), quote(carrier), quote(flight)), aggregate = c(FALSE,
       FALSE, FALSE, FALSE, FALSE)), from = list(quote(flights)), group_by = list(
       quote(year), quote(month), quote(day), quote(origin), quote(dest),
-      quote(carrier), quote(flight)), order_by = list(quote(year *
-      10000 + month * 100 + day), quote(origin), quote(dest), quote(carrier),
-      quote(flight)), limit = list(100L)), aggregate = TRUE)
+      quote(carrier), quote(flight)), order_by = structure(list(
+      quote(year * 10000 + month * 100 + day), quote(origin), quote(dest),
+      quote(carrier), quote(flight)), aggregate = c(FALSE, FALSE,
+      FALSE, FALSE, FALSE)), limit = list(100L)), aggregate = TRUE)
   )
 })
 
@@ -207,10 +210,10 @@ test_that("parse_query(tidy = TRUE) works on 'flights' aggregate example query #
   expect_equal(
     {
       query <- "SELECT year y, year * 1000 + month * 100 + day, origin, dest, carrier, flight
-      FROM flights
-      GROUP BY year, month, day, origin, dest, carrier, flight
-      ORDER BY y * 10000 + month * 100 + day, origin, dest, carrier, flight
-      LIMIT 100"
+        FROM flights
+        GROUP BY year, month, day, origin, dest, carrier, flight
+        ORDER BY y * 10000 + month * 100 + day, origin, dest, carrier, flight
+        LIMIT 100"
       parse_query(query, tidy = TRUE)
     },
     structure(list(select = structure(list(y = quote(year), quote(year *
@@ -218,9 +221,10 @@ test_that("parse_query(tidy = TRUE) works on 'flights' aggregate example query #
       quote(flight)), aggregate = c(y = FALSE, FALSE, FALSE, FALSE,
       FALSE, FALSE)), from = list(quote(flights)), group_by = list(
       quote(year), quote(month), quote(day), quote(origin), quote(dest),
-      quote(carrier), quote(flight)), order_by = list(quote(y *
-      10000 + month * 100 + day), quote(origin), quote(dest), quote(carrier),
-      quote(flight)), limit = list(100L)), aggregate = TRUE)
+      quote(carrier), quote(flight)), order_by = structure(list(
+      quote(y * 10000 + month * 100 + day), quote(origin), quote(dest),
+      quote(carrier), quote(flight)), aggregate = c(FALSE, FALSE,
+      FALSE, FALSE, FALSE)), limit = list(100L)), aggregate = TRUE)
   )
 })
 
@@ -282,9 +286,9 @@ test_that("parse_query(tidy = TRUE) works on 'flights' SELECT DISTINCT example q
   expect_equal(
     {
       query <- "SELECT DISTINCT year * 10000 + month * 100 + day, origin, dest, carrier, flight
-      FROM flights
-      ORDER BY year * 10000 + month * 100 + day, origin, dest, carrier, flight
-      LIMIT 100"
+        FROM flights
+        ORDER BY year * 10000 + month * 100 + day, origin, dest, carrier, flight
+        LIMIT 100"
       parse_query(query, tidy = TRUE)
     },
     list(select = structure(list(quote(year * 10000 + month * 100 +
@@ -300,9 +304,9 @@ test_that("parse_query(tidy = TRUE) works on 'flights' SELECT DISTINCT example q
   expect_success(
     {
       query <- "SELECT DISTINCT year y, year * 10000 + month * 100 + day, origin, dest, carrier, flight
-      FROM flights
-      ORDER BY y * 10000 + month * 100 + day, origin, dest, carrier, flight
-      LIMIT 100"
+        FROM flights
+        ORDER BY y * 10000 + month * 100 + day, origin, dest, carrier, flight
+        LIMIT 100"
       parse_query(query, tidy = TRUE)
     }
   )
