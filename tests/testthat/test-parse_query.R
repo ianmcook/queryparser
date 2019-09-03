@@ -19,10 +19,10 @@ test_that("parse_query(tidy = TRUE) works on 'flights' example query", {
     na.rm = TRUE))), avg_delay = quote(round(mean(arr_delay,
     na.rm = TRUE)))), aggregate = c(FALSE, FALSE, num_flts = TRUE,
     dist = TRUE, avg_delay = TRUE)), from = list(quote(flights)),
-    where = list(quote(dplyr::between(distance, 200, 300) & !is.na(air_time))),
+    where = list(str2lang("dplyr::between(distance, 200, 300) & !is.na(air_time)")),
     group_by = list(quote(origin), quote(dest)), having = list(
-    quote(num_flts > 5000)), order_by = structure(list(quote(dplyr::desc(num_flts)),
-    quote(dplyr::desc(avg_delay))), aggregate = c(FALSE,
+    quote(num_flts > 5000)), order_by = structure(list(str2lang("dplyr::desc(num_flts)"),
+    str2lang("dplyr::desc(avg_delay)")), aggregate = c(FALSE,
     FALSE)), limit = list(100L)), aggregate = TRUE)
   )
 })
