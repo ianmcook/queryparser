@@ -1,7 +1,9 @@
 # queryparser (development version)
 
-* List returned by `parse_query()` has attribute `aggregate` set to `TRUE` if query aggregates ([#8](https://github.com/ianmcook/queryparser/issues/8))
-* When translating an aggregate query, sublist `select` returned by by `parse_query()` has logical vector attribute `aggregate` indicating whether each expression aggregates ([#9](https://github.com/ianmcook/queryparser/issues/9))
+* Output indicates when queries aggregate
+  * List returned by `parse_query()` has attribute `aggregate` set to `TRUE` if query aggregates ([#8](https://github.com/ianmcook/queryparser/issues/8))
+  * When translating an aggregate query, sublist `select` returned by by `parse_query()` has logical vector attribute `aggregate` indicating whether each expression in the `SELECT` list aggregates ([#9](https://github.com/ianmcook/queryparser/issues/9))
+  * When translating an aggregate query with an `ORDER BY` clause, sublist `order_by` returned by by `parse_query()` has logical vector attribute `aggregate` indicating whether each expression in the `ORDER BY` clause aggregates ([#11](https://github.com/ianmcook/queryparser/issues/11))
 * Translation of multiple `CAST` and `BETWEEN` expressions in a single expression no longer fails  ([#10](https://github.com/ianmcook/queryparser/issues/10))
 * Minor bugfixes and improvements
 
