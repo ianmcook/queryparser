@@ -13,14 +13,14 @@ expressions.
 ## Installation
 
 Install the released version of **queryparser** from
-[CRAN](https://CRAN.R-project.org) with:
+[CRAN](https://CRAN.R-project.org/package=queryparser) with:
 
 ``` r
 install.packages("queryparser")
 ```
 
-Or install the development version from [GitHub](https://github.com/)
-with:
+Or install the development version from
+[GitHub](https://github.com/ianmcook/queryparser) with:
 
 ``` r
 # install.packages("devtools")
