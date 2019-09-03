@@ -75,11 +75,12 @@ parse_query <- function(query, tidyverse = FALSE, secure = TRUE) {
   tree$order_by <- parse_order_by(tree$order_by, tidyverse, secure)
   tree$limit <- parse_limit(tree$limit)
 
-  is_aggregate_expression <- are_aggregate_expressions(tree$select)
-  has_aggregates_in_select_list <- any(is_aggregate_expression)
-  has_aggregates_in_order_by_clause <- any(are_aggregate_expressions(tree$order_by))
+  is_aggregate_expression_in_select_list <- are_aggregate_expressions(tree$select)
+  is_aggregate_expression_in_order_by_list <- are_aggregate_expressions(tree$order_by)
+  has_aggregates_in_select <- any(is_aggregate_expression_in_select_list)
+  has_aggregates_in_order_by <- any(is_aggregate_expression_in_order_by_list)
 
-  is_aggregating_query <- has_group_by || has_having || has_aggregates_in_select_list || has_aggregates_in_order_by_clause
+  is_aggregating_query <- has_group_by || has_having || has_aggregates_in_select || has_aggregates_in_order_by
 
   if (is_aggregating_query) {
 
@@ -113,7 +114,7 @@ parse_query <- function(query, tidyverse = FALSE, secure = TRUE) {
            "or incompatible with the GROUP BY clause", call. = FALSE)
     }
 
-    agg_expr_aliases <- agg_aliases[is_aggregate_expression]
+    agg_expr_aliases <- agg_aliases[is_aggregate_expression_in_select_list]
     if (any(agg_expr_aliases %in% group_by_cols)) {
       stop("Aliases of aggregate expressions are not allowed in the GROUP BY clause", call. = FALSE)
     }
@@ -128,7 +129,11 @@ parse_query <- function(query, tidyverse = FALSE, secure = TRUE) {
            "or incompatible with the GROUP BY clause", call. = FALSE)
     }
 
-    attr(tree$select, "aggregate") <- is_aggregate_expression
+    attr(tree$select, "aggregate") <- is_aggregate_expression_in_select_list
+
+    if(has_order_by) {
+      attr(tree$order_by, "aggregate") <- is_aggregate_expression_in_order_by_list
+    }
 
     attr(tree, "aggregate") <- TRUE
 
