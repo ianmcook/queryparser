@@ -104,7 +104,11 @@ translate_indirect <- function(expr, tidyverse) {
 
 quasieval <- function(expr, envir) {
   if (is.call(expr) && tolower(deparse(expr[[1]])) %in% ls(envir = envir)) {
-    expr[[1]] <- str2lang(tolower(deparse(expr[[1]]))) # make function name lowercase
+    expr[[1]] <- tryCatch({
+      str2lang(tolower(deparse(expr[[1]]))) # make function name lowercase
+    }, error = function(e) {
+      expr[[1]] # fails on some custom operators where case does not matter
+    })
     expr <- eval(expr, envir)
   }
   if (length(expr) == 1) {
