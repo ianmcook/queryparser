@@ -32,6 +32,14 @@ Parses a SQL \code{SELECT} statement into a list with R
 \details{
 The query must not contain line comments (\code{--}) or block
   comments (\code{/* */}).
+
+  When one or more individual expressions within a query are longer than 500
+  characters, errors or unexpected results can occur.
+
+  See the
+  \href{https://cran.r-project.org/package=queryparser/readme/README.html#current-limitations}{current
+  limitations} section of the \code{README} for information about what types
+  of queries are supported.
 }
 \examples{
 query <- "SELECT origin, dest,
@@ -49,4 +57,7 @@ query <- "SELECT origin, dest,
 parse_query(query)
 
 parse_query(query, tidyverse = TRUE)
+}
+\seealso{
+\code{\link{parse_expression}}
 }

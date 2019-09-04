@@ -33,6 +33,9 @@ The expression must not end with a column alias assignment.
 
   The expression must not contain line comments (\code{--}) or block comments
   (\code{/* */}).
+
+  Expressions longer than 500 characters can cause errors or unexpected
+  results.
 }
 \examples{
 expr <- "round(AVG(arr_delay))"
