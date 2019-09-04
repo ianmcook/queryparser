@@ -18,3 +18,8 @@ if (!exists("str2lang")) {
     parse(text = s, keep.source = FALSE)[[1]]
   }
 }
+
+# to avoid problems with expressions longer than about 60 characters
+deparse <- function(expr, width.cutoff = 500, ...) {
+  base::deparse(expr, width.cutoff, ...)
+}

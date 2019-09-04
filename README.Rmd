@@ -89,6 +89,7 @@ parse_query("SELECT x FROM y WHERE system('rm -rf /')")
 
 - When logical operators (such as `IS NULL`) have unparenthesized expressions as their operands, R will interpret the resulting code using a different order of operations than a SQL engine would. When using an expression as the operand to a logical operator, always enclose the expression in parentheses.
 - The error messages that occur when attempting to parse invalid or unrecognized SQL are often non-informative.
+- When an expression within a `SELECT` statement is longer than 500 characters, errors or unexpected results can occur.
 
 ## Non-Goals
 

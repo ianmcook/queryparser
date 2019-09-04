@@ -199,6 +199,8 @@ parse_query("SELECT x FROM y WHERE system('rm -rf /')")
     enclose the expression in parentheses.
   - The error messages that occur when attempting to parse invalid or
     unrecognized SQL are often non-informative.
+  - When an expression within a `SELECT` statement is longer than 500
+    characters, errors or unexpected results can occur.
 
 ## Non-Goals
 
