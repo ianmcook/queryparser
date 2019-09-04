@@ -9,9 +9,9 @@ parse_expression(expr, tidyverse = FALSE, secure = TRUE)
 \arguments{
 \item{expr}{a character string containing a SQL expression}
 
-\item{tidyverse}{set to \code{TRUE} to use functions from tidyverse packages
-including dplyr, stringr, and lubridate in the returned R expression
-expression}
+\item{tidyverse}{set to \code{TRUE} to use functions from \pkg{tidyverse}
+packages including \pkg{dplyr}, \pkg{stringr}, and \pkg{lubridate} in the
+returned R expression}
 
 \item{secure}{set to \code{FALSE} to allow potentially dangerous functions in
 the returned R expression}
@@ -23,12 +23,13 @@ an unevaluated R expression (a \code{\link{call}})
 Parses a SQL expression into an R expression
 }
 \details{
-The expression must not end with a column alias assignment. Use
-  \code{\link{extract_alias}} to extract and remove column alias assignments.
+The expression must not end with a column alias assignment.
+  Use \code{\link{extract_alias}} to extract and remove column alias
+  assignments.
 
   The expression must not contain any unquoted whitespace characters except
-  spaces, and there must be no unquoted runs or two or more spaces. Use
-  \code{\link{squish_sql}} to satisfy this whitespace requirement.
+  spaces, and there must be no unquoted runs or two or more spaces.
+  Use \code{\link{squish_sql}} to satisfy this whitespace requirement.
 
   The expression must not contain line comments (\code{--}) or block comments
   (\code{/* */}).
@@ -36,4 +37,7 @@ The expression must not end with a column alias assignment. Use
 \examples{
 expr <- "round(AVG(arr_delay))"
 parse_expression(expr)
+}
+\seealso{
+\code{\link{parse_query}}
 }

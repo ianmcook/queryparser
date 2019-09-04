@@ -9,19 +9,24 @@ parse_query(query, tidyverse = FALSE, secure = TRUE)
 \arguments{
 \item{query}{a character string containing a SQL \code{SELECT} statement}
 
-\item{tidyverse}{set to \code{TRUE} to use functions from tidyverse packages
-including dplyr, stringr, and lubridate in the R expressions}
+\item{tidyverse}{set to \code{TRUE} to use functions from \pkg{tidyverse}
+packages including \pkg{dplyr}, \pkg{stringr}, and \pkg{lubridate} in the R
+expressions}
 
 \item{secure}{set to \code{FALSE} to allow potentially dangerous functions in
 the returned R expressions}
 }
 \value{
 A list object with named elements representing the clauses of the
-  query and containing lists of unevaluated R expressions translated from the
-  SQL expressions in the query
+  query, containing sublists of unevaluated R expressions translated from the
+  SQL expressions in the query.
+
+  Depending on the arguments, the returned list and its sublists will have
+  attributes named \code{distinct}, \code{aggregate}, and \code{decreasing}
+  with logical values that can aid in the evaluation of the R expressions.
 }
 \description{
-Parses a SQL \code{SELECT} statement into a list of R
+Parses a SQL \code{SELECT} statement into a list with R
   expressions
 }
 \details{
@@ -42,4 +47,6 @@ query <- "SELECT origin, dest,
   LIMIT 100;"
 
 parse_query(query)
+
+parse_query(query, tidyverse = TRUE)
 }
