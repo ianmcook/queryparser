@@ -28,6 +28,7 @@ test_that("column aliases extract as expected", {
 
 test_that("column aliases extract as expected with UTF-8 characters present", {
   skip_on_os("windows")
+  skip_on_cran()
   expect_true(all(
     extract_alias("ö x") == c(x = "ö"),
     extract_alias("ö 'ö'") == c("ö" = "ö"),
