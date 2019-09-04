@@ -9,7 +9,7 @@ test_that("parse_query(tidy = TRUE) works on 'flights' example query", {
         WHERE distance BETWEEN 200 AND 300
           AND air_time IS NOT NULL
         GROUP BY origin, dest
-        HAVING num_flts > 5000
+        HAVING num_flts > 3000
         ORDER BY num_flts DESC, avg_delay DESC
         LIMIT 100;"
       parse_query(query, tidy = TRUE)
@@ -21,7 +21,7 @@ test_that("parse_query(tidy = TRUE) works on 'flights' example query", {
     dist = TRUE, avg_delay = TRUE)), from = list(quote(flights)),
     where = list(str2lang("dplyr::between(distance, 200, 300) & !is.na(air_time)")),
     group_by = list(quote(origin), quote(dest)), having = list(
-    quote(num_flts > 5000)), order_by = structure(list(str2lang("dplyr::desc(num_flts)"),
+    quote(num_flts > 3000)), order_by = structure(list(str2lang("dplyr::desc(num_flts)"),
     str2lang("dplyr::desc(avg_delay)")), aggregate = c(FALSE,
     FALSE)), limit = list(100L)), aggregate = TRUE)
   )
@@ -38,7 +38,7 @@ test_that("parse_query(tidy = FALSE) works on 'flights' example query", {
       WHERE distance BETWEEN 200 AND 300
         AND air_time IS NOT NULL
       GROUP BY origin, dest
-      HAVING num_flts > 5000
+      HAVING num_flts > 3000
       ORDER BY num_flts DESC, avg_delay DESC
       LIMIT 100;"
       parse_query(query, tidy = FALSE)
@@ -50,7 +50,7 @@ test_that("parse_query(tidy = FALSE) works on 'flights' example query", {
       dist = TRUE, avg_delay = TRUE)), from = list(quote(flights)),
       where = list(quote((distance >= 200 & distance <= 300) &
       !is.na(air_time))), group_by = list(quote(origin), quote(dest)),
-      having = list(quote(num_flts > 5000)), order_by = structure(list(
+      having = list(quote(num_flts > 3000)), order_by = structure(list(
       quote(num_flts), quote(avg_delay)), descreasing = c(TRUE,
       TRUE), aggregate = c(FALSE, FALSE)), limit = list(100L)), aggregate = TRUE)
   )

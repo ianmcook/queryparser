@@ -42,7 +42,7 @@ query <- "SELECT origin, dest,
   WHERE distance BETWEEN 200 AND 300
     AND air_time IS NOT NULL
   GROUP BY origin, dest
-  HAVING num_flts > 5000
+  HAVING num_flts > 3000
   ORDER BY num_flts DESC, avg_delay DESC
   LIMIT 100;"
 
