@@ -84,6 +84,7 @@ parse_query("SELECT x FROM y WHERE system('rm -rf /')")
 
 - Joins
 - Subqueries
+- Unions
 - The `WITH` clause (common table expressions)
 - `OVER` expressions (window or analytic functions)
 - `CASE` expressions
