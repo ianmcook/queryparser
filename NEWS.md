@@ -1,5 +1,6 @@
 # queryparser (development version)
 
+* `BETWEEN` expressions with quotes in operands translate correctly ([#13](https://github.com/ianmcook/queryparser/issues/13))
 * Continuous integration and coverage tests
 * Minor bugfixes and improvements
 
