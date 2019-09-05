@@ -318,3 +318,38 @@ test_that("parse_query() stops on positional column references in ORDER BY claus
     "^Positional"
   )
 })
+
+test_that("parse_query() stops when unvalid expression used in an aggregate query", {
+  expect_error(
+    parse_query("SELECT x FROM y GROUP BY z"),
+    "aggregation"
+  )
+})
+
+test_that("parse_query() stops when unvalid expression used in a SELECT DISTINCT query", {
+  expect_error(
+    parse_query("SELECT DISTINCT x FROM y ORDER BY z"),
+    "DISTINCT"
+  )
+})
+
+test_that("parse_query() stops on incomplete CAST expression", {
+  expect_error(
+    parse_query("SELECT CAST(x) FROM y"),
+    "cast"
+  )
+})
+
+test_that("parse_query() stops on malformed CAST expression", {
+  expect_error(
+    parse_query("SELECT CAST(x) AS y FROM z"),
+    "cast"
+  )
+})
+
+test_that("parse_query() stops on incomplete BETWEEN expression", {
+  expect_error(
+    parse_query("SELECT x FROM y WHERE a BETWEEN b"),
+    "BETWEEN"
+  )
+})
