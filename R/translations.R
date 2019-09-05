@@ -205,25 +205,43 @@ translations_direct_tidyverse <- list(
 
 translations_indirect_generic <- list(
   `%like%` = function(x, wc) {
+    if (!is_constant(eval(substitute(quote(wc))))) {
+      stop("The operand on the right side of LIKE must be a constant value", call. = FALSE)
+    }
     rx <- translate_wildcard_to_regex(wc)
     eval(substitute(quote(grepl(rx, x))))
   },
   `%nlike%` = function(x, wc) {
+    if (!is_constant(eval(substitute(quote(wc))))) {
+      stop("The operand on the right side of NLIKE must be a constant value", call. = FALSE)
+    }
     rx <- translate_wildcard_to_regex(wc)
     eval(substitute(quote(!grepl(rx, x))))
   },
   `%ilike%` = function(x, wc) {
+    if (!is_constant(eval(substitute(quote(wc))))) {
+      stop("The operand on the right side of ILIKE must be a constant value", call. = FALSE)
+    }
     rx <- translate_wildcard_to_regex(wc)
     eval(substitute(quote(grepl(rx, x, ignore.case = TRUE))))
   },
   `%nilike%` = function(x, wc) {
+    if (!is_constant(eval(substitute(quote(wc))))) {
+      stop("The operand on the right side of NILIKE must be a constant value", call. = FALSE)
+    }
     rx <- translate_wildcard_to_regex(wc)
     eval(substitute(quote(!grepl(rx, x, ignore.case = TRUE))))
   },
   `%regexp%` = function(x, rx) {
+    if (!is_constant(eval(substitute(quote(wc))))) {
+      stop("The operand on the right side of REGEXP must be a constant value", call. = FALSE)
+    }
     eval(substitute(quote(grepl(rx, x))))
   },
   `%iregexp%` = function(x, rx) {
+    if (!is_constant(eval(substitute(quote(wc))))) {
+      stop("The operand on the right side of IREGEXP must be a constant value", call. = FALSE)
+    }
     eval(substitute(quote(grepl(rx, x, ignore.case = TRUE))))
   },
   `%<=>%` = function(x, y) {
