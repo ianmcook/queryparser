@@ -47,7 +47,7 @@ replace_special_functions <- function(expr_quotes_masked) {
   )
 }
 
-replace_special_keywords <- function(expr_quotes_masked, tidyverse) {
+replace_special_keywords <- function(expr_quotes_masked) {
 
   special_keywords <- c("CAST", "BETWEEN")
 
@@ -111,11 +111,7 @@ replace_special_keywords <- function(expr_quotes_masked, tidyverse) {
       first_pos[2L:6L] <- first_pos[2L:6L] - char_offset
       repl_strings <- substring(expr_quotes_masked, first_pos, last_pos)
       length_before_replacement <- nchar(expr_quotes_masked)
-      if (tidyverse) {
-        repl_strings <- c(repl_strings[1], " !dplyr::between(", repl_strings[2], ",", repl_strings[4], ",", repl_strings[5], ")", repl_strings[6])
-      } else {
-        repl_strings <- c(repl_strings[1], " (", repl_strings[2], "<", repl_strings[4], " | ", repl_strings[2], ">", repl_strings[5], ")", repl_strings[6])
-      }
+      repl_strings <- c(repl_strings[1], " notbetween(", repl_strings[2], ",", repl_strings[4], ",", repl_strings[5], ")", repl_strings[6])
       expr_quotes_masked <- paste(repl_strings, collapse = "")
       length_after_replacement <- nchar(expr_quotes_masked)
       char_offset <-  char_offset + length_before_replacement - length_after_replacement
@@ -136,11 +132,7 @@ replace_special_keywords <- function(expr_quotes_masked, tidyverse) {
       first_pos[2L:6L] <- first_pos[2L:6L] - char_offset
       repl_strings <- substring(expr_quotes_masked, first_pos, last_pos)
       length_before_replacement <- nchar(expr_quotes_masked)
-      if (tidyverse) {
-        repl_strings <- c(repl_strings[1], " dplyr::between(", repl_strings[2], ",", repl_strings[4], ",", repl_strings[5], ")", repl_strings[6])
-      } else {
-        repl_strings <- c(repl_strings[1], " (", repl_strings[2], ">=", repl_strings[4], " & ", repl_strings[2], "<=", repl_strings[5], ")", repl_strings[6])
-      }
+      repl_strings <- c(repl_strings[1], " yesbetween(", repl_strings[2], ",", repl_strings[4], ",", repl_strings[5], ")", repl_strings[6])
       expr_quotes_masked <- paste(repl_strings, collapse = "")
       length_after_replacement <- nchar(expr_quotes_masked)
       char_offset <-  char_offset + length_before_replacement - length_after_replacement

@@ -117,7 +117,7 @@ parse_expression <- function(expr, tidyverse = FALSE, secure = TRUE) {
   expr_quotes_masked <- replace_star(expr_quotes_masked, tidyverse)
   expr_quotes_masked <- replace_operators_binary_symbolic(expr_quotes_masked)
   expr_quotes_masked <- replace_special_functions(expr_quotes_masked)
-  expr_quotes_masked <- replace_special_keywords(expr_quotes_masked, tidyverse)
+  expr_quotes_masked <- replace_special_keywords(expr_quotes_masked)
   expr_quotes_masked <- replace_null_with_na(expr_quotes_masked)
   expr_quotes_masked <- replace_in_operator(expr_quotes_masked)
   expr_quotes_masked <- replace_operators_binary_word(expr_quotes_masked)

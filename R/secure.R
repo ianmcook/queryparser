@@ -88,7 +88,7 @@ allowed_funs_base <- setdiff(
 
 allowed_funs_tidyverse <- unique(c(
   allowed_funs_generic,
-  "everything", "dplyr", "desc", "between",
+  "everything", "dplyr", "desc",
   names(translations_direct_tidyverse),
   names(translations_indirect_tidyverse),
   names(translations_indirect_tidyverse_agg),

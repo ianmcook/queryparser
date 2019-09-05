@@ -287,6 +287,18 @@ translations_indirect_generic <- list(
 )
 
 translations_indirect_base <- list(
+  yesbetween = function(x, left, right) {
+    if (missing(x) || missing(left) || missing(right)) {
+      stop("BETWEEN requires three operands", call. = FALSE)
+    }
+    eval(substitute(quote((x >= left & x <= right))))
+  },
+  notbetween = function(x, left, right) {
+    if (missing(x) || missing(left) || missing(right)) {
+      stop("NOT BETWEEN requires three operands", call. = FALSE)
+    }
+    eval(substitute(quote((x < left | x > right))))
+  },
   cast = function(x, y = NULL) {
     y <- eval(substitute(quote(y)))
     if (is.call(y) && !is_constant(y)) {
@@ -389,6 +401,20 @@ translations_indirect_base <- list(
 )
 
 translations_indirect_tidyverse <- list(
+  yesbetween = function(x, left, right) {
+    if (missing(x) || missing(left) || missing(right)) {
+      stop("BETWEEN requires three operands", call. = FALSE)
+    }
+    fun <- str2lang("dplyr::between")
+    eval(substitute(quote(fun(x, left, right))))
+  },
+  notbetween = function(x, left, right) {
+    if (missing(x) || missing(left) || missing(right)) {
+      stop("NOT BETWEEN requires three operands", call. = FALSE)
+    }
+    fun <- str2lang("dplyr::between")
+    eval(substitute(quote(!fun(x, left, right))))
+  },
   cast = function(x, y = NULL) {
     y <- eval(substitute(quote(y)))
     if (is.call(y) && !is_constant(y)) {

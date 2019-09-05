@@ -208,3 +208,38 @@ test_that("parse_expression(tidyverse = TRUE) does not translate column names th
     str2lang("stringr::str_to_upper(initcap)")
   )
 })
+
+test_that("parse_expression() wraps `!` args in parentheses", {
+  expect_equal(
+    parse_expression("NOT NOT x"),
+    quote(!(!x))
+  )
+})
+
+test_that("parse_expression(tidyverse = FALSE) successfully translates BETWEEN with quoted operands", {
+  expect_equal(
+    parse_expression("'b' BETWEEN 'a' AND 'c'", tidyverse = FALSE),
+    quote(("b" >= "a" & "b" <= "c"))
+  )
+})
+
+test_that("parse_expression(tidyverse = TRUE) successfully translates BETWEEN with quoted operands", {
+  expect_equal(
+    parse_expression("'b' BETWEEN 'a' AND 'c'", tidyverse = TRUE),
+    str2lang("dplyr::between('b', 'a', 'c')")
+  )
+})
+
+test_that("parse_expression(tidyverse = FALSE) successfully translates NOT BETWEEN with quoted operands", {
+  expect_equal(
+    parse_expression("'b' NOT BETWEEN 'a' AND 'c'", tidyverse = FALSE),
+    quote(("b" < "a" | "b" > "c"))
+  )
+})
+
+test_that("parse_expression(tidyverse = TRUE) successfully translates NOT BETWEEN with quoted operands", {
+  expect_equal(
+    parse_expression("'b' NOT BETWEEN 'a' AND 'c'", tidyverse = TRUE),
+    str2lang("!dplyr::between('b', 'a', 'c')")
+  )
+})
