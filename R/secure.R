@@ -18,10 +18,6 @@ NULL
 # prevent this kind of horror:
 #parse_query("SELECT system('rm -rf /')")
 
-secure_expressions_list <- function(tree, tidyverse) {
-  stop_if_bad_funs(unique(unlist(vapply(unlist(tree), bad_funs, "", tidyverse = tidyverse))))
-}
-
 secure_expression <- function(expr, tidyverse) {
   stop_if_bad_funs(bad_funs(expr, tidyverse))
 }
