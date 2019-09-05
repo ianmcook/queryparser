@@ -341,7 +341,7 @@ find_keyword_pairs <- function(expr_quotes_masked, keyword_1, keyword_2, operand
   keyword_pair_pos <- list()
 
   rc <- rawConnection(raw(0L), "r+")
-
+  on.exit(close(rc))
   writeChar(paste0(expr_quotes_masked, " "), rc)
   len <- seek(rc, 0L) - 1L
 
@@ -394,7 +394,6 @@ find_keyword_pairs <- function(expr_quotes_masked, keyword_1, keyword_2, operand
     }
 
   }
-  close(rc)
   keyword_pair_pos
 }
 
