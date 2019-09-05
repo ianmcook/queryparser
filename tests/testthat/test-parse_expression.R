@@ -263,3 +263,38 @@ test_that("parse_expression() successfully translates expression with LIKE", {
     quote(grepl("^a.*d.f$", x))
   )
 })
+
+test_that("parse_expression() stops when input is not a character vector", {
+  expect_error(
+    parse_expression(42),
+    "^Unexpected"
+  )
+})
+
+test_that("parse_expression() stops when input is has length > 1", {
+  expect_error(
+    parse_expression(c("sqrt(4)", "sqrt(9)")),
+    "^Unexpected"
+  )
+})
+
+test_that("parse_expression() properly handles quote character escaped by doubling", {
+  expect_equal(
+    parse_expression("x LIKE 'isn''t'"),
+    quote(grepl("^isn't$", x))
+  )
+})
+
+test_that("parse_expression() properly handles quote character escaped with backslash", {
+  expect_equal(
+    parse_expression("x LIKE 'isn\\'t'"),
+    quote(grepl("^isn't$", x))
+  )
+})
+
+test_that("parse_expression() stops when column name is an R reserved word in backticks", {
+  expect_error(
+    parse_expression("SUM(`break`)"),
+    "reserved"
+  )
+})

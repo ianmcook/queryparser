@@ -312,6 +312,14 @@ test_that("parse_query(tidy = TRUE) works on 'flights' SELECT DISTINCT example q
   )
 })
 
+test_that("parse_query() works on SELECT ALL example query", {
+  expect_equal(
+    parse_query("SELECT ALL year, month, day FROM flights"),
+    list(select = list(quote(year), quote(month), quote(day)), from = list(
+      quote(flights)))
+  )
+})
+
 test_that("parse_query() stops on positional column references in ORDER BY clause", {
   expect_error(
     parse_query("SELECT x, y, z FROM t ORDER BY 1 DESC, 2"),
@@ -417,3 +425,102 @@ test_that("parse_query() stops when column name in LIMIT clause", {
   )
 })
 
+test_that("parse_query() stops when input is not a character vector", {
+  expect_error(
+    parse_query(42),
+    "^Unexpected"
+  )
+})
+
+test_that("parse_query() stops when input is has length > 1", {
+  expect_error(
+    parse_query(c("SELECT w FROM x", "SELECT y FROM z")),
+    "^Unexpected"
+  )
+})
+
+test_that("parse_query() stops when query does not begin with SELECT", {
+  expect_error(
+    parse_query("ORDER BY z"),
+    "begin"
+  )
+})
+
+test_that("parse_query() stops on CASE expression", {
+  expect_error(
+    parse_query("SELECT CASE WHEN x THEN 1 ELSE 2 END;"),
+    "CASE"
+  )
+})
+
+test_that("parse_query() stops on OVER clauses", {
+  expect_error(
+    parse_query("SELECT SUM(x) OVER(PARTITION BY y) FROM z"),
+    "OVER"
+  )
+})
+
+
+test_that("parse_query() stops on join", {
+  expect_error(
+    parse_query("SELECT x FROM y JOIN z ON y.a = z.b"),
+    "Joins"
+  )
+})
+
+test_that("parse_query() stops on UNION", {
+  expect_error(
+    parse_query("SELECT * FROM x UNION SELECT * FROM y"),
+    "UNION"
+  )
+})
+
+test_that("parse_query() stops on INTERSECT", {
+  expect_error(
+    parse_query("SELECT * FROM x INTERSECT SELECT * FROM y"),
+    "INTERSECT"
+  )
+})
+
+test_that("parse_query() stops on EXCEPT", {
+  expect_error(
+    parse_query("SELECT * FROM x EXCEPT SELECT * FROM y"),
+    "EXCEPT"
+  )
+})
+
+test_that("parse_query() stops on subquery", {
+  expect_error(
+    parse_query("SELECT * FROM table WHERE x IN (SELECT z FROM table2) t;"),
+    "^Subqueries"
+  )
+})
+
+test_that("parse_query() stops on unmatched quotation marks", {
+  expect_error(
+    parse_query("SELECT 'hello FROM x"),
+    "unmatched"
+  )
+})
+
+test_that("parse_query() stops on unmatched quotation parentheses", {
+  expect_error(
+    parse_query("SELECT sqrt(16 FROM y"),
+    "unmatched"
+  )
+})
+
+test_that("parse_query() stops on repated clause", {
+  expect_error(
+    parse_query("SELECT x FROM y WHERE z WHERE w"),
+    "times"
+  )
+})
+
+
+test_that("parse_query() stops on clauses in incorrect order", {
+  expect_error(
+    parse_query("SELECT x GROUP BY z FROM y"),
+    "order"
+  )
+})
