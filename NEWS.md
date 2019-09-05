@@ -1,3 +1,8 @@
+# queryparser (development version)
+
+* Continuous integration and coverage tests
+* Minor bugfixes and improvements
+
 # queryparser 0.1.1
 
 * Output indicates when queries aggregate
