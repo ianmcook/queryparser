@@ -181,6 +181,20 @@ test_that("parse_expression(tidyverse = TRUE) stops when multiple expressions to
   )
 })
 
+test_that("parse_expression(tidyverse = FALSE) succeeds when one expression to COUNT DISTINCT", {
+  expect_equal(
+    parse_expression("COUNT(DISTINCT x)", tidyverse = FALSE),
+    quote(sum(!is.na(unique(x))))
+  )
+})
+
+test_that("parse_expression(tidyverse = TRUE) succeeds when one expression to COUNT DISTINCT", {
+  expect_equal(
+    parse_expression("COUNT(DISTINCT x)", tidyverse = TRUE),
+    str2lang("dplyr::n_distinct(x, na.rm = TRUE)")
+  )
+})
+
 test_that("parse_expression(tidyverse = FALSE) stops when multiple expressions to COUNT DISTINCT", {
   expect_error(
     parse_expression("COUNT(DISTINCT x, y)", tidyverse = FALSE),
@@ -211,8 +225,8 @@ test_that("parse_expression(tidyverse = TRUE) does not translate column names th
 
 test_that("parse_expression() wraps `!` args in parentheses", {
   expect_equal(
-    parse_expression("NOT NOT x"),
-    quote(!(!x))
+    parse_expression("NOT NOT NOT (x OR y)"),
+    quote(!(!(!(x | y))))
   )
 })
 
@@ -241,5 +255,12 @@ test_that("parse_expression(tidyverse = TRUE) successfully translates NOT BETWEE
   expect_equal(
     parse_expression("'b' NOT BETWEEN 'a' AND 'c'", tidyverse = TRUE),
     str2lang("!dplyr::between('b', 'a', 'c')")
+  )
+})
+
+test_that("parse_expression() successfully translates expression with LIKE", {
+  expect_equal(
+    parse_expression("x LIKE 'a%d_f'"),
+    quote(grepl("^a.*d.f$", x))
   )
 })
