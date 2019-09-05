@@ -353,3 +353,67 @@ test_that("parse_query() stops on incomplete BETWEEN expression", {
     "BETWEEN"
   )
 })
+
+test_that("parse_query() stops when invalid object name in FROM clause", {
+  expect_error(
+    parse_query("SELECT * FROM `1a`"),
+    "^Invalid name"
+  )
+})
+
+test_that("parse_query() stops when expression (not name) in FROM clause", {
+  expect_error(
+    parse_query("SELECT * FROM 1+2+3"),
+    "^Invalid name"
+  )
+})
+
+test_that("parse_query() stops when invalid namespace name in FROM clause", {
+  expect_error(
+    parse_query("SELECT * FROM `1a`::foo"),
+    "^Invalid name"
+  )
+})
+
+test_that("parse_query() stops when aggregate expression in WHERE clause", {
+  expect_error(
+    parse_query("SELECT x WHERE COUNT(*) > 2"),
+    "^Aggregate"
+  )
+})
+
+test_that("parse_query() stops when aggregate expression in GROUP BY clause", {
+  expect_error(
+    parse_query("SELECT x GROUP BY SUM(x)"),
+    "^Aggregate"
+  )
+})
+
+test_that("parse_query() stops when invalid use of ASC in ORDER BY clause", {
+  expect_error(
+    parse_query("SELECT x FROM y ORDER BY x, ASC"),
+    "^Invalid"
+  )
+})
+
+test_that("parse_query() stops when invalid use of DESC in ORDER BY clause", {
+  expect_error(
+    parse_query("SELECT x FROM y ORDER BY x, DESC"),
+    "^Invalid"
+  )
+})
+
+test_that("parse_query() stops when expression in LIMIT clause", {
+  expect_error(
+    parse_query("SELECT x FROM y LIMIT sqrt(100)"),
+    "constant"
+  )
+})
+
+test_that("parse_query() stops when column name in LIMIT clause", {
+  expect_error(
+    parse_query("SELECT x FROM y LIMIT z"),
+    "constant"
+  )
+})
+

@@ -20,17 +20,9 @@ parse_select <- function(exprs, tidyverse, secure = TRUE) {
 
 parse_from <- function(exprs, tidyverse, secure = TRUE) {
   if (is.null(exprs)) return(NULL)
-  exprs <- sapply(exprs, parse_expression, tidyverse = tidyverse, secure = secure, USE.NAMES = FALSE)
-
-  if (length(exprs) < 1) {
-    stop("No name found in the FROM clause", call. = FALSE)
-  }
-
-  if (length(exprs) > 1) {
-    stop("Multi-table queries are not supported", call. = FALSE)
-  }
-
   expr <- exprs[[1]]
+
+  expr <- parse_expression(expr, tidyverse = tidyverse, secure = secure)
 
   expr_parts <- strsplit(deparse(expr), "::")[[1]]
 
@@ -50,25 +42,20 @@ parse_from <- function(exprs, tidyverse, secure = TRUE) {
     stop("Invalid name in FROM clause", call. = FALSE)
   }
 
-  exprs
+  list(expr)
 }
 
 parse_where <- function(exprs, tidyverse, secure = TRUE) {
   if (is.null(exprs)) return(NULL)
-  exprs <- sapply(exprs, parse_expression, tidyverse = tidyverse, secure = secure, USE.NAMES = FALSE)
-
-  if (length(exprs) > 1) {
-    stop("The WHERE clause must contain a single Boolean expression", call. = FALSE)
-  }
-
   expr <- exprs[[1]]
+  expr <- parse_expression(expr, tidyverse = tidyverse, secure = secure)
 
   if (is_aggregate_expression(expr)) {
     stop("Aggregate functions are not allowed in the WHERE clause. ",
          "Use the HAVING clause to filter by aggregates.", call. = FALSE)
   }
 
-  exprs
+  list(expr)
 }
 
 parse_group_by <- function(exprs, tidyverse, secure = TRUE) {
@@ -84,13 +71,12 @@ parse_group_by <- function(exprs, tidyverse, secure = TRUE) {
 
 parse_having <- function(exprs, tidyverse, secure = TRUE) {
   if (is.null(exprs)) return(NULL)
-  exprs <- sapply(exprs, parse_expression, tidyverse = tidyverse, secure = secure, USE.NAMES = FALSE)
 
-  if (length(exprs) > 1) {
-    stop("The HAVING clause must contain a single Boolean expression", call. = FALSE)
-  }
+  expr <- exprs[[1]]
 
-  exprs
+  expr <- parse_expression(expr, tidyverse = tidyverse, secure = secure)
+
+  list(expr)
 }
 
 parse_order_by <- function(exprs, tidyverse, secure = TRUE) {
@@ -126,15 +112,16 @@ parse_order_by <- function(exprs, tidyverse, secure = TRUE) {
 
 parse_limit <- function(exprs) {
   if (is.null(exprs)) return(NULL)
+  expr <- exprs[[1]]
 
-  suppressWarnings(exprs <- as.integer(exprs))
+  suppressWarnings(expr <- as.integer(expr))
 
-  if (any(is.na(exprs)) || length(exprs) != 1 || isTRUE(exprs < 0)) {
+  if (any(is.na(expr)) || length(expr) != 1 || isTRUE(expr < 0)) {
     stop("The LIMIT clause may contain only a single ",
          "constant non-negative integer", call. = FALSE)
   }
 
-  list(exprs)
+  list(expr)
 }
 
 order_is_desc <- function(exprs) {
