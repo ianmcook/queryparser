@@ -21,6 +21,17 @@ test_that("column aliases extract as expected", {
     extract_alias("(abc) xyz") == c(xyz = "(abc)"),
     extract_alias("2+2'xyz'") == c(xyz = "2+2"),
     extract_alias("2+2") == "2+2",
+    extract_alias("") == "",
+    extract_alias("x") == "x",
+    extract_alias("'x'") == "'x'",
+    extract_alias("''") == "''",
+    extract_alias("xs y") == c(y = "xs"),
+    extract_alias("xas y") == c(y = "xas"),
+    extract_alias("xs 'y'") == c(y = "xs"),
+    extract_alias("xas 'y'") == c(y = "xas"),
+    extract_alias("x like y") == "x like y",
+    extract_alias("x IS NULL") == "x IS NULL",
+    extract_alias("NULL") == "NULL",
     extract_alias("cast(1 as string)l") == c(l = "cast(1 as string)"),
     extract_alias("x between y and z l") == c(l = "x between y and z")
   ))

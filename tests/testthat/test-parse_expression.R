@@ -40,7 +40,6 @@ test_that("parse_expression(tidy = TRUE) successfully parses test expression #3 
   )
 })
 
-
 test_that("parse_expression(tidy = FALSE) successfully parses test expression #4 with CAST and BETWEEN", {
   expect_equal(
     parse_expression("if (1 + cast(2 + 3 + sqrt(4) as integer) between 7 and 11 - 1, 'a', 'b')", tidy = FALSE),
