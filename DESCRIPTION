@@ -33,4 +33,5 @@ Collate:
     'unpipe.R'
     'wrap_bangs.R'
 Suggests: 
-    testthat (>= 2.1.0)
+    testthat (>= 2.1.0),
+    covr
