@@ -5,6 +5,14 @@
 
 <!-- badges: start -->
 
+[![CRAN
+status](https://www.r-pkg.org/badges/version/queryparser)](https://cran.r-project.org/package=queryparser)
+[![Travis build
+status](https://travis-ci.org/ianmcook/queryparser.svg?branch=master)](https://travis-ci.org/ianmcook/queryparser)
+[![AppVeyor build
+status](https://ci.appveyor.com/api/projects/status/github/ianmcook/queryparser?branch=master&svg=true)](https://ci.appveyor.com/project/ianmcook/queryparser)
+[![Codecov test
+coverage](https://codecov.io/gh/ianmcook/queryparser/branch/master/graph/badge.svg)](https://codecov.io/gh/ianmcook/queryparser?branch=master)
 <!-- badges: end -->
 
 **queryparser** translates SQL queries into lists of unevaluated R
