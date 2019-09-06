@@ -30,10 +30,7 @@ Parses a SQL \code{SELECT} statement into a list with R
   expressions
 }
 \details{
-The query must not contain line comments (\code{--}) or block
-  comments (\code{/* */}).
-
-  When one or more individual expressions within a query are longer than 500
+When one or more individual expressions within a query are longer than 500
   characters, errors or unexpected results can occur.
 
   See the

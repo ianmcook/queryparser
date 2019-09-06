@@ -197,7 +197,6 @@ parse_query("SELECT x FROM y WHERE system('rm -rf /')")
   - The `WITH` clause (common table expressions)
   - `OVER` expressions (window or analytic functions)
   - `CASE` expressions
-  - Line comments `--` or block comments `/* */`
   - Some SQL functions and operators
 
 **queryparser** currently has the following limitations:

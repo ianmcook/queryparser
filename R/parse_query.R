@@ -33,10 +33,7 @@ NULL
 #'   Depending on the arguments, the returned list and its sublists will have
 #'   attributes named \code{distinct}, \code{aggregate}, and \code{decreasing}
 #'   with logical values that can aid in the evaluation of the R expressions.
-#' @details The query must not contain line comments (\code{--}) or block
-#'   comments (\code{/* */}).
-#'
-#'   When one or more individual expressions within a query are longer than 500
+#' @details When one or more individual expressions within a query are longer than 500
 #'   characters, errors or unexpected results can occur.
 #'
 #'   See the

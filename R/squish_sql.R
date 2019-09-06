@@ -15,10 +15,13 @@
 #' Squish a SQL query or SQL expression
 #'
 #' @description Replaces every unquoted run of whitespace characters with a
-#'   single space. Whitespace within quotes is not modified.
+#'   single space and removes all line comments (\code{--}) and block comments
+#'   (\code{/* */}). Whitespace and comment marks within quotes are not
+#'   modified.
 #'
 #' @param x a character string containing a SQL query or expression
-#' @return a character string containing the squished query or expression
+#' @return a character string containing the squished query or expression with
+#'   comments removed
 #' @export
 squish_sql <- function(x) {
   if (!identical(typeof(x), "character") || !identical(length(x), 1L)) {
@@ -33,11 +36,28 @@ squish_sql <- function(x) {
 
   in_quotes <- FALSE
   in_ws <- FALSE
+  in_line_comment <- FALSE
+  in_block_comment <- FALSE
   escaped <- FALSE
 
   while((pos <- seek(rc_in, NA)) < len) {
     char <- readChar(rc_in, 1L)
-    if (char %in% quote_chars) {
+
+    if (in_line_comment) {
+      if (identical(char, "\n")) {
+        in_line_comment <- FALSE
+      }
+      next;
+    } else if (in_block_comment) {
+      if(identical(char, "*")) {
+        if (identical(readChar(rc_in, 1L), "/")) {
+          in_block_comment <- FALSE
+        } else {
+          seek(rc_in, -1L, "current")
+        }
+      }
+      next;
+    } else if (char %in% quote_chars) {
       if (!in_quotes) {
         in_quotes <- TRUE
         escaped <- FALSE
@@ -64,8 +84,20 @@ squish_sql <- function(x) {
       escaped <- FALSE
     }
 
-    if (!in_quotes) {
-      if (isTRUE(is_whitespace_character(char))) {
+    if (!in_quotes && !in_line_comment && !in_block_comment) {
+      if (identical(char, "-")) {
+        if (identical(readChar(rc_in, 1L), "-")) {
+          in_line_comment <- TRUE
+          next;
+        }
+        seek(rc_in, -1L, "current")
+      } else if (identical(char, "/")) {
+        if (identical(readChar(rc_in, 1L), "*")) {
+          in_block_comment <- TRUE
+          next;
+        }
+        seek(rc_in, -1L, "current")
+      } else if (isTRUE(is_whitespace_character(char))) {
         # this is a whitespace character
         if (in_ws) {
           # was already in whitespace
@@ -86,6 +118,10 @@ squish_sql <- function(x) {
     }
 
     writeChar(char, rc_out, eos = NULL)
+  }
+
+  if (in_block_comment) {
+    stop("Query or expression contains unclosed block comment", call. = FALSE)
   }
 
   seek(rc_out, 0L)

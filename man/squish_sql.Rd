@@ -10,9 +10,12 @@ squish_sql(x)
 \item{x}{a character string containing a SQL query or expression}
 }
 \value{
-a character string containing the squished query or expression
+a character string containing the squished query or expression with
+  comments removed
 }
 \description{
 Replaces every unquoted run of whitespace characters with a
-  single space. Whitespace within quotes is not modified.
+  single space and removes all line comments (\code{--}) and block comments
+  (\code{/* */}). Whitespace and comment marks within quotes are not
+  modified.
 }

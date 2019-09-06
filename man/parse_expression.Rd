@@ -28,11 +28,10 @@ The expression must not end with a column alias assignment.
   assignments.
 
   The expression must not contain any unquoted whitespace characters except
-  spaces, and there must be no unquoted runs or two or more spaces.
-  Use \code{\link{squish_sql}} to satisfy this whitespace requirement.
-
-  The expression must not contain line comments (\code{--}) or block comments
-  (\code{/* */}).
+  spaces, and there must be no unquoted runs or two or more spaces. The
+  expression must not contain line comments (\code{--}) or block comments
+  (\code{/* */}). Use \code{\link{squish_sql}} to satisfy these whitespace
+  requirements and remove any comments.
 
   Expressions longer than 500 characters can cause errors or unexpected
   results.
