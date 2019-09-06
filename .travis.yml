@@ -3,5 +3,5 @@ cache: packages
 warnings_are_errors: false
 
 after_success:
-  - R CMD INSTALL .
+  - R CMD INSTALL --with-keep.source .
   - Rscript codecov.R
