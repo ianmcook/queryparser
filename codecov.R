@@ -1,4 +1,4 @@
-devtools::install()
+system("R CMD INSTALL --no-multiarch --with-keep.source .")
 library(testthat)
 library(covr)
 library(queryparser)
