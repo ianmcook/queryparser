@@ -2,7 +2,6 @@ language: R
 cache: packages
 warnings_are_errors: false
 
-deploy:
-  provider: script
-  script: Rscript codecov.R
-  skip_cleanup: true
+after_success:
+  - R CMD INSTALL .
+  - Rscript codecov.R

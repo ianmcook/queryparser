@@ -26,5 +26,7 @@ result <- structure(c(
   env_result_base,
   env_result_tidy
 ), class = "coverage")
+attr(result, "package") <- attr(pkg_result, "package")
+attr(result, "relative") <- TRUE
 
 codecov(coverage = result)
