@@ -5,3 +5,4 @@ LICENSE
 ^\.travis\.yml$
 ^appveyor\.yml$
 ^codecov\.yml$
+^codecov\.R$
