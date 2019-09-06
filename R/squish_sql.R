@@ -90,12 +90,14 @@ squish_sql <- function(x) {
           in_line_comment <- TRUE
           next;
         }
+        in_ws <- FALSE
         seek(rc_in, -1L, "current")
       } else if (identical(char, "/")) {
         if (identical(readChar(rc_in, 1L), "*")) {
           in_block_comment <- TRUE
           next;
         }
+        in_ws <- FALSE
         seek(rc_in, -1L, "current")
       } else if (isTRUE(is_whitespace_character(char))) {
         # this is a whitespace character
