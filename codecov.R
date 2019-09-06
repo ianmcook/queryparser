@@ -1,6 +1,7 @@
+devtools::install()
 library(testthat)
-library(queryparser)
 library(covr)
+library(queryparser)
 
 pkg_result <- package_coverage()
 
