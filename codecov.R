@@ -1,3 +1,5 @@
+library(testthat)
+library(queryparser)
 library(covr)
 
 pkg_result <- package_coverage()
