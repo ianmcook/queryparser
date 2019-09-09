@@ -68,7 +68,7 @@ parse_query <- function(query, tidyverse = FALSE, secure = TRUE) {
     stop("Unexpected input to parse_query()", call. = FALSE)
   }
 
-  tree <- split_query(query)
+  tree <- split_query(query, tidyverse)
 
   is_select_distinct <- isTRUE(attr(tree$select, "distinct"))
   is_select_star <- any(tree$select == "*")

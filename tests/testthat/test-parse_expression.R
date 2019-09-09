@@ -166,6 +166,81 @@ test_that("parse_expression() successfully parses test expression #15 with IS DI
   )
 })
 
+test_that("parse_expression(tidy = TRUE) successfully parses test expression #16 with CASE", {
+  expect_equal(
+    parse_expression(paste(
+      "CASE size WHEN 'L' THEN 'large'",
+      "WHEN 'M' THEN 'medium'",
+      "WHEN 'S' THEN 'small' END"), tidy = TRUE),
+    str2lang("dplyr::case_when(size == 'L' ~ 'large', size == 'M' ~ 'medium',
+             size == 'S' ~ 'small')")
+  )
+})
+
+test_that("parse_expression(tidy = TRUE) successfully parses test expression #17 with CASE", {
+  expect_equal(
+    parse_expression(paste(
+      "CASE size WHEN 'L' THEN 'large'",
+      "WHEN 'M' THEN 'medium'",
+      "WHEN 'S' THEN 'small'",
+      "ELSE 'other' END"), tidy = TRUE),
+    str2lang("dplyr::case_when(size == 'L' ~ 'large', size == 'M' ~ 'medium',
+      size == 'S' ~ 'small', TRUE ~ 'other')")
+  )
+})
+
+test_that("parse_expression(tidy = TRUE) successfully parses test expression #18 with CASE", {
+  expect_equal(
+    parse_expression(paste(
+      "CASE WHEN size >= 46 THEN 'other' WHEN size >= 42 THEN 'large'",
+      "WHEN size >= 38 THEN 'medium'",
+      "WHEN size >= 34 THEN 'small' END"), tidy = TRUE),
+    str2lang("dplyr::case_when(size >= 46 ~ 'other', size >= 42 ~ 'large',
+      size >= 38 ~ 'medium', size >= 34 ~ 'small')")
+  )
+})
+
+test_that("parse_expression(tidy = TRUE) successfully parses test expression #19 with CASE", {
+  expect_equal(
+    parse_expression(paste(
+      "CASE WHEN size >= 46 THEN 'other' WHEN size >= 42 THEN 'large'",
+      "WHEN size >= 38 THEN 'medium'",
+      "WHEN size >= 34 THEN 'small'",
+      "ELSE 'other' END"), tidy = TRUE),
+    str2lang("dplyr::case_when(size >= 46 ~ 'other', size >= 42 ~ 'large',
+             size >= 38 ~ 'medium', size >= 34 ~ 'small', TRUE ~ 'other')")
+  )
+})
+
+test_that("parse_expression(tidy = TRUE) stops on malformed CASE expression with no END", {
+  expect_error(
+    parse_expression(paste(
+      "CASE WHEN size >= 46 THEN 'other' WHEN size >= 42 THEN 'large'",
+      "WHEN size >= 38 THEN 'medium'",
+      "WHEN size >= 34 THEN 'small'",
+      "ELSE 'other'"), tidy = TRUE),
+    "END"
+  )
+})
+
+test_that("parse_expression(tidy = TRUE) stops on malformed CASE expression with no WHEN ... THEN", {
+  expect_error(
+    parse_expression("CASE ELSE 'other' END", tidy = TRUE),
+    "WHEN"
+  )
+})
+
+test_that("parse_expression(tidy = TRUE) stops on malformed CASE expression with WHEN missing THEN", {
+  expect_error(
+    parse_expression(paste(
+      "CASE WHEN size >= 46 THEN 'other' WHEN size >= 42 THEN 'large'",
+      "WHEN size >= 38 THEN 'medium'",
+      "WHEN size >= 34",
+      "ELSE 'other' END"), tidy = TRUE),
+    "THEN"
+  )
+})
+
 test_that("parse_expression(tidy = FALSE) stops when coalesce() has no arguments", {
   expect_error(
     parse_expression("coalesce()", tidy = FALSE),

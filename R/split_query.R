@@ -18,6 +18,7 @@
 #'   comma-separated column lists within the clauses.
 #'
 #' @param query a character string containing a SQL \code{SELECT} statement
+#' @param tidyverse for queryparser internal use only
 #' @return A list object with named elements representing the clauses of the
 #'   query
 #' @examples
@@ -36,7 +37,7 @@
 #' split_query(query)
 #' @seealso \code{\link{parse_query}}
 #' @export
-split_query <- function(query) {
+split_query <- function(query, tidyverse) {
   if (!identical(typeof(query), "character") || !identical(length(query), 1L)) {
     stop("Unexpected input to split_query()", call. = FALSE)
   }
@@ -122,8 +123,12 @@ split_query <- function(query) {
     if (!in_quotes && !in_word) {
 
       # identify unsupported syntax
-      if (clause_starts_here(rc, "case")) {
-        stop("CASE expressions are not supported", call. = FALSE)
+      if (!missing(tidyverse) && !tidyverse && clause_starts_here(rc, "case")) {
+        stop(
+          "CASE expressions are not supported ",
+          "when tidyverse = FALSE",
+          call. = FALSE
+        )
       }
       if (clause_starts_here(rc, "over")) {
         stop("OVER clauses are not supported", call. = FALSE)

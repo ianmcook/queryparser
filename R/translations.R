@@ -456,6 +456,55 @@ translations_indirect_tidyverse <- list(
     func <- str2lang(func_name)
     eval(substitute(quote(func(x))))
   },
+  casewhen = function(... , otherwise) {
+    dots <- eval(substitute(alist(...)))
+    otherwise <- eval(substitute(quote(otherwise)))
+    expr <- "dplyr::case_when("
+    i <- 1L
+    while(i + 1 <= length(dots)) {
+      expr <- paste0(
+        expr,
+        deparse(dots[[i]]),
+        " ~ ",
+        deparse(dots[[i + 1]])
+      )
+      if (i + 1 < length(dots)) {
+        expr <- paste0(expr, ", ")
+      }
+      i <- i + 2L
+    }
+    if (!missing(otherwise)) {
+      expr <- paste0(expr, ", TRUE ~ ", deparse(otherwise))
+    }
+    expr <- paste0(expr, ")")
+    eval(substitute(str2lang(expr)))
+  },
+  casevalue = function(value, ... , otherwise) {
+    value <- eval(substitute(quote(value)))
+    dots <- eval(substitute(alist(...)))
+    otherwise <- eval(substitute(quote(otherwise)))
+    expr <- "dplyr::case_when("
+    i <- 1L
+    while(i + 1 <= length(dots)) {
+      expr <- paste0(
+        expr,
+        deparse(value),
+        " == ",
+        deparse(dots[[i]]),
+        " ~ ",
+        deparse(dots[[i + 1]])
+      )
+      if (i + 1 < length(dots)) {
+        expr <- paste0(expr, ", ")
+      }
+      i <- i + 2L
+    }
+    if (!missing(otherwise)) {
+      expr <- paste0(expr, ", TRUE ~ ", deparse(otherwise))
+    }
+    expr <- paste0(expr, ")")
+    eval(substitute(str2lang(expr)))
+  },
   concat_ws = function(sep, ...) {
     fun <- str2lang("stringr::str_c")
     eval(substitute(quote(fun(..., sep = sep))))

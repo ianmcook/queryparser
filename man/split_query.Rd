@@ -4,10 +4,12 @@
 \alias{split_query}
 \title{Split a SQL query}
 \usage{
-split_query(query)
+split_query(query, tidyverse)
 }
 \arguments{
 \item{query}{a character string containing a SQL \code{SELECT} statement}
+
+\item{tidyverse}{for queryparser internal use only}
 }
 \value{
 A list object with named elements representing the clauses of the

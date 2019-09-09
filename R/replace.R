@@ -49,7 +49,7 @@ replace_special_functions <- function(expr_quotes_masked) {
 
 replace_special_keywords <- function(expr_quotes_masked) {
 
-  special_keywords <- c("CAST", "BETWEEN")
+  special_keywords <- c("CAST", "BETWEEN", "CASE")
 
   if (!grepl(paste0("\\b(", paste(special_keywords, collapse = "|"), ")\\b"), expr_quotes_masked, ignore.case = TRUE)) {
     return(expr_quotes_masked)
@@ -135,6 +135,98 @@ replace_special_keywords <- function(expr_quotes_masked) {
       repl_strings <- c(repl_strings[1], " yesbetween(", repl_strings[2], ",", repl_strings[4], ",", repl_strings[5], ")", repl_strings[6])
       expr_quotes_masked <- paste(repl_strings, collapse = "")
       length_after_replacement <- nchar(expr_quotes_masked)
+      char_offset <-  char_offset + length_before_replacement - length_after_replacement
+    }
+  }
+
+  # replace CASE
+  if (grepl(paste0("\\bCASE\\b"), expr_quotes_masked, ignore.case = TRUE)) {
+
+    # identify positions of "CASE ... END"
+    err <- "Found CASE without END following it"
+    case_end_pos <-
+      find_keyword_pairs(expr_quotes_masked, "case", "end", operands = FALSE, error_message = err)
+    nchar_bytes <- nchar(expr_quotes_masked, type = "bytes")
+
+    char_offset <- 0
+    for (pos in case_end_pos) {
+      first_pos <- pos[1L] + 1L - char_offset
+      last_pos <- pos[2L] + 3L - char_offset
+      case_expression_in <- substring(expr_quotes_masked, first_pos, last_pos)
+
+      err <- "In CASE expression, found WHEN without THEN following it"
+      when_then_pos <-
+        find_keyword_pairs(case_expression_in, "when", "then", operands = FALSE, error_message = err)
+
+      num_when_then <- length(when_then_pos)
+      if (num_when_then < 1) {
+        stop("Found CASE expression without any WHEN ... THEN inside it", call. = FALSE)
+      }
+
+      before_first_when <- trimws(substring(
+        case_expression_in,
+        5L,
+        when_then_pos[[1L]][1L]
+      ))
+      if (nchar(before_first_when) > 0) {
+        case_expression_out <- paste0("casevalue(value = ", before_first_when, ", ")
+      } else {
+        case_expression_out <- "casewhen("
+      }
+
+      after_last_then <- substring(
+        case_expression_in,
+        when_then_pos[[num_when_then]][2L] + 5L
+      )
+      if (grepl("\\belse\\b", after_last_then, ignore.case = TRUE)) {
+        else_end_pos <-
+          find_keyword_pairs(after_last_then, "else", "end", operands = FALSE)[[1]]
+      } else {
+        else_end_pos <- NULL
+      }
+      if (!is.null(else_end_pos)) {
+        final_then_operand_boundary <-
+          when_then_pos[[num_when_then]][2L] + 5L + else_end_pos[1L] - 1L
+     } else {
+       final_then_operand_boundary <- nchar(case_expression_in) - 3L
+      }
+
+      for (i in seq_along(when_then_pos)) {
+        if (i < length(when_then_pos)) {
+          end_then_pos <- when_then_pos[[i+1L]][1L] # - 1L?
+        } else {
+          end_then_pos <- final_then_operand_boundary
+        }
+        case_expression_out <- paste0(
+          case_expression_out,
+          ifelse(i == 1, "", ", "),
+          trimws(substr(case_expression_in, when_then_pos[[i]][1L] + 5L, when_then_pos[[i]][2L])),
+          ", ",
+          trimws(substr(case_expression_in, when_then_pos[[i]][2L] + 5L, end_then_pos))
+        )
+      }
+
+      if (!is.null(else_end_pos)) {
+        case_expression_out <- paste0(
+          case_expression_out,
+          ", otherwise = ",
+          trimws(substring(
+            after_last_then,
+            else_end_pos[1L] + 5L,
+            else_end_pos[2L]
+          ))
+        )
+      }
+
+      case_expression_out <- paste0(case_expression_out, ")")
+
+      length_before_replacement <- nchar(case_expression_in)
+      length_after_replacement <- nchar(case_expression_out)
+      expr_quotes_masked <- paste0(
+        substring(expr_quotes_masked, 1, first_pos - 1L),
+        case_expression_out,
+        substring(expr_quotes_masked, last_pos + 1L, nchar_bytes - char_offset)
+      )
       char_offset <-  char_offset + length_before_replacement - length_after_replacement
     }
   }
