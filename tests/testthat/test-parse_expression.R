@@ -70,15 +70,15 @@ test_that("parse_expression(tidy = TRUE) successfully parses test expression #5 
 
 test_that("parse_expression(tidy = FALSE) successfully parses test expression #7 with coalesce()", {
   expect_equal(
-    parse_expression("coalesce(w, x, y, z)", tidy = FALSE),
-    str2lang("if (!is.na(w)) w else if (!is.na(x)) x else if (!is.na(y)) y else if (!is.na(z)) z else NA")
+    parse_expression("coalesce(abs(w + 2), x, y, z)", tidy = FALSE),
+    str2lang("if (!is.na(abs(w + 2))) abs(w + 2) else if (!is.na(x)) x else if (!is.na(y)) y else if (!is.na(z)) z else NA")
   )
 })
 
-test_that("parse_expression(tidy = FALSE) successfully parses test expression #7 with coalesce()", {
+test_that("parse_expression(tidy = TRUE) successfully parses test expression #7 with coalesce()", {
   expect_equal(
-    parse_expression("coalesce(w, x, y, z)", tidy = TRUE),
-    str2lang("dplyr::coalesce(w, x, y, z)")
+    parse_expression("coalesce(abs(w + 2), x, y, z)", tidy = TRUE),
+    str2lang("dplyr::coalesce(abs(w + 2), x, y, z)")
   )
 })
 
@@ -163,6 +163,13 @@ test_that("parse_expression() successfully parses test expression #15 with IS DI
   expect_equal(
     parse_expression("x is distinct from y"),
     str2lang("ifelse(is.na(x) | is.na(y), is.na(x) != is.na(y), x != y)")
+  )
+})
+
+test_that("parse_expression(tidy = FALSE) stops when coalesce() has no arguments", {
+  expect_error(
+    parse_expression("coalesce()", tidy = FALSE),
+    "argument"
   )
 })
 

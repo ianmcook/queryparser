@@ -346,9 +346,9 @@ translations_indirect_base <- list(
       stop("At least one argument must be passed to coalesce()", call. = FALSE)
     }
     x <- dots[[1]]
-    expr <- paste0("if (!is.na(", x, ")) ", x, " ")
+    expr <- paste0("if (!is.na(", deparse(x), ")) ", deparse(x), " ")
     for (x in dots[-1]) {
-      expr <- paste0(expr, "else if (!is.na(", x, ")) ", x, " ")
+      expr <- paste0(expr, "else if (!is.na(", deparse(x), ")) ", deparse(x), " ")
     }
     expr <- paste0(expr, "else NA")
     eval(substitute(str2lang(expr)))
