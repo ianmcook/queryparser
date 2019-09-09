@@ -50,15 +50,18 @@ sql_words_expecting_right_operands <- c(
   "and", "or", "xor", "as", "from", "not",
   "in", "div", "between",
   "all", "any", "some",
-  "like", "ilike", "regexp", "iregexp", "rlike"
+  "like", "ilike", "regexp", "iregexp", "rlike",
+  "when", "then", "else"
 )
 
 sql_logical_operand_right_boundary_words <- c(
-  "and", "or", "xor"
+  "and", "or", "xor",
+  "when", "then", "else", "end"
 )
 
 sql_logical_operand_left_boundary_words <- c(
-  "and", "or", "xor", "not"
+  "and", "or", "xor", "not",
+  "case", "when", "then", "else"
 )
 
 sql_data_types_with_args <- c(
