@@ -49,7 +49,7 @@ squish_sql <- function(x) {
       }
       next;
     } else if (in_block_comment) {
-      if(identical(char, "*")) {
+      if (identical(char, "*")) {
         if (identical(readChar(rc_in, 1L), "/")) {
           in_block_comment <- FALSE
         } else {
