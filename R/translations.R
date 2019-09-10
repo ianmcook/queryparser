@@ -345,12 +345,11 @@ translations_indirect_base <- list(
     if (length(dots) < 1) {
       stop("At least one argument must be passed to coalesce()", call. = FALSE)
     }
-    x <- dots[[1]]
-    expr <- paste0("if (!is.na(", deparse(x), ")) ", deparse(x), " ")
-    for (x in dots[-1]) {
-      expr <- paste0(expr, "else if (!is.na(", deparse(x), ")) ", deparse(x), " ")
+    expr <- ""
+    for (x in dots) {
+      expr <- paste0(expr, "ifelse(!is.na(", deparse(x), "), ", deparse(x), ", ")
     }
-    expr <- paste0(expr, "else NA")
+    expr <- paste0(expr, "NA", paste0(rep(")", length(dots)), collapse = ""))
     eval(substitute(str2lang(expr)))
   },
   concat_ws = function(sep, ...) {

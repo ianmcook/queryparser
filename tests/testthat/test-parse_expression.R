@@ -71,7 +71,7 @@ test_that("parse_expression(tidy = TRUE) successfully parses test expression #5 
 test_that("parse_expression(tidy = FALSE) successfully parses test expression #7 with coalesce()", {
   expect_equal(
     parse_expression("coalesce(abs(w + 2), x, y, z)", tidy = FALSE),
-    str2lang("if (!is.na(abs(w + 2))) abs(w + 2) else if (!is.na(x)) x else if (!is.na(y)) y else if (!is.na(z)) z else NA")
+    str2lang("ifelse(!is.na(abs(w + 2)), abs(w + 2), ifelse(!is.na(x), x, ifelse(!is.na(y), y, ifelse(!is.na(z), z, NA))))")
   )
 })
 
