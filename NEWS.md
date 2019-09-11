@@ -3,7 +3,7 @@
 * `BETWEEN` expressions with quotes in operands translate correctly ([#13](https://github.com/ianmcook/queryparser/issues/13))
 * Line comments (`--`) and block comments (`/* */`) are removed from queries ([#14](https://github.com/ianmcook/queryparser/issues/14))
 * `coalesce()` translates correctly when `tidyverse = FALSE` ([#15](https://github.com/ianmcook/queryparser/issues/15), [#17](https://github.com/ianmcook/queryparser/issues/17))
-* `CASE` expressions translate when `tidyverse = TRUE` ([#16](https://github.com/ianmcook/queryparser/issues/16))
+* `CASE` expressions translate ([#16](https://github.com/ianmcook/queryparser/issues/16), [#18](https://github.com/ianmcook/queryparser/issues/18))
 * Continuous integration and coverage tests
 * Minor bugfixes and improvements
 
