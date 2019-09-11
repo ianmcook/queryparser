@@ -446,13 +446,6 @@ test_that("parse_query() stops when query does not begin with SELECT", {
   )
 })
 
-test_that("parse_query(tidyverse = FALSE) stops on CASE expression", {
-  expect_error(
-    parse_query("SELECT CASE WHEN x THEN 1 ELSE 2 END;", tidyverse = FALSE),
-    "CASE"
-  )
-})
-
 test_that("parse_query() stops on OVER clauses", {
   expect_error(
     parse_query("SELECT SUM(x) OVER(PARTITION BY y) FROM z"),

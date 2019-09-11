@@ -123,13 +123,6 @@ split_query <- function(query, tidyverse) {
     if (!in_quotes && !in_word) {
 
       # identify unsupported syntax
-      if (!missing(tidyverse) && !tidyverse && clause_starts_here(rc, "case")) {
-        stop(
-          "CASE expressions are not supported ",
-          "when tidyverse = FALSE",
-          call. = FALSE
-        )
-      }
       if (clause_starts_here(rc, "over")) {
         stop("OVER clauses are not supported", call. = FALSE)
       }

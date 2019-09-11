@@ -340,6 +340,55 @@ translations_indirect_base <- list(
     func <- str2lang(func_name)
     eval(substitute(quote(func(x))))
   },
+  casewhen = function(... , otherwise) {
+    dots <- eval(substitute(alist(...)))
+    otherwise <- eval(substitute(quote(otherwise)))
+    expr <- ""
+    i <- 1L
+    while(i + 1 <= length(dots)) {
+      expr <- paste0(
+        expr,
+        "ifelse(",
+        deparse(dots[[i]]),
+        ", ",
+        deparse(dots[[i + 1]]),
+        ", "
+      )
+      i <- i + 2L
+    }
+    if (missing(otherwise)) {
+      expr <- paste0(expr, "NA", paste0(rep(")", length(dots) %/% 2), collapse = ""))
+    } else {
+      expr <- paste0(expr, deparse(otherwise), paste0(rep(")", length(dots) %/% 2), collapse = ""))
+    }
+    eval(substitute(str2lang(expr)))
+  },
+  casevalue = function(value, ... , otherwise) {
+    value <- eval(substitute(quote(value)))
+    dots <- eval(substitute(alist(...)))
+    otherwise <- eval(substitute(quote(otherwise)))
+    expr <- ""
+    i <- 1L
+    while(i + 1 <= length(dots)) {
+      expr <- paste0(
+        expr,
+        "ifelse(",
+        deparse(value),
+        " == ",
+        deparse(dots[[i]]),
+        ", ",
+        deparse(dots[[i + 1]]),
+        ", "
+      )
+      i <- i + 2L
+    }
+    if (missing(otherwise)) {
+      expr <- paste0(expr, "NA", paste0(rep(")", length(dots) %/% 2), collapse = ""))
+    } else {
+      expr <- paste0(expr, deparse(otherwise), paste0(rep(")", length(dots) %/% 2), collapse = ""))
+    }
+    eval(substitute(str2lang(expr)))
+  },
   coalesce = function(...) {
     dots <- eval(substitute(alist(...)))
     if (length(dots) < 1) {

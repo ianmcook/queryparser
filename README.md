@@ -201,19 +201,19 @@ parse_query("SELECT x FROM y WHERE system('rm -rf /')")
 **queryparser** currently has the following known limitations:
 
   - Some SQL expressions will translate only when `tidyverse` is set to
-    `TRUE`. This includes `COUNT(DISTINCT )` expressions with multiple
-    arguments, and `CASE` expressions.
+    `TRUE`. An example of this is `COUNT(DISTINCT )` expressions with
+    multiple arguments.
   - When logical operators (such as `IS NULL`) have unparenthesized
     expressions as their operands, R will interpret the resulting code
     using a different order of operations than a SQL engine would. When
     using an expression as the operand to a logical operator, always
     enclose the expression in parentheses.
-  - SQL expressions that use `CASE` or `coalesce()` with `NULL`s in the
-    arguments can return expressions that throw data type errors when
-    evaluated. This is because `NULL` translates to `NA`, which is by
-    default a logical constant (not a numeric, integer, or character
-    constant). To work around this, cast `NULL` to the expected data
-    type in the SQL expression.
+  - When `tidyverse` is set to `TRUE`, SQL expressions that use `CASE`
+    or `coalesce()` with `NULL`s in the arguments can return expressions
+    that throw data type errors when evaluated. This is because `NULL`
+    translates to `NA`, which is by default a logical constant (not a
+    numeric, integer, or character constant). To work around this, cast
+    `NULL` to the expected data type in the SQL expression.
   - The error messages that occur when attempting to parse invalid or
     unrecognized SQL are often non-informative.
   - When one or more individual expressions within a `SELECT` statement
