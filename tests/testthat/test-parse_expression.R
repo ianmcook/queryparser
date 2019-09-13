@@ -148,21 +148,21 @@ test_that("parse_expression(tidy = TRUE) successfully parses test expression #13
 test_that("parse_expression() successfully parses test expression #13 with IS NOT DISTINCT FROM", {
   expect_equal(
     parse_expression("x is not distinct from y"),
-    str2lang("ifelse(is.na(x) | is.na(y), is.na(x) == is.na(y), x == y)")
+    str2lang("ifelse(is.na(x) | is.na(y), is.na(x) & is.na(y), x == y)")
   )
 })
 
 test_that("parse_expression() successfully parses test expression #14 with <=>", {
   expect_equal(
     parse_expression("x <=> y"),
-    str2lang("ifelse(is.na(x) | is.na(y), is.na(x) == is.na(y), x == y)")
+    str2lang("ifelse(is.na(x) | is.na(y), is.na(x) & is.na(y), x == y)")
   )
 })
 
 test_that("parse_expression() successfully parses test expression #15 with IS DISTINCT FROM", {
   expect_equal(
     parse_expression("x is distinct from y"),
-    str2lang("ifelse(is.na(x) | is.na(y), is.na(x) != is.na(y), x != y)")
+    str2lang("ifelse(is.na(x) | is.na(y), xor(is.na(x), is.na(y)), x != y)")
   )
 })
 

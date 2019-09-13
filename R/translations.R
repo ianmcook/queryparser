@@ -247,17 +247,17 @@ translations_indirect_generic <- list(
   `%<=>%` = function(x, y) {
     # x is not distinct from y
     # is equivalent to
-    # if (x IS NULL OR y IS NULL, (x IS NULL) = (y IS NULL), x = y)
+    # if (x IS NULL OR y IS NULL, x IS NULL AND y IS NULL, x = y)
     eval(substitute(quote(
-      ifelse(is.na(x) | is.na(y), is.na(x) == is.na(y), x == y)
+      ifelse(is.na(x) | is.na(y), is.na(x) & is.na(y), x == y)
     )))
   },
   `%<!=>%` = function(x, y) {
     # x is distinct from y
     # is equivalent to
-    # if (x IS NULL OR y IS NULL, x IS NULL != y IS NULL, x != y)
+    # if (x IS NULL OR y IS NULL, x IS NULL XOR y IS NULL, x != y)
     eval(substitute(quote(
-      ifelse(is.na(x) | is.na(y), is.na(x) != is.na(y), x != y)
+      ifelse(is.na(x) | is.na(y), xor(is.na(x), is.na(y)), x != y)
     )))
   },
   degrees = function(rad) {
