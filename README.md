@@ -18,6 +18,9 @@ coverage](https://codecov.io/gh/ianmcook/queryparser/branch/master/graph/badge.s
 **queryparser** translates SQL queries into lists of unevaluated R
 expressions.
 
+| ⚠️ Most R users should not directly use queryparser. Instead, use it through [tidyquery](https://github.com/ianmcook/tidyquery).
+| --- |
+
 ## Installation
 
 Install the released version of **queryparser** from
