@@ -108,7 +108,7 @@ parse_order_by <- function(exprs, tidyverse, secure = TRUE) {
   exprs <- sapply(exprs, parse_expression, tidyverse = tidyverse, secure = secure, USE.NAMES = FALSE)
 
   if (!tidyverse) {
-    attr(exprs, "descreasing") <- descending_cols
+    attr(exprs, "decreasing") <- descending_cols
   }
 
   exprs

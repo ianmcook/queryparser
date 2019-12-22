@@ -51,7 +51,7 @@ test_that("parse_query(tidy = FALSE) works on 'flights' example query", {
       where = list(quote((distance >= 200 & distance <= 300) &
       !is.na(air_time))), group_by = list(quote(origin), quote(dest)),
       having = list(quote(num_flts > 3000)), order_by = structure(list(
-      quote(num_flts), quote(avg_delay)), descreasing = c(TRUE,
+      quote(num_flts), quote(avg_delay)), decreasing = c(TRUE,
       TRUE), aggregate = c(FALSE, FALSE)), limit = list(100L)), aggregate = TRUE)
   )
 })
