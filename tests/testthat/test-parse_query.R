@@ -510,10 +510,39 @@ test_that("parse_query() stops on repated clause", {
   )
 })
 
-
 test_that("parse_query() stops on clauses in incorrect order", {
   expect_error(
     parse_query("SELECT x GROUP BY z FROM y"),
     "order"
+  )
+})
+
+test_that("parse_query() removes table name prefixes in single-table queries", {
+  expect_equal(
+    {
+      query <- "SELECT flights.year, flights.month, flights.day
+        FROM flights
+        WHERE flights.arr_delay <= 0
+        ORDER BY flights.carrier"
+      parse_query(query)
+    },
+    list(select = list(quote(year), quote(month), quote(day)), from = list(quote(flights)),
+      where = list(quote(arr_delay <= 0)), order_by = structure(list(quote(carrier)),
+      decreasing = FALSE))
+  )
+})
+
+test_that("parse_query() removes table alias prefixes in single-table queries", {
+  expect_equal(
+    {
+      query <- "SELECT f.year, f.month, f.day
+        FROM flights f
+        WHERE f.arr_delay <= 0
+        ORDER BY f.carrier"
+      parse_query(query)
+    },
+    list(select = list(quote(year), quote(month), quote(day)), from = list(f = quote(flights)),
+      where = list(quote(arr_delay <= 0)), order_by = structure(list(quote(carrier)),
+      decreasing = FALSE))
   )
 })

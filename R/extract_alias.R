@@ -28,6 +28,9 @@
 #' @details The expression must not contain any unquoted whitespace characters
 #'   except spaces, and there must be no unquoted runs or two or more spaces.
 #'   Use \code{\link{squish_sql}} to satisfy this whitespace requirement.
+#'
+#'   queryparser also uses this function internally to extract table aliases
+#'   used in the \code{FROM} clause.
 #' @export
 extract_alias <- function(expr) {
   if (!identical(typeof(expr), "character") || !identical(length(expr), 1L)) {

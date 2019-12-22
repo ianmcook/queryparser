@@ -22,6 +22,8 @@ parse_from <- function(exprs, tidyverse, secure = TRUE) {
   if (is.null(exprs)) return(NULL)
   expr <- exprs[[1]]
 
+  expr <- extract_alias(expr)
+  table_alias <- names(expr)
   expr <- parse_expression(expr, tidyverse = tidyverse, secure = secure)
 
   expr_parts <- strsplit(deparse(expr), "::")[[1]]
@@ -42,7 +44,9 @@ parse_from <- function(exprs, tidyverse, secure = TRUE) {
     stop("Invalid name in FROM clause", call. = FALSE)
   }
 
-  list(expr)
+  exprs <- list(expr)
+  names(exprs) <- table_alias
+  exprs
 }
 
 parse_where <- function(exprs, tidyverse, secure = TRUE) {

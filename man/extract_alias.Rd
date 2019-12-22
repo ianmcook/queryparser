@@ -23,6 +23,9 @@ Extracts the column alias assignment from an expression used in
 The expression must not contain any unquoted whitespace characters
   except spaces, and there must be no unquoted runs or two or more spaces.
   Use \code{\link{squish_sql}} to satisfy this whitespace requirement.
+
+  queryparser also uses this function internally to extract table aliases
+  used in the \code{FROM} clause.
 }
 \examples{
 expr <- "round(AVG(arr_delay)) AS avg_delay"

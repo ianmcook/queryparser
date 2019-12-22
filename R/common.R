@@ -43,7 +43,7 @@ r_reserved_words <- c(
 sql_characters_expecting_right_operands <- c(
   ">", "<", "=", "&", "|",
   "+", "-", "*", "/", "%",
-  "^", "!", "~"
+  "^", "!", "~", ":"
 )
 
 sql_words_expecting_right_operands <- c(

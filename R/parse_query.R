@@ -174,5 +174,17 @@ parse_query <- function(query, tidyverse = FALSE, secure = TRUE) {
 
   }
 
+  if (length(tree$from) == 1) {
+    prefix <- names(tree$from)
+    if (is.null(prefix)) {
+      prefix <- tree$from[[1]]
+    }
+    tree$select <- unqualify_column_names_in_clause(tree$select, prefix)
+    tree$where <- unqualify_column_names_in_clause(tree$where, prefix)
+    tree$group_by <- unqualify_column_names_in_clause(tree$group_by, prefix)
+    tree$having <- unqualify_column_names_in_clause(tree$having, prefix)
+    tree$order_by <- unqualify_column_names_in_clause(tree$order_by, prefix)
+  }
+
   tree
 }
