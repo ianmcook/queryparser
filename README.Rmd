@@ -23,6 +23,9 @@ knitr::opts_chunk$set(
 
 **queryparser** translates SQL queries into lists of unevaluated R expressions.
 
+| ⚠️ Most R users should not directly use queryparser. Instead, use it through [tidyquery](https://github.com/ianmcook/tidyquery).
+| --- |
+
 ## Installation
 
 Install the released version of **queryparser** from [CRAN](https://CRAN.R-project.org/package=queryparser) with:
