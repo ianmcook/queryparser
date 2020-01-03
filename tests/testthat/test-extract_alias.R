@@ -33,7 +33,22 @@ test_that("column aliases extract as expected", {
     extract_alias("x IS NULL") == "x IS NULL",
     extract_alias("NULL") == "NULL",
     extract_alias("cast(1 as string)l") == c(l = "cast(1 as string)"),
-    extract_alias("x between y and z l") == c(l = "x between y and z")
+    extract_alias("x between y and z l") == c(l = "x between y and z"),
+    extract_alias("w.x") == "w.x",
+    extract_alias("`w.x`") == "`w.x`",
+    extract_alias("'w.x'") == "'w.x'",
+    extract_alias("\"w.x\"") == "\"w.x\"",
+    extract_alias("`w`.x") == "`w`.x",
+    extract_alias("'w'.x") == "'w'.x",
+    extract_alias("\"w\".x") == "\"w\".x",
+    extract_alias("`w`.`x`") == "`w`.`x`",
+    extract_alias("'w'.'x'") == "'w'.'x'",
+    extract_alias("\"w\".\"x\"") == "\"w\".\"x\"",
+    extract_alias("w.`x`") == "w.`x`",
+    extract_alias("w.'x'") == "w.'x'",
+    extract_alias("w.\"x\"") == "w.\"x\"",
+    extract_alias("`w`.'x'") == "`w`.'x'",
+    extract_alias("'w'.`x`") == "'w'.`x`"
   ))
 })
 

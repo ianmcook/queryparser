@@ -143,7 +143,9 @@ extract_alias <- function(expr) {
         advance_positions <- 0
       }
       look_for_as_keyword <- FALSE
-      look_for_char_before_alias <- TRUE
+      if (!identical(char, ".")) {
+        look_for_char_before_alias <- TRUE
+      }
     }
 
     if (quote_at_end && was_in_quotes && !in_quotes) {
@@ -154,7 +156,7 @@ extract_alias <- function(expr) {
 
     if (possible_word_at_end && is_non_word_character(char)) {
       next_char <- readChar(rc, 1L)
-      if (is_word_start_character(next_char)) {
+      if (is_word_start_character(next_char) && !identical(next_char, ".")) {
         seek(rc, -1 * nchar(next_char, type = "bytes"), "current")
         column_alias <- readChar(rc, len - pos - 1L, useBytes = TRUE)
         if (char == " ") {
