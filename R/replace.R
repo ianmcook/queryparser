@@ -315,3 +315,29 @@ replace_star <- function(expr_quotes_masked, tidyverse) {
     ignore.case = TRUE
   )
 }
+
+replace_qualified_names <- function(expr_quotes_masked) {
+  if (!grepl(paste0("\\.", quote_char_regex, MASKING_CHARACTER), expr_quotes_masked) &&
+      !grepl(paste0(MASKING_CHARACTER, quote_char_regex, "\\."), expr_quotes_masked)) {
+    return(expr_quotes_masked)
+  }
+  # a.`b` --> `a.b`
+  expr_quotes_masked <- gsub(
+    paste0("\\b(",word_char_regex,"+?)\\.(",quote_char_regex,")(",MASKING_CHARACTER,"+?)(",quote_char_regex,")\\b"),
+    "\\2\\1.\\3\\4",
+    expr_quotes_masked
+  )
+  # `a`.b --> `a.b`
+  expr_quotes_masked <- gsub(
+    paste0("\\b(",quote_char_regex,")(",MASKING_CHARACTER,"+?)(",quote_char_regex,")\\.(",word_char_regex,"+?)\\b"),
+    "\\1\\2.\\4\\3",
+    expr_quotes_masked
+  )
+  # `a`.`b` --> `a.b`
+  expr_quotes_masked <- gsub(
+    paste0("\\b(",quote_char_regex,")(",MASKING_CHARACTER,"+?)(",quote_char_regex,")\\.(",quote_char_regex,")(",MASKING_CHARACTER,"+?)(",quote_char_regex,")\\b"),
+    "\\1\\2.\\5\\1",
+    expr_quotes_masked
+  )
+  expr_quotes_masked
+}

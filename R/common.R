@@ -19,6 +19,8 @@ MASKING_CHARACTER <- "\U001"
 
 quote_chars <- c("\"", "'", "`")
 
+quote_char_regex <- "[\"'`']"
+
 ws_regex <- "[ \t\r\n]"
 
 word_char_regex <- "[[:alnum:]_.]"
