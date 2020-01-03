@@ -15,9 +15,6 @@
 #' @include common.R translations.R
 NULL
 
-# prevent this kind of horror:
-#parse_query("SELECT system('rm -rf /')")
-
 secure_expression <- function(expr, tidyverse) {
   stop_if_bad_funs(bad_funs(expr, tidyverse))
 }
