@@ -21,5 +21,5 @@ if (!exists("str2lang")) {
 
 # to avoid problems with expressions longer than about 60 characters
 deparse <- function(expr, width.cutoff = 500, ...) {
-  base::deparse(expr, width.cutoff, ...)
+  paste0(trimws(base::deparse(expr, width.cutoff, ...)), collapse = " ")
 }

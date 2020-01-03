@@ -19,9 +19,13 @@ MASKING_CHARACTER <- "\U001"
 
 quote_chars <- c("\"", "'", "`")
 
+quote_char_regex <- "[\"'`']"
+
 ws_regex <- "[ \t\r\n]"
 
 word_char_regex <- "[[:alnum:]_.]"
+
+word_char_regex_with_colon <- "[[:alnum:]_.:]"
 
 non_word_char_regex <- "[^[:alnum:]_.]"
 
@@ -43,7 +47,7 @@ r_reserved_words <- c(
 sql_characters_expecting_right_operands <- c(
   ">", "<", "=", "&", "|",
   "+", "-", "*", "/", "%",
-  "^", "!", "~"
+  "^", "!", "~", ":"
 )
 
 sql_words_expecting_right_operands <- c(
@@ -66,6 +70,23 @@ sql_logical_operand_left_boundary_words <- c(
 
 sql_data_types_with_args <- c(
   "decimal", "char", "varchar"
+)
+
+sql_join_keywords <- c(
+  "on", "using",
+  "join",
+  "inner", "outer", "anti", "semi", "cross",
+  "left", "right", "full",
+  "natural"
+)
+
+sql_join_conditions_allowed_characters <- c(
+  "(", ")",
+  sql_characters_expecting_right_operands
+)
+
+sql_join_conditions_allowed_logical_operators <- c(
+  "not", "and", "or", "xor"
 )
 
 sql_reserved_words <- c(
@@ -286,8 +307,12 @@ is_word_start_character <- function(char, useBytes = FALSE) {
   grepl(word_char_regex, char, useBytes = useBytes) && !grepl(digit_regex, char, useBytes = useBytes)
 }
 
-is_word_character <- function(char, useBytes = FALSE) {
-  grepl(word_char_regex, char, useBytes = useBytes)
+is_word_character <- function(char, useBytes = FALSE, allow_colons_in_word = FALSE) {
+  if (allow_colons_in_word) {
+    grepl(word_char_regex_with_colon, char, useBytes = useBytes)
+  } else {
+    grepl(word_char_regex, char, useBytes = useBytes)
+  }
 }
 
 is_non_word_character <- function(char, useBytes = FALSE) {
@@ -487,7 +512,7 @@ find_beginning_of_boolean_operand_before <- function(rc, in_parens) {
   return(0L)
 }
 
-get_next_character_word_or_number <- function(rc, len) {
+get_next_character_word_or_number <- function(rc, len, allow_colons_in_word = FALSE) {
   # get the next non-space character
   # or if it's a word character or digit, then get the whole word or number
   # or if there is nothing after, then return character(0)
@@ -513,8 +538,8 @@ get_next_character_word_or_number <- function(rc, len) {
     # if it's a word character or digit, keep going
     # until there's a non-word character or non-digit,
     # and return the whole word or number
-    if (is_word_character(char)) { # this matches digits
-      while(is_word_character(char)) { # this matches digits
+    if (is_word_character(char, allow_colons_in_word)) { # this matches digits
+      while(is_word_character(char, allow_colons_in_word)) { # this matches digits
         out_str <- paste0(out_str, char)
         char <- readChar(rc, 1L)
       }
@@ -528,7 +553,7 @@ get_next_character_word_or_number <- function(rc, len) {
   out_str
 }
 
-get_previous_character_word_or_number <- function(rc) {
+get_previous_character_word_or_number <- function(rc, allow_colons_in_word = FALSE) {
   # get the previous non-space character
   # or if it's a word character or digit, then get the whole word or number
   # or if there is nothing before, then return character(0)
@@ -555,8 +580,8 @@ get_previous_character_word_or_number <- function(rc) {
     # if it's a word character or digit, keep going
     # until there's a non-word character or non-digit,
     # and return the whole word or number
-    if (is_word_character(char)) { # this matches digits
-      while(is_word_character(char)) { # this matches digits
+    if (is_word_character(char, allow_colons_in_word)) { # this matches digits
+      while(is_word_character(char, allow_colons_in_word)) { # this matches digits
         out_str <- paste0(char, out_str)
         at_start <- tryCatch({
           seek(rc, -2L, "current")
@@ -615,6 +640,19 @@ ends_with_operator_expecting_right_operand <- function(expr, except = c()) {
   words_regex <- paste0("(", paste(setdiff(sql_words_expecting_right_operands, except), collapse = "|"), ")")
   if (grepl(paste0("\\b",words_regex, "$"), expr, ignore.case = TRUE)) return(TRUE)
   FALSE
+}
+
+is_join_keyword <- function(expr) {
+  isTRUE(tolower(expr) %in% sql_join_keywords)
+}
+
+is_not_join_condition_operator <- function(expr) {
+  !isTRUE(
+    tolower(expr) %in% c(
+      sql_join_conditions_allowed_characters,
+      sql_join_conditions_allowed_logical_operators
+    )
+  )
 }
 
 is_one_valid_r_name <- function(x) {

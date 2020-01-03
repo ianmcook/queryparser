@@ -21,28 +21,14 @@ parse_select <- function(exprs, tidyverse, secure = TRUE) {
 parse_from <- function(exprs, tidyverse, secure = TRUE) {
   if (is.null(exprs)) return(NULL)
   expr <- exprs[[1]]
-
-  expr <- parse_expression(expr, tidyverse = tidyverse, secure = secure)
-
-  expr_parts <- strsplit(deparse(expr), "::")[[1]]
-
-  if (length(expr_parts) == 2) {
-    if (!all(vapply(
-      expr_parts,
-      is_one_valid_r_name,
-      TRUE
-    ))) {
-      stop("Invalid name in FROM clause", call. = FALSE)
-    }
-  } else if (length(expr_parts) == 1) {
-    if (!is_one_valid_r_name(expr_parts)) {
-      stop("Invalid name in FROM clause", call. = FALSE)
-    }
+  if (grepl(" join |\\,", expr, ignore.case = TRUE)) {
+    # this might be a join query
+    from <- parse_join(expr, tidyverse, secure)
   } else {
-    stop("Invalid name in FROM clause", call. = FALSE)
+    # this is not a join query
+    from <- parse_table_reference(expr, tidyverse, secure)
   }
-
-  list(expr)
+  from
 }
 
 parse_where <- function(exprs, tidyverse, secure = TRUE) {
@@ -92,7 +78,7 @@ parse_order_by <- function(exprs, tidyverse, secure = TRUE) {
 
   suppressWarnings(int_positions <- as.integer(exprs))
   if (any(!is.na(int_positions))) {
-    stop("Positional column references in the ORDER BY clause are not supported")
+    stop("Positional column references in the ORDER BY clause are not supported", call. = FALSE)
   }
 
   if (tidyverse) {
@@ -104,7 +90,7 @@ parse_order_by <- function(exprs, tidyverse, secure = TRUE) {
   exprs <- sapply(exprs, parse_expression, tidyverse = tidyverse, secure = secure, USE.NAMES = FALSE)
 
   if (!tidyverse) {
-    attr(exprs, "descreasing") <- descending_cols
+    attr(exprs, "decreasing") <- descending_cols
   }
 
   exprs

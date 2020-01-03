@@ -18,8 +18,8 @@ coverage](https://codecov.io/gh/ianmcook/queryparser/branch/master/graph/badge.s
 **queryparser** translates SQL queries into lists of unevaluated R
 expressions.
 
-| ⚠️ Most R users should not directly use queryparser. Instead, use it through [tidyquery](https://github.com/ianmcook/tidyquery).
-| --- |
+| ⚠️ Most R users should not directly use queryparser. Instead, use it through [tidyquery](https://github.com/ianmcook/tidyquery). |
+| -------------------------------------------------------------------------------------------------------------------------------- |
 
 ## Installation
 
@@ -131,7 +131,7 @@ parse_query(
 #> $order_by[[2]]
 #> avg_delay
 #> 
-#> attr(,"descreasing")
+#> attr(,"decreasing")
 #> [1] TRUE TRUE
 #> attr(,"aggregate")
 #> [1] FALSE FALSE
@@ -194,9 +194,9 @@ parse_query("SELECT x FROM y WHERE system('rm -rf /')")
 
 **queryparser** does not currently support:
 
-  - Joins
   - Subqueries
   - Unions
+  - SQL-89-style (implicit) join notation
   - The `WITH` clause (common table expressions)
   - `OVER` expressions (window or analytic functions)
   - Some SQL functions and operators

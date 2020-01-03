@@ -1,7 +1,7 @@
 Package: queryparser
 Type: Package
 Title: Translate 'SQL' Queries into 'R' Expressions
-Version: 0.1.1.9002
+Version: 0.1.1.9004
 Authors@R: c(
     person("Ian", "Cook", email = "ian@cloudera.com", role = c("aut", "cre")),
     person(family = "Cloudera", role = c("cph"))
@@ -13,7 +13,7 @@ BugReports: https://github.com/ianmcook/queryparser/issues
 NeedsCompilation: no
 License: Apache License 2.0
 Encoding: UTF-8
-RoxygenNote: 6.1.1
+RoxygenNote: 7.0.2
 Collate: 
     'compat.R'
     'agg_scalar.R'
@@ -22,15 +22,18 @@ Collate:
     'extract_alias.R'
     'parse_clauses.R'
     'parse_expression.R'
+    'parse_join.R'
     'translations.R'
     'process_translations.R'
     'parse_query.R'
+    'parse_table_reference.R'
     'replace.R'
     'secure.R'
     'split_query.R'
     'squish_sql.R'
     'translate.R'
     'unpipe.R'
+    'unqualify.R'
     'wrap_bangs.R'
 Suggests: 
     testthat (>= 2.1.0),
