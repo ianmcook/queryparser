@@ -1,7 +1,7 @@
 Package: queryparser
 Type: Package
 Title: Translate 'SQL' Queries into 'R' Expressions
-Version: 0.1.1.9003
+Version: 0.1.1.9004
 Authors@R: c(
     person("Ian", "Cook", email = "ian@cloudera.com", role = c("aut", "cre")),
     person(family = "Cloudera", role = c("cph"))
@@ -22,9 +22,11 @@ Collate:
     'extract_alias.R'
     'parse_clauses.R'
     'parse_expression.R'
+    'parse_join.R'
     'translations.R'
     'process_translations.R'
     'parse_query.R'
+    'parse_table_reference.R'
     'replace.R'
     'secure.R'
     'split_query.R'

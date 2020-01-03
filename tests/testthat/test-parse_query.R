@@ -453,14 +453,6 @@ test_that("parse_query() stops on OVER clauses", {
   )
 })
 
-
-test_that("parse_query() stops on join", {
-  expect_error(
-    parse_query("SELECT x FROM y JOIN z ON y.a = z.b"),
-    "Joins"
-  )
-})
-
 test_that("parse_query() stops on UNION", {
   expect_error(
     parse_query("SELECT * FROM x UNION SELECT * FROM y"),

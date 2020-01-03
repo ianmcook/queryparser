@@ -82,9 +82,9 @@ parse_query("SELECT x FROM y WHERE system('rm -rf /')")
 
 **queryparser** does not currently support:
 
-- Joins
 - Subqueries
 - Unions
+- SQL-89-style (implicit) join notation
 - The `WITH` clause (common table expressions)
 - `OVER` expressions (window or analytic functions)
 - Some SQL functions and operators

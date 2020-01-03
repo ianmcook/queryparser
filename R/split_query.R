@@ -138,9 +138,6 @@ split_query <- function(query, tidyverse) {
     if (!in_quotes && in_parens <= 0 && !in_word) {
 
       # identify unsupported syntax
-      if (clause_starts_here(rc, "join")) {
-        stop("Joins are not supported", call. = FALSE)
-      }
       if (clause_starts_here(rc, "union")) {
         stop("The UNION operator is not supported", call. = FALSE)
       }
