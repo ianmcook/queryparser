@@ -131,7 +131,7 @@ parse_query(
 #> $order_by[[2]]
 #> avg_delay
 #> 
-#> attr(,"descreasing")
+#> attr(,"decreasing")
 #> [1] TRUE TRUE
 #> attr(,"aggregate")
 #> [1] FALSE FALSE

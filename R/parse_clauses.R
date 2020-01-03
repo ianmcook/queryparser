@@ -78,7 +78,7 @@ parse_order_by <- function(exprs, tidyverse, secure = TRUE) {
 
   suppressWarnings(int_positions <- as.integer(exprs))
   if (any(!is.na(int_positions))) {
-    stop("Positional column references in the ORDER BY clause are not supported")
+    stop("Positional column references in the ORDER BY clause are not supported", call. = FALSE)
   }
 
   if (tidyverse) {
