@@ -1,3 +1,34 @@
+test_that("parse_query(tidy = TRUE) works on 'flights' and 'planes' left outer join example query", {
+  expect_equal(
+    {
+      query <- "SELECT origin, dest,
+          round(AVG(distance)) AS dist,
+          round(COUNT(*)/10) AS flights_per_year,
+          round(SUM(seats)/10) AS seats_per_year,
+          round(AVG(arr_delay)) AS avg_arr_delay
+        FROM fly.flights f LEFT OUTER JOIN fly.planes p
+          ON f.tailnum = p.tailnum
+        WHERE distance BETWEEN 300 AND 400
+        GROUP BY origin, dest
+        HAVING flights_per_year > 5000
+        ORDER BY seats_per_year DESC
+        LIMIT 6;"
+      parse_query(query, tidy = TRUE)
+    },
+    structure(list(select = structure(list(quote(origin), quote(dest),
+      dist = quote(round(mean(distance, na.rm = TRUE))), flights_per_year = quote(round(dplyr::n()/10)),
+      seats_per_year = quote(round(sum(seats, na.rm = TRUE)/10)),
+      avg_arr_delay = quote(round(mean(arr_delay, na.rm = TRUE)))),
+      aggregate = c(FALSE, FALSE, dist = TRUE, flights_per_year = TRUE,
+      seats_per_year = TRUE, avg_arr_delay = TRUE)), from = structure(list(f = quote(fly.flights),
+      p = quote(fly.planes)), join_types = "left outer join", join_conditions = list(quote(f.tailnum ==
+      p.tailnum))), where = list(quote(dplyr::between(distance,
+      300, 400))), group_by = list(quote(origin), quote(dest)),
+      having = list(quote(flights_per_year > 5000)), order_by = structure(list(quote(dplyr::desc(seats_per_year))),
+      aggregate = FALSE), limit = list(6)), aggregate = TRUE)
+  )
+})
+
 test_that("parse_query() works on SQL-92-style (explicit) join with ON", {
   expect_equal(
     parse_query("SELECT y.w, z.x FROM y JOIN z ON y.a = z.b"),
