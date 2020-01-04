@@ -706,6 +706,9 @@ check_using_expressions <- function(exprs) {
 }
 
 check_on_expression <- function(expr) {
+  if (typeof(expr) != "language") {
+    stop("Malformed join conditions", call. = FALSE)
+  }
   if (length(setdiff(all_funs(expr), c("&", "=="))) > 0) {
     stop("Only equality comparisons combined with AND are allowed after ON in join conditions", call. = FALSE)
   }
