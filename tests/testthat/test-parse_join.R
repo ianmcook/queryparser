@@ -27,7 +27,7 @@ test_that("parse_query() works on SQL-92-style (explicit) join with USING", {
 
 test_that("parse_query() works on join with aliases", {
   expect_equal(
-    parse_query("SELECT y.a, z.`b`, `w`.c FROM why AS y LEFT OUTER JOIN zee 'z' ON y.a = z.b INNER JOIN dub w USING (c,d,e)"),
+    parse_query("SELECT y.a, z.`b`, `w`.c FROM why AS y LEFT OUTER JOIN zee 'z' ON y.a = z.b INNER JOIN dub w USING(c,d,e)"),
     list(select = list(quote(y.a), quote(z.b), quote(w.c)), from = structure(list(y = quote(why),
       z = quote(zee), w = quote(dub)), join_types = c("left outer join",
       "inner join"), join_conditions = list(quote(y.a == z.b),
@@ -231,6 +231,14 @@ test_that("parse_query() works on LEFT JOIN", {
   )
 })
 
+test_that("parse_query() works on NATURAL RIGHT JOIN", {
+  expect_equal(
+    parse_query("SELECT a, b FROM x NATURAL RIGHT JOIN y"),
+    list(select = list(quote(a), quote(b)), from = structure(list(quote(x),
+      quote(y)), join_types = "natural right outer join", join_conditions = NA))
+  )
+})
+
 test_that("parse_query() works on RIGHT JOIN", {
   expect_equal(
     parse_query("SELECT a, b FROM x RIGHT JOIN y ON x.k = y.k"),
@@ -260,6 +268,27 @@ test_that("parse_query() works on JOIN with no modifying keywords", {
     parse_query("SELECT a, b FROM x JOIN y ON x.k = y.k"),
     list(select = list(quote(a), quote(b)), from = structure(list(quote(x),
       quote(y)), join_types = "inner join", join_conditions = list(quote(x.k ==                                                                                                                                       y.k))))
+  )
+})
+
+test_that("parse_query() stops on LEFT INNER JOIN", {
+  expect_error(
+    parse_query("SELECT a, b FROM x LEFT INNER JOIN y ON x.k = y.k"),
+    "Invalid"
+  )
+})
+
+test_that("parse_query() stops on INNER OUTER JOIN", {
+  expect_error(
+    parse_query("SELECT a, b FROM x INNER OUTER JOIN y ON x.k = y.k"),
+    "Invalid"
+  )
+})
+
+test_that("parse_query() stops on OUTER INNER JOIN", {
+  expect_error(
+    parse_query("SELECT a, b FROM x OUTER INNER JOIN y ON x.k = y.k"),
+    "Invalid"
   )
 })
 
@@ -326,6 +355,13 @@ test_that("parse_query() stops on join with required conditions missing", {
   )
 })
 
+test_that("parse_query() stops on three-table join with required conditions missing", {
+  expect_error(
+    parse_query("SELECT a, b, c FROM x JOIN y JOIN z USING (t)"),
+    "conditions"
+  )
+})
+
 test_that("parse_query() stops on NATURAL JOIN with ON clause", {
   expect_error(
     parse_query("SELECT a, b FROM x NATURAL JOIN y ON x.k = y.k"),
@@ -337,5 +373,55 @@ test_that("parse_query() stops on NATURAL JOIN with USING clause", {
   expect_error(
     parse_query("SELECT a, b FROM x NATURAL JOIN y USING (k)"),
     "Unexpected USING"
+  )
+})
+
+test_that("parse_query() stops when parentheses around table name in join", {
+  expect_error(
+    parse_query("SELECT a, b FROM c JOIN (d) USING (e)"),
+    "parenthes"
+  )
+})
+
+test_that("parse_query() stops when unexpected word or symbol in join", {
+  expect_error(
+    parse_query("SELECT a, b FROM c JOIN d USING (e) NOT f"),
+    "Unexpected"
+  )
+})
+
+test_that("parse_query() stops on incomplete join conditions", {
+  expect_error(
+    parse_query("SELECT a, b FROM x JOIN y ON x"),
+    "Malformed"
+  )
+})
+
+test_that("parse_query() stops on malformed join conditions #1", {
+  expect_error(
+    parse_query("SELECT a, b FROM x JOIN y ON x AND y"),
+    "Malformed"
+  )
+})
+
+test_that("parse_query() stops on malformed join conditions #2", {
+  expect_error(
+    parse_query("SELECT a, b FROM x JOIN y ON x AND y = q AND r"),
+    "Malformed"
+  )
+})
+
+test_that("parse_query() stops on disallowed values in USING", {
+  expect_error(
+    parse_query("SELECT a, b FROM x JOIN y USING(a = b)"),
+    "column"
+  )
+})
+
+
+test_that("parse_query() stops on join conditions with disallowed operators and/or functions", {
+  expect_error(
+    parse_query("SELECT a, b FROM x JOIN y ON sqrt(t) - 4 = 0"),
+    "equality"
   )
 })
