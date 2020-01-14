@@ -53,7 +53,7 @@ my_query <- "SELECT origin, dest,
 
 parse_query(my_query)
 
-parse_query(query, tidyverse = TRUE)
+parse_query(my_query, tidyverse = TRUE)
 }
 \seealso{
 \code{\link{parse_expression}}
