@@ -688,6 +688,20 @@ parse_join <- function(expr, tidyverse, secure) {
   if (length(join_conditions) + 1 != length(join_tables)) {
     stop("Unexpected result from parsing join conditions", call. = FALSE)
   }
+  if (is.null(names(join_tables))) {
+    table_references <- as.character(join_tables)
+  } else {
+    table_references <-  unname(unlist(
+      Map(
+        function(x,y) {if (x != "") x else y},
+        names(join_tables),
+        as.character(join_tables)
+      )
+    ))
+  }
+  if (any(duplicated(table_references))) {
+    stop("Tables in a join must have different names or aliases", call. = FALSE)
+  }
 
   output <- join_tables
   attr(output, "join_types") <- join_types
