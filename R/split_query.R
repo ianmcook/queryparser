@@ -22,7 +22,7 @@
 #' @return A list object with named elements representing the clauses of the
 #'   query
 #' @examples
-#' query <- "SELECT origin, dest,
+#' my_query <- "SELECT origin, dest,
 #'     COUNT(flight) AS num_flts,
 #'     round(AVG(distance)) AS dist,
 #'     round(AVG(arr_delay)) AS avg_delay
@@ -34,7 +34,7 @@
 #'   ORDER BY num_flts DESC, avg_delay DESC
 #'   LIMIT 100;"
 #'
-#' split_query(query)
+#' split_query(my_query)
 #' @seealso \code{\link{parse_query}}
 #' @export
 split_query <- function(query, tidyverse) {

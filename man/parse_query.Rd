@@ -39,7 +39,7 @@ When one or more individual expressions within a query are longer than 500
   of queries are supported.
 }
 \examples{
-query <- "SELECT origin, dest,
+my_query <- "SELECT origin, dest,
     COUNT(flight) AS num_flts,
     round(AVG(distance)) AS dist,
     round(AVG(arr_delay)) AS avg_delay
@@ -51,7 +51,7 @@ query <- "SELECT origin, dest,
   ORDER BY num_flts DESC, avg_delay DESC
   LIMIT 100;"
 
-parse_query(query)
+parse_query(my_query)
 
 parse_query(query, tidyverse = TRUE)
 }

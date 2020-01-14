@@ -20,7 +20,7 @@ Splits a SQL \code{SELECT} statement into clauses, and splits
   comma-separated column lists within the clauses.
 }
 \examples{
-query <- "SELECT origin, dest,
+my_query <- "SELECT origin, dest,
     COUNT(flight) AS num_flts,
     round(AVG(distance)) AS dist,
     round(AVG(arr_delay)) AS avg_delay
@@ -32,7 +32,7 @@ query <- "SELECT origin, dest,
   ORDER BY num_flts DESC, avg_delay DESC
   LIMIT 100;"
 
-split_query(query)
+split_query(my_query)
 }
 \seealso{
 \code{\link{parse_query}}

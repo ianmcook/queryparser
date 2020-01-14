@@ -41,7 +41,7 @@ NULL
 #'   limitations} section of the \code{README} for information about what types
 #'   of queries are supported.
 #' @examples
-#' query <- "SELECT origin, dest,
+#' my_query <- "SELECT origin, dest,
 #'     COUNT(flight) AS num_flts,
 #'     round(AVG(distance)) AS dist,
 #'     round(AVG(arr_delay)) AS avg_delay
@@ -53,7 +53,7 @@ NULL
 #'   ORDER BY num_flts DESC, avg_delay DESC
 #'   LIMIT 100;"
 #'
-#' parse_query(query)
+#' parse_query(my_query)
 #'
 #' parse_query(query, tidyverse = TRUE)
 #' @seealso \code{\link{parse_expression}}
