@@ -430,3 +430,10 @@ test_that("parse_expression() stops when column name is an R reserved word in ba
     "reserved"
   )
 })
+
+test_that("parse_expression() stops when column name is disallowed", {
+  expect_error(
+    parse_expression("sqrt(is)"),
+    "disallowed"
+  )
+})

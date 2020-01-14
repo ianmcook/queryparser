@@ -538,3 +538,17 @@ test_that("parse_query() removes table alias prefixes in single-table queries", 
       decreasing = FALSE))
   )
 })
+
+test_that("parse_query() stops when column alias is disallowed", {
+  expect_error(
+    parse_query("SELECT x AS character FROM y"),
+    "disallowed"
+  )
+})
+
+test_that("parse_query() stops when table alias is disallowed", {
+  expect_error(
+    parse_query("SELECT x FROM y 'is'"),
+    "disallowed"
+  )
+})
