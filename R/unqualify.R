@@ -29,7 +29,14 @@
 #'   \code{ORDER BY} clauses unqualified, except those in \code{except}. The
 #'   \code{FROM} clause is unmodified
 #' @export
-unqualify_query <- function(tree, prefixes, except = NULL) {
+unqualify_query <- function(tree, prefixes, except = character(0)) {
+  if (!is.list(tree) ||
+      !("select" %in% names(tree)) ||
+      !is.character(prefixes) ||
+      !is.character(except)) {
+    stop("Unexpected input to unqualify_query()", call. = FALSE)
+  }
+
   tree$select <- unqualify_clause(tree$select, prefixes, except)
   tree$where <- unqualify_clause(tree$where, prefixes, except)
   tree$group_by <- unqualify_clause(tree$group_by, prefixes, except)

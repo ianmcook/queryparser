@@ -180,11 +180,14 @@ parse_query <- function(query, tidyverse = FALSE, secure = TRUE) {
   }
 
   if (length(tree$from) == 1) {
-    prefix <- names(tree$from)
-    if (is.null(prefix)) {
-      prefix <- tree$from[[1]]
+    table_name <- as.character(tree$from[[1]])
+    if (!is.null(names(tree$from)) && names(tree$from) != "") {
+      table_alias <- names(tree$from)
+    } else {
+      table_alias <- character(0)
     }
-    tree <- unqualify_query(tree, prefix)
+    table_prefixes <- c(table_name, table_alias)
+    tree <- unqualify_query(tree, table_prefixes)
   }
 
   tree
