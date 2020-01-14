@@ -12,13 +12,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-#' Remove prefixes from column references in a SQL query
+#' Remove prefixes from column references in a parsed SQL query
 #'
-#' @description Unqualifies column references in the clauses of a SQL
+#' @description Unqualifies column references in the clauses of a parsed SQL
 #'   \code{SELECT} statement that begin with any of the specified prefixes
 #'   followed by a dot
 #'
-#' @param tree a list returned by \code{\link{squish_sql}} containing named
+#' @param tree a list returned by \code{\link{parse_query}} containing named
 #'   elements representing the clauses of a SQL \code{SELECT} statement
 #' @param prefixes a character vector containing one or more table names or
 #'   table aliases
@@ -26,8 +26,20 @@
 #'   (optional)
 #' @return A list the same as \code{tree} but with all column references in the
 #'   \code{SELECT}, \code{WHERE}, \code{GROUP BY}, \code{HAVING}, and
-#'   \code{ORDER BY} clauses unqualified, except those in \code{except}. The
-#'   \code{FROM} clause is unmodified
+#'   \code{ORDER BY} clauses unqualified, except those in \code{except}
+#' @details In the returned list, the \code{FROM} clause is unmodified and
+#'   column alias assignments made in the \code{SELECT} clause are unmodified.
+#' @examples
+#' my_query <- "SELECT f.flight,
+#'     manufacturer, p.model
+#'   FROM flights f
+#'     JOIN planes p USING (tailnum);"
+#'
+#' unqualify_query(
+#'   parse_query(my_query),
+#'   prefixes = c("p", "f")
+#' )
+#' @seealso \code{\link{parse_query}}
 #' @export
 unqualify_query <- function(tree, prefixes, except = character(0)) {
   if (!is.list(tree) ||
