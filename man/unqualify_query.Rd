@@ -4,7 +4,7 @@
 \alias{unqualify_query}
 \title{Remove prefixes from column references in a SQL query}
 \usage{
-unqualify_query(tree, prefixes)
+unqualify_query(tree, prefixes, except = NULL)
 }
 \arguments{
 \item{tree}{a list returned by \code{\link{squish_sql}} containing named
@@ -12,14 +12,18 @@ elements representing the clauses of a SQL \code{SELECT} statement}
 
 \item{prefixes}{a character vector containing one or more table names or
 table aliases}
+
+\item{except}{a character vector containing column references to leave as is
+(optional)}
 }
 \value{
-a list the same as \code{tree} but with all column references in the
+A list the same as \code{tree} but with all column references in the
   \code{SELECT}, \code{WHERE}, \code{GROUP BY}, \code{HAVING}, and
-  \code{ORDER BY} clauses unqualified. The \code{FROM} clause is unmodified
+  \code{ORDER BY} clauses unqualified, except those in \code{except}. The
+  \code{FROM} clause is unmodified
 }
 \description{
-Unqualifies all column references in the clauses of a SQL
+Unqualifies column references in the clauses of a SQL
   \code{SELECT} statement that begin with any of the specified prefixes
   followed by a dot
 }

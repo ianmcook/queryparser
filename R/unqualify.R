@@ -14,7 +14,7 @@
 
 #' Remove prefixes from column references in a SQL query
 #'
-#' @description Unqualifies all column references in the clauses of a SQL
+#' @description Unqualifies column references in the clauses of a SQL
 #'   \code{SELECT} statement that begin with any of the specified prefixes
 #'   followed by a dot
 #'
@@ -22,24 +22,27 @@
 #'   elements representing the clauses of a SQL \code{SELECT} statement
 #' @param prefixes a character vector containing one or more table names or
 #'   table aliases
-#' @return a list the same as \code{tree} but with all column references in the
+#' @param except a character vector containing column references to leave as is
+#'   (optional)
+#' @return A list the same as \code{tree} but with all column references in the
 #'   \code{SELECT}, \code{WHERE}, \code{GROUP BY}, \code{HAVING}, and
-#'   \code{ORDER BY} clauses unqualified. The \code{FROM} clause is unmodified
+#'   \code{ORDER BY} clauses unqualified, except those in \code{except}. The
+#'   \code{FROM} clause is unmodified
 #' @export
-unqualify_query <- function(tree, prefixes) {
-  tree$select <- unqualify_clause(tree$select, prefixes)
-  tree$where <- unqualify_clause(tree$where, prefixes)
-  tree$group_by <- unqualify_clause(tree$group_by, prefixes)
-  tree$having <- unqualify_clause(tree$having, prefixes)
-  tree$order_by <- unqualify_clause(tree$order_by, prefixes)
+unqualify_query <- function(tree, prefixes, except = NULL) {
+  tree$select <- unqualify_clause(tree$select, prefixes, except)
+  tree$where <- unqualify_clause(tree$where, prefixes, except)
+  tree$group_by <- unqualify_clause(tree$group_by, prefixes, except)
+  tree$having <- unqualify_clause(tree$having, prefixes, except)
+  tree$order_by <- unqualify_clause(tree$order_by, prefixes, except)
   tree
 }
 
-unqualify_clause <- function(exprs, prefixes) {
+unqualify_clause <- function(exprs, prefixes, except) {
   attrs <- attributes(exprs)
   if (is.null(exprs)) return(NULL)
   exprs <- lapply(exprs, function(expr) {
-    column_names <- all_cols(expr)
+    column_names <- setdiff(all_cols(expr), except)
     unqualify_expression(expr, prefixes, column_names)
   })
   attributes(exprs) <- attrs
