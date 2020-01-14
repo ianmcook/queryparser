@@ -272,7 +272,7 @@ replace_operators_unary_prefix <- function(expr_quotes_masked) {
 }
 
 replace_operators_unary_postfix <- function(expr_quotes_masked) {
-  for(i in seq_along(translations_operators_unary_postfix)) {
+  for (i in seq_along(translations_operators_unary_postfix)) {
     expr_quotes_masked <- gsub(
       paste0("\\b",names(translations_operators_unary_postfix)[i],"\\b"),
       translations_operators_unary_postfix[i],
