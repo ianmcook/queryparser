@@ -18,6 +18,7 @@ Collate:
     'compat.R'
     'agg_scalar.R'
     'check_expressions.R'
+    'column_references.R'
     'common.R'
     'extract_alias.R'
     'parse_clauses.R'
