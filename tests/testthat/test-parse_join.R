@@ -456,3 +456,31 @@ test_that("parse_query() stops on join conditions with disallowed operators and/
     "equality"
   )
 })
+
+test_that("parse_query() stops on self-join with no table aliases", {
+  expect_error(
+    parse_query("SELECT * FROM x JOIN x USING (z)"),
+    "different"
+  )
+})
+
+test_that("parse_query() stops on join with non-unique table aliases", {
+  expect_error(
+    parse_query("SELECT * FROM x AS y JOIN x AS y USING (z)"),
+    "different"
+  )
+})
+
+test_that("parse_query() succeeds on self-join with unique table aliases", {
+  expect_error(
+    parse_query("SELECT * FROM x AS w JOIN x AS y USING (z)"),
+    NA
+  )
+})
+
+test_that("parse_query() succeeds on self-join with unique table names/aliases", {
+  expect_error(
+    parse_query("SELECT * FROM x JOIN x AS y USING (z)"),
+    NA
+  )
+})
