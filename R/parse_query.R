@@ -88,6 +88,11 @@ parse_query <- function(query, tidyverse = FALSE, secure = TRUE) {
   tree$order_by <- parse_order_by(tree$order_by, tidyverse, secure)
   tree$limit <- parse_limit(tree$limit)
 
+  bad_aliases <- intersect(c(names(tree$select), names(tree$from)), disallowed_aliases)
+  if (length(bad_aliases) > 0) {
+    stop("Query contains disallowed aliases: ", paste(bad_aliases, collapse = ", "), call. = FALSE)
+  }
+
   is_aggregate_expression_in_select_list <- are_aggregate_expressions(tree$select)
   is_aggregate_expression_in_order_by_list <- are_aggregate_expressions(tree$order_by)
   has_aggregates_in_select <- any(is_aggregate_expression_in_select_list)

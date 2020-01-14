@@ -44,6 +44,19 @@ r_reserved_words <- c(
   # also the dots (..., ..1, ..2, and so on)
 )
 
+disallowed_names <- c(
+  # these names could cause ambiguity because SQL uses the dot for qualification
+  "is.na",
+  "is", "as", "na"
+)
+
+disallowed_aliases <- c(
+  # these aliases could cause ambiguity because SQL uses the dot for qualification
+  disallowed_names,
+  "character", "logical", "integer", "single", "double", "numeric",
+  "POSIXct", "datetime", "duration"
+)
+
 sql_characters_expecting_right_operands <- c(
   ">", "<", "=", "&", "|",
   "+", "-", "*", "/", "%",

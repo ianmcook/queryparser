@@ -150,7 +150,7 @@ parse_expression <- function(expr, tidyverse = FALSE, secure = TRUE) {
     secure_expression(call_out, tidyverse)
   }
 
-  # stop if any column names are R reserved words
+  # stop if any names are R reserved words
   all_words <- all_cols(call_out)
   res_words <- c(
     intersect(all_words, r_reserved_words),
@@ -160,6 +160,19 @@ parse_expression <- function(expr, tidyverse = FALSE, secure = TRUE) {
     stop(
       "Query contains R reserved words: ",
       paste(res_words, collapse = ", "),
+      call. = FALSE
+    )
+  }
+
+  # stop if any names are disallowed
+  bad_names <- intersect(
+    all_words,
+    c(if (tidyverse) ".", disallowed_names)
+  )
+  if (length(bad_names) > 0) {
+    stop(
+      "Query contains disallowed names: ",
+      paste(bad_names, collapse = ", "),
       call. = FALSE
     )
   }
