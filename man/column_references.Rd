@@ -4,16 +4,20 @@
 \alias{column_references}
 \title{Return the column references in a parsed SQL query}
 \usage{
-column_references(tree)
+column_references(tree, from = TRUE)
 }
 \arguments{
 \item{tree}{a list returned by \code{\link{parse_query}} containing named
 elements representing the clauses of a SQL \code{SELECT} statement}
+
+\item{from}{a logical value indicating whether to include the column
+references from the join conditions in the \code{FROM} clause}
 }
 \value{
 A character vector containing all the unique column references found
-  in the \code{SELECT}, \code{FROM}, \code{WHERE}, \code{GROUP BY},
-  \code{HAVING}, and \code{ORDER BY} clauses of the \code{SELECT} statement
+  in the \code{SELECT}, \code{FROM} (if \code{from = TRUE}), \code{WHERE},
+  \code{GROUP BY}, \code{HAVING}, and \code{ORDER BY} clauses of the
+  \code{SELECT} statement
 }
 \description{
 Returns a character vector containing all the column references
@@ -30,7 +34,7 @@ my_query <- "SELECT f.flight,
   FROM flights f
     JOIN planes p USING (tailnum);"
 
-column_references(parse_query(my_query))
+column_references(parse_query(my_query), from = FALSE)
 }
 \seealso{
 \code{\link{parse_query}}

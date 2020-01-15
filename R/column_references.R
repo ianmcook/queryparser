@@ -19,9 +19,12 @@
 #'
 #' @param tree a list returned by \code{\link{parse_query}} containing named
 #'   elements representing the clauses of a SQL \code{SELECT} statement
+#' @param from a logical value indicating whether to include the column
+#'   references from the join conditions in the \code{FROM} clause
 #' @return A character vector containing all the unique column references found
-#'   in the \code{SELECT}, \code{FROM}, \code{WHERE}, \code{GROUP BY},
-#'   \code{HAVING}, and \code{ORDER BY} clauses of the \code{SELECT} statement
+#'   in the \code{SELECT}, \code{FROM} (if \code{from = TRUE}), \code{WHERE},
+#'   \code{GROUP BY}, \code{HAVING}, and \code{ORDER BY} clauses of the
+#'   \code{SELECT} statement
 #' @details The returned character vector includes only \emph{column}
 #'   references, not table references. Column aliases assigned in the
 #'   \code{SELECT} list are not included unless they are used in other clauses.
@@ -31,16 +34,16 @@
 #'   FROM flights f
 #'     JOIN planes p USING (tailnum);"
 #'
-#' column_references(parse_query(my_query))
+#' column_references(parse_query(my_query), from = FALSE)
 #' @seealso \code{\link{parse_query}}
 #' @export
-column_references <- function(tree) {
+column_references <- function(tree, from = TRUE) {
   if (!is.list(tree) || !("select" %in% names(tree))) {
     stop("Unexpected input to column_references()", call. = FALSE)
   }
   unique(c(
     column_references_in_clause(tree$select),
-    column_references_in_clause(attr(tree$from, "join_conditions")),
+    if (from) column_references_in_clause(attr(tree$from, "join_conditions")),
     column_references_in_clause(tree$where),
     column_references_in_clause(tree$group_by),
     column_references_in_clause(tree$having),
