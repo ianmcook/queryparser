@@ -1,4 +1,4 @@
-# queryparser (development version)
+# queryparser 0.2.0
 
 * `BETWEEN` expressions with quotes in operands translate correctly ([#13](https://github.com/ianmcook/queryparser/issues/13))
 * Line comments (`--`) and block comments (`/* */`) are removed from queries ([#14](https://github.com/ianmcook/queryparser/issues/14))
