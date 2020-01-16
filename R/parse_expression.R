@@ -35,9 +35,6 @@
 #'   expression must not contain line comments (\code{--}) or block comments
 #'   (\code{/* */}). Use \code{\link{squish_sql}} to satisfy these whitespace
 #'   requirements and remove any comments.
-#'
-#'   Expressions longer than 500 characters can cause errors or unexpected
-#'   results.
 #' @seealso \code{\link{parse_query}}
 #' @export
 parse_expression <- function(expr, tidyverse = FALSE, secure = TRUE) {

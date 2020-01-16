@@ -219,9 +219,6 @@ parse_query("SELECT x FROM y WHERE system('rm -rf /')")
     `NULL` to the expected data type in the SQL expression.
   - The error messages that occur when attempting to parse invalid or
     unrecognized SQL are often non-informative.
-  - When one or more individual expressions within a `SELECT` statement
-    are longer than 500 characters, errors or unexpected results can
-    occur.
 
 ## Non-Goals
 
