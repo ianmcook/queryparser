@@ -59,15 +59,16 @@ Queries can include the clauses `SELECT`, `FROM`, `WHERE`, `GROUP BY`,
 parse_query(
 " SELECT origin, dest,
     COUNT(flight) AS num_flts,
-    round(AVG(distance)) AS dist,
+    round(SUM(seats)) AS num_seats,
     round(AVG(arr_delay)) AS avg_delay
-  FROM flights
+  FROM flights f LEFT OUTER JOIN planes p
+    ON f.tailnum = p.tailnum
   WHERE distance BETWEEN 200 AND 300
     AND air_time IS NOT NULL
   GROUP BY origin, dest
-  HAVING num_flts > 5000
-  ORDER BY num_flts DESC, avg_delay DESC
-  LIMIT 100;"
+  HAVING num_flts > 3000
+  ORDER BY num_seats DESC, avg_delay ASC
+  LIMIT 2;"
 )
 #> $select
 #> $select[[1]]
@@ -79,19 +80,28 @@ parse_query(
 #> $select$num_flts
 #> sum(!is.na(flight))
 #> 
-#> $select$dist
-#> round(mean(distance, na.rm = TRUE))
+#> $select$num_seats
+#> round(sum(seats, na.rm = TRUE))
 #> 
 #> $select$avg_delay
 #> round(mean(arr_delay, na.rm = TRUE))
 #> 
 #> attr(,"aggregate")
-#>                      num_flts      dist avg_delay 
+#>                      num_flts num_seats avg_delay 
 #>     FALSE     FALSE      TRUE      TRUE      TRUE 
 #> 
 #> $from
-#> $from[[1]]
+#> $from$f
 #> flights
+#> 
+#> $from$p
+#> planes
+#> 
+#> attr(,"join_types")
+#> [1] "left outer join"
+#> attr(,"join_conditions")
+#> attr(,"join_conditions")[[1]]
+#> f.tailnum == p.tailnum
 #> 
 #> 
 #> $where
@@ -109,24 +119,24 @@ parse_query(
 #> 
 #> $having
 #> $having[[1]]
-#> num_flts > 5000
+#> num_flts > 3000
 #> 
 #> 
 #> $order_by
 #> $order_by[[1]]
-#> num_flts
+#> num_seats
 #> 
 #> $order_by[[2]]
 #> avg_delay
 #> 
 #> attr(,"decreasing")
-#> [1] TRUE TRUE
+#> [1]  TRUE FALSE
 #> attr(,"aggregate")
 #> [1] FALSE FALSE
 #> 
 #> $limit
 #> $limit[[1]]
-#> [1] 100
+#> [1] 2
 #> 
 #> 
 #> attr(,"aggregate")

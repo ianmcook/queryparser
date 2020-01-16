@@ -50,15 +50,16 @@ Queries can include the clauses `SELECT`, `FROM`, `WHERE`, `GROUP BY`, `HAVING`,
 parse_query(
 " SELECT origin, dest,
     COUNT(flight) AS num_flts,
-    round(AVG(distance)) AS dist,
+    round(SUM(seats)) AS num_seats,
     round(AVG(arr_delay)) AS avg_delay
-  FROM flights
+  FROM flights f LEFT OUTER JOIN planes p
+    ON f.tailnum = p.tailnum
   WHERE distance BETWEEN 200 AND 300
     AND air_time IS NOT NULL
   GROUP BY origin, dest
-  HAVING num_flts > 5000
-  ORDER BY num_flts DESC, avg_delay DESC
-  LIMIT 100;"
+  HAVING num_flts > 3000
+  ORDER BY num_seats DESC, avg_delay ASC
+  LIMIT 2;"
 )
 ```
 
