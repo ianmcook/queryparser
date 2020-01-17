@@ -32,13 +32,13 @@ NULL
 #'
 #'   Depending on the arguments, the returned list and its sublists will have
 #'   attributes named \code{distinct}, \code{aggregate}, and \code{decreasing}
-#'   with logical values that can aid in the evaluation of the R expressions.
-#' @details When one or more individual expressions within a query are longer than 500
-#'   characters, errors or unexpected results can occur.
-#'
-#'   See the
+#'   with logical values that can aid in the evaluation of the R expressions. If
+#'   \code{query} contains one or more joins, then the sublist named \code{from}
+#'   will have attributes named \code{join_types} and \code{join_conditions}
+#'   specifying the types of join and the join conditions.
+#' @details See the
 #'   \href{https://cran.r-project.org/package=queryparser/readme/README.html#current-limitations}{current
-#'   limitations} section of the \code{README} for information about what types
+#'    limitations} section of the \code{README} for information about what types
 #'   of queries are supported.
 #' @examples
 #' my_query <- "SELECT origin, dest,
