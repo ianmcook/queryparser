@@ -701,3 +701,11 @@ all_names <- function(expr) {
 is_constant <- function(expr) {
   length(all_cols(expr)) == 0
 }
+
+remove_enclosing_parentheses <- function(expr) {
+  while (grepl("^\\(.*\\)$", expr)) {
+    if (length(gregexpr("\\((?>[^()]|(?R))*\\)", expr, perl = TRUE)[[1]]) > 1) break
+    expr <- sub("^\\((.*)\\)$", "\\1", expr)
+  }
+  expr
+}

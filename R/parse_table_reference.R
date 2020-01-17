@@ -14,6 +14,7 @@
 
 parse_table_reference <- function(expr, tidyverse, secure) {
   expr <- extract_alias(expr)
+  expr <- remove_enclosing_parentheses(expr)
   table_alias <- names(expr)
   expr <- parse_expression(expr, tidyverse = tidyverse, secure = secure)
 

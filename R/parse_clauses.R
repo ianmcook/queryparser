@@ -21,6 +21,7 @@ parse_select <- function(exprs, tidyverse, secure = TRUE) {
 parse_from <- function(exprs, tidyverse, secure = TRUE) {
   if (is.null(exprs)) return(NULL)
   expr <- exprs[[1]]
+  expr <- remove_enclosing_parentheses(expr)
   if (grepl(" join |\\,", expr, ignore.case = TRUE)) {
     # this might be a join query
     from <- parse_join(expr, tidyverse, secure)

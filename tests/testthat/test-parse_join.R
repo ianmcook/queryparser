@@ -407,13 +407,6 @@ test_that("parse_query() stops on NATURAL JOIN with USING clause", {
   )
 })
 
-test_that("parse_query() stops when parentheses around table name in join", {
-  expect_error(
-    parse_query("SELECT a, b FROM c JOIN (d) USING (e)"),
-    "parenthes"
-  )
-})
-
 test_that("parse_query() stops when unexpected word or symbol in join", {
   expect_error(
     parse_query("SELECT a, b FROM c JOIN d USING (e) NOT f"),

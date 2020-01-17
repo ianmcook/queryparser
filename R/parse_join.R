@@ -655,10 +655,6 @@ parse_join <- function(expr, tidyverse, secure) {
         }
 
       }
-    } else if (in_parens > 0) {
-      if (!in_on_clause && !in_using_clause) {
-        stop("Unexpected parentheses in FROM clause", call. = FALSE)
-      }
     }
 
     seek(rc, pos + 1L)
