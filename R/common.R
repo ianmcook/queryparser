@@ -703,6 +703,9 @@ is_constant <- function(expr) {
 }
 
 remove_enclosing_parentheses <- function(expr) {
+  # note: this might fail to remove enclosing parentheses
+  #   if expr contains parentheses inside quoted strings
+  # for example: queryparser:::remove_enclosing_parentheses("(') (')")
   while (grepl("^\\(.*\\)$", expr)) {
     if (length(gregexpr("\\((?>[^()]|(?R))*\\)", expr, perl = TRUE)[[1]]) > 1) break
     expr <- sub("^\\((.*)\\)$", "\\1", expr)
