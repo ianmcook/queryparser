@@ -1,5 +1,6 @@
 # queryparser (development version)
 
+* Parentheses can enclose table names and joins in the `FROM` clause ([#23](https://github.com/ianmcook/queryparser/issues/23))
 * Minor bugfixes and improvements
 
 # queryparser 0.2.0
