@@ -552,3 +552,17 @@ test_that("parse_query() stops when table alias is disallowed", {
     "disallowed"
   )
 })
+
+test_that("parse_query() succeeds when parentheses around table name", {
+  expect_error(
+    parse_query("SELECT * FROM (ex)"),
+    NA
+  )
+})
+
+test_that("parse_query() succeeds when parentheses around table name and alias after", {
+  expect_error(
+    parse_query("SELECT * FROM (ex) x"),
+    NA
+  )
+})

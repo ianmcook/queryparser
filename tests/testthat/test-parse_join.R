@@ -477,3 +477,31 @@ test_that("parse_query() succeeds on self-join with unique table names/aliases",
     NA
   )
 })
+
+test_that("parse_query() succeeds when parentheses enclose FROM clause with join", {
+  expect_error(
+    parse_query("SELECT * FROM (x JOIN y ON x.a = y.a)"),
+    NA
+  )
+})
+
+test_that("parse_query() succeeds when parentheses enclose FROM clause and table names in join", {
+  expect_error(
+    parse_query("SELECT * FROM ((ex) x JOIN (why) y ON x.a = y.a)"),
+    NA
+  )
+})
+
+test_that("parse_query() succeeds when two pairs of parentheses enclose FROM clause with join", {
+  expect_error(
+    parse_query("SELECT * FROM ((x JOIN y ON x.a = y.a))"),
+    NA
+  )
+})
+
+test_that("parse_query() succeeds when join in FROM clause is not enclosed in parentheses but begins with ( and ends with )", {
+  expect_error(
+    parse_query("SELECT * FROM (x) JOIN (y) USING (a)"),
+    NA
+  )
+})
