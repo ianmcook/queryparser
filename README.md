@@ -240,3 +240,6 @@ parse_query("SELECT x FROM y WHERE system('rm -rf /')")
     `UPDATE`)
   - Customize translations for specific SQL dialects
   - Fully validate the syntax of the `SELECT` statements passed to it
+  - Efficiently process large batches of queries
+  - Facilitate the analysis of queries (for example, to identify
+    patterns)
