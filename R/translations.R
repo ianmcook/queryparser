@@ -405,7 +405,7 @@ translations_indirect_base <- list(
     eval(substitute(quote(paste(..., sep = sep))))
   },
   nullif = function(x, y) {
-    eval(substitute(quote(ifelse(is.na(x), x, y))))
+    eval(substitute(quote(ifelse(x==y, NA, x))))
   },
   lpad = function(str, len, pad) {
     if (!is_constant(eval(substitute(quote(len)))) ||
