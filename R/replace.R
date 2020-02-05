@@ -49,7 +49,7 @@ replace_special_functions <- function(expr_quotes_masked) {
 
 replace_special_keywords <- function(expr_quotes_masked) {
 
-  special_keywords <- c("CAST", "BETWEEN", "CASE")
+  special_keywords <- c("CAST", "TRY_CAST", "BETWEEN", "CASE")
 
   if (!grepl(paste0("\\b(", paste(special_keywords, collapse = "|"), ")\\b"), expr_quotes_masked, ignore.case = TRUE)) {
     return(expr_quotes_masked)
@@ -58,6 +58,13 @@ replace_special_keywords <- function(expr_quotes_masked) {
   original_encoding <- Encoding(expr_quotes_masked)
   Encoding(expr_quotes_masked) <- "bytes"
   nchar_bytes <- nchar(expr_quotes_masked, type = "bytes")
+
+  # replace TRY_CAST
+  if (grepl(paste0("\\bTRY_CAST\\b"), expr_quotes_masked, ignore.case = TRUE)) {
+    # TRY_CAST converts to NULL when attempt fails, just like R's `as.*` functions
+    # So, we can handle it the same as CAST
+    expr_quotes_masked <- gsub("(\\b)TRY_CAST(\\b)", "\\1CAST\\2", expr_quotes_masked, ignore.case = TRUE)
+  }
 
   # replace CAST
   if (grepl(paste0("\\bCAST\\b"), expr_quotes_masked, ignore.case = TRUE)) {
