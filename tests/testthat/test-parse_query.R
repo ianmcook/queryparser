@@ -51,8 +51,7 @@ test_that("parse_query(tidy = FALSE) works on 'flights' example query", {
       where = list(quote((distance >= 200 & distance <= 300) &
       !is.na(air_time))), group_by = list(quote(origin), quote(dest)),
       having = list(quote(num_flts > 3000)), order_by = structure(list(
-      quote(num_flts), quote(avg_delay)), decreasing = c(TRUE,
-      TRUE), aggregate = c(FALSE, FALSE)), limit = list(100L)), aggregate = TRUE)
+      quote(-xtfrm(num_flts)), quote(-xtfrm(avg_delay))), aggregate = c(FALSE, FALSE)), limit = list(100L)), aggregate = TRUE)
   )
 })
 
@@ -320,6 +319,25 @@ test_that("parse_query() works on SELECT ALL example query", {
   )
 })
 
+test_that("parse_query works with NULLS FIRST in ORDER BY", {
+  expect_equal(
+    parse_query("SELECT x FROM df ORDER BY x NULLS FIRST"),
+    list(select = list(quote(x)),
+         from = list(quote(df)),
+         order_by = list(quote(!is.na(x)), quote(x)))
+  )
+})
+
+test_that("parse_query works with NULLS LAST in ORDER BY", {
+  expect_equal(
+    parse_query("SELECT x FROM df ORDER BY x NULLS LAST"),
+    list(select = list(quote(x)),
+         from = list(quote(df)),
+         order_by = list(quote(is.na(x)), quote(x)))
+  )
+})
+
+
 test_that("parse_query() stops on positional column references in ORDER BY clause", {
   expect_error(
     parse_query("SELECT x, y, z FROM t ORDER BY 1 DESC, 2"),
@@ -407,6 +425,20 @@ test_that("parse_query() stops when invalid use of ASC in ORDER BY clause", {
 test_that("parse_query() stops when invalid use of DESC in ORDER BY clause", {
   expect_error(
     parse_query("SELECT x FROM y ORDER BY x, DESC"),
+    "^Invalid"
+  )
+})
+
+test_that("parse_query() stops when invalid use of NULLS FIRST in ORDER BY clause", {
+  expect_error(
+    parse_query("SELECT x FROM y ORDER BY x, NULLS FIRST"),
+    "^Invalid"
+  )
+})
+
+test_that("parse_query() stops when invalid use of NULLS LAST in ORDER BY clause", {
+  expect_error(
+    parse_query("SELECT x FROM y ORDER BY x, NULLS LAST"),
     "^Invalid"
   )
 })
@@ -519,8 +551,7 @@ test_that("parse_query() removes table name prefixes in single-table queries", {
       parse_query(query)
     },
     list(select = list(quote(year), quote(month), quote(day)), from = list(quote(flights)),
-      where = list(quote(arr_delay <= 0)), order_by = structure(list(quote(carrier)),
-      decreasing = FALSE))
+      where = list(quote(arr_delay <= 0)), order_by = structure(list(quote(carrier))))
   )
 })
 
@@ -534,8 +565,7 @@ test_that("parse_query() removes table alias prefixes in single-table queries", 
       parse_query(query)
     },
     list(select = list(quote(year), quote(month), quote(day)), from = list(f = quote(flights)),
-      where = list(quote(arr_delay <= 0)), order_by = structure(list(quote(carrier)),
-      decreasing = FALSE))
+      where = list(quote(arr_delay <= 0)), order_by = structure(list(quote(carrier))))
   )
 })
 
