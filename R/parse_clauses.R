@@ -82,17 +82,15 @@ parse_order_by <- function(exprs, tidyverse, secure = TRUE) {
     stop("Positional column references in the ORDER BY clause are not supported", call. = FALSE)
   }
 
-  if (tidyverse) {
-    for (i in which(descending_cols)) {
+  for (i in which(descending_cols)) {
+    if (tidyverse) {
       exprs[[i]] <- paste0("dplyr::desc(", exprs[[i]], ")")
+    } else {
+      exprs[[i]] <- paste0("-xtfrm(", exprs[[i]], ")")
     }
   }
 
   exprs <- sapply(exprs, parse_expression, tidyverse = tidyverse, secure = secure, USE.NAMES = FALSE)
-
-  if (!tidyverse) {
-    attr(exprs, "decreasing") <- descending_cols
-  }
 
   exprs
 }

@@ -56,7 +56,7 @@ allowed_funs_generic <- c(
   "!=",  "<", "<=", "=", "==", ">", ">=",
   "cast", "count_star", "is.na",
   "as.logical", "%in%", "%nin%",  "ifelse",
-  "(", "c", "between",
+  "(", "c", "between", "xtfrm",
   sql_data_types_with_args,
   unname(unlist(translations_operators_binary_symbolic)),
   unname(unlist(translations_operators_binary_word)),
