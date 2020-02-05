@@ -89,22 +89,31 @@ parse_order_by <- function(exprs, tidyverse, secure = TRUE) {
     stop("Positional column references in the ORDER BY clause are not supported", call. = FALSE)
   }
 
-  for (i in which(descending_cols)) {
-    if (tidyverse) {
-      exprs[[i]] <- paste0("dplyr::desc(", exprs[[i]], ")")
-    } else {
-      exprs[[i]] <- paste0("-xtfrm(", exprs[[i]], ")")
-    }
-  }
-
   exprs <- as.list(exprs)
+
   for (i in which(nulls_first_cols)) {
     exprs[[i]] <- c(paste0("!is.na(", exprs[[i]], ")"), exprs[[i]])
   }
-
   for (i in which(nulls_last_cols)) {
     exprs[[i]] <- c(paste0("is.na(", exprs[[i]], ")"), exprs[[i]])
   }
+
+  for (i in which(descending_cols)) {
+    if (i %in% c(which(nulls_first_cols), which(nulls_last_cols))) {
+      if (tidyverse) {
+        exprs[[i]][[2]] <- paste0("dplyr::desc(", exprs[[i]][[2]], ")")
+      } else {
+        exprs[[i]][[2]] <- paste0("-xtfrm(", exprs[[i]][[2]], ")")
+      }
+    } else {
+      if (tidyverse) {
+        exprs[[i]] <- paste0("dplyr::desc(", exprs[[i]], ")")
+      } else {
+        exprs[[i]] <- paste0("-xtfrm(", exprs[[i]], ")")
+      }
+    }
+  }
+
   exprs <- unlist(exprs, recursive = FALSE, use.names = FALSE)
 
   exprs <- sapply(exprs, parse_expression, tidyverse = tidyverse, secure = secure, USE.NAMES = FALSE)

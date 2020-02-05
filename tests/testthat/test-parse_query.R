@@ -319,24 +319,47 @@ test_that("parse_query() works on SELECT ALL example query", {
   )
 })
 
-test_that("parse_query works with NULLS FIRST in ORDER BY", {
+test_that("parse_query() works with NULLS FIRST in ORDER BY", {
   expect_equal(
     parse_query("SELECT x FROM df ORDER BY x NULLS FIRST"),
     list(select = list(quote(x)),
-         from = list(quote(df)),
-         order_by = list(quote(!is.na(x)), quote(x)))
+      from = list(quote(df)),
+      order_by = list(quote(!is.na(x)), quote(x)))
   )
 })
 
-test_that("parse_query works with NULLS LAST in ORDER BY", {
+test_that("parse_query() works with NULLS LAST in ORDER BY", {
   expect_equal(
     parse_query("SELECT x FROM df ORDER BY x NULLS LAST"),
     list(select = list(quote(x)),
-         from = list(quote(df)),
-         order_by = list(quote(is.na(x)), quote(x)))
+      from = list(quote(df)),
+      order_by = list(quote(is.na(x)), quote(x)))
   )
 })
 
+test_that("parse_query() works with ASC/DESC and NULLS FIRST/LAST in ORDER BY", {
+  expect_equal(
+    parse_query("SELECT w, x, y, z FROM df
+      ORDER BY w ASC NULLS FIRST, x DESC NULLS FIRST, y ASC NULLS LAST, z DESC NULLS LAST"),
+    list(select = list(quote(w), quote(x), quote(y), quote(z)), from = list(quote(df)),
+      order_by = list(quote(!is.na(w)), quote(w), quote(!is.na(x)),
+      quote(-xtfrm(x)), quote(is.na(y)), quote(y), quote(is.na(z)),
+      quote(-xtfrm(z))))
+  )
+})
+
+test_that("parse_query(tidy = TRUE) works with ASC/DESC and NULLS FIRST/LAST in ORDER BY", {
+  expect_equal(
+    parse_query("SELECT w, x, y, z FROM df
+        ORDER BY w ASC NULLS FIRST, x DESC NULLS FIRST, y ASC NULLS LAST, z DESC NULLS LAST",
+      tidyverse = TRUE
+    ),
+    list(select = list(quote(w), quote(x), quote(y), quote(z)), from = list(quote(df)),
+      order_by = list(quote(!is.na(w)), quote(w), quote(!is.na(x)),
+      quote(dplyr::desc(x)), quote(is.na(y)), quote(y), quote(is.na(z)),
+      quote(dplyr::desc(z))))
+  )
+})
 
 test_that("parse_query() stops on positional column references in ORDER BY clause", {
   expect_error(
