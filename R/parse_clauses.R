@@ -69,8 +69,12 @@ parse_having <- function(exprs, tidyverse, secure = TRUE) {
 parse_order_by <- function(exprs, tidyverse, secure = TRUE) {
   if (is.null(exprs)) return(NULL)
 
-  if (any(tolower(exprs) %in% c("asc", "desc"))) {
+  if (any(grepl("^(asc|desc)", tolower(exprs)))) {
     stop("Invalid use of ASC or DESC in the ORDER BY clause", call. = FALSE)
+  }
+
+  if (any(grepl("^(asc |desc )?nulls (first|last)", tolower(exprs)))) {
+    stop("Invalid use of NULLS FIRST or NULLS LAST in the ORDER BY clause", call. = FALSE)
   }
 
   descending_cols <- order_is_desc(exprs)
