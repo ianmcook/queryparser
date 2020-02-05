@@ -74,8 +74,11 @@ parse_order_by <- function(exprs, tidyverse, secure = TRUE) {
   }
 
   descending_cols <- order_is_desc(exprs)
+  nulls_first_cols <- order_is_nulls_first(exprs)
+  nulls_last_cols <- order_is_nulls_last(exprs)
 
   exprs <- remove_asc_desc(exprs)
+  exprs <- remove_nulls_first_last(exprs)
 
   suppressWarnings(int_positions <- as.integer(exprs))
   if (any(!is.na(int_positions))) {
@@ -90,10 +93,21 @@ parse_order_by <- function(exprs, tidyverse, secure = TRUE) {
     }
   }
 
+  exprs <- as.list(exprs)
+  for (i in which(nulls_first_cols)) {
+    exprs[[i]] <- c(paste0("!is.na(", exprs[[i]], ")"), exprs[[i]])
+  }
+
+  for (i in which(nulls_last_cols)) {
+    exprs[[i]] <- c(paste0("is.na(", exprs[[i]], ")"), exprs[[i]])
+  }
+  exprs <- unlist(exprs, recursive = FALSE, use.names = FALSE)
+
   exprs <- sapply(exprs, parse_expression, tidyverse = tidyverse, secure = secure, USE.NAMES = FALSE)
 
   exprs
 }
+
 
 parse_limit <- function(exprs) {
   if (is.null(exprs)) return(NULL)
@@ -110,9 +124,21 @@ parse_limit <- function(exprs) {
 }
 
 order_is_desc <- function(exprs) {
-  grepl("\\bDESC$", exprs, ignore.case = TRUE)
+  grepl("\\bDESC\\b", exprs, ignore.case = TRUE)
+}
+
+order_is_nulls_first <- function(exprs) {
+  grepl("\\bNULLS FIRST\\b", exprs, ignore.case = TRUE)
+}
+
+order_is_nulls_last <- function(exprs) {
+  grepl("\\bNULLS LAST\\b", exprs, ignore.case = TRUE)
 }
 
 remove_asc_desc <- function(exprs) {
-  gsub("\\b ?(A|DE)SC$", "", exprs, ignore.case = TRUE)
+  gsub("\\b ?(A|DE)SC\\b", "", exprs, ignore.case = TRUE)
+}
+
+remove_nulls_first_last <- function(exprs) {
+  gsub("\\b NULLS (FIRST|LAST)\\b", "", exprs, ignore.case = TRUE)
 }
