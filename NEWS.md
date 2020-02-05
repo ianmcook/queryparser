@@ -1,5 +1,6 @@
 # queryparser (development version)
 
+* `ORDER BY` clause can include `NULLS FIRST` and `NULLS LAST` ([#12](https://github.com/ianmcook/queryparser/issues/12), [\@StevenHibble](https://github.com/StevenHibble))
 * Parentheses can enclose table names and joins in the `FROM` clause ([#23](https://github.com/ianmcook/queryparser/issues/23))
 * Minor bugfixes and improvements
 
