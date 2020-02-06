@@ -301,6 +301,12 @@ translations_indirect_generic <- list(
   },
   ifnull = function(x, y) {
     eval(substitute(quote(ifelse(is.na(x), y, x))))
+  },
+  isnull = function(x, y) {
+    eval(substitute(quote(ifelse(is.na(x), y, x))))
+  },
+  nvl = function(x, y) {
+    eval(substitute(quote(ifelse(is.na(x), y, x))))
   }
 )
 
