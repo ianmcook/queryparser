@@ -12,6 +12,13 @@ test_that("parse_expression() fails on illegal functions", {
   )
 })
 
+test_that("parse_expression() fails on illegal function as argument to legal function", {
+  expect_error(
+    parse_expression("abs(x = system('ls'))"),
+    "^Unrecognized"
+  )
+})
+
 test_that("parse_expression() fails on illegal function when function also used as a column name", {
   expect_error(
     parse_expression("system + system('ls')"),
