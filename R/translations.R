@@ -346,6 +346,29 @@ translations_indirect_base <- list(
     func <- str2lang(func_name)
     eval(substitute(quote(func(x))))
   },
+  convert = function(y = NULL, x) {
+    y <- eval(substitute(quote(y)))
+    if (is.call(y) && !is_constant(y)) {
+      stop("Invalid data type in CONVERT", call. = FALSE)
+    }
+    if (is.null(y)) stop("Unspecified data type in CONVERT", call. = FALSE)
+    if (is.call(y)) {
+      data_type <- data_type_translations_for_base[[tolower(deparse(y[[1]]))]]
+    } else {
+      data_type <- data_type_translations_for_base[[tolower(deparse(y))]]
+    }
+    if (is.null(data_type)) stop("Unrecognized data type in CONVERT", call. = FALSE)
+    func_name <- attr(data_type, "function")
+    if (is.null(func_name)) {
+      func_name <- paste0("as.", data_type)
+    }
+    pkg_name <- attr(data_type, "package")
+    if (!is.null(pkg_name)) {
+      func_name <- paste(pkg_name, func_name, sep = "::")
+    }
+    func <- str2lang(func_name)
+    eval(substitute(quote(func(x))))
+  },
   casewhen = function(... , otherwise) {
     dots <- eval(substitute(alist(...)))
     otherwise <- eval(substitute(quote(otherwise)))
@@ -499,6 +522,29 @@ translations_indirect_tidyverse <- list(
       data_type <- data_type_translations_for_tidyverse[[tolower(deparse(y))]]
     }
     if (is.null(data_type)) stop("Unrecognized data type in CAST", call. = FALSE)
+    func_name <- attr(data_type, "function")
+    if (is.null(func_name)) {
+      func_name <- paste0("as.", data_type)
+    }
+    pkg_name <- attr(data_type, "package")
+    if (!is.null(pkg_name)) {
+      func_name <- paste(pkg_name, func_name, sep = "::")
+    }
+    func <- str2lang(func_name)
+    eval(substitute(quote(func(x))))
+  },
+  convert = function(y = NULL, x) {
+    y <- eval(substitute(quote(y)))
+    if (is.call(y) && !is_constant(y)) {
+      stop("Invalid data type in CONVERT", call. = FALSE)
+    }
+    if (is.null(y)) stop("Unspecified data type in CONVERT", call. = FALSE)
+    if (is.call(y)) {
+      data_type <- data_type_translations_for_tidyverse[[tolower(deparse(y[[1]]))]]
+    } else {
+      data_type <- data_type_translations_for_tidyverse[[tolower(deparse(y))]]
+    }
+    if (is.null(data_type)) stop("Unrecognized data type in CONVERT", call. = FALSE)
     func_name <- attr(data_type, "function")
     if (is.null(func_name)) {
       func_name <- paste0("as.", data_type)

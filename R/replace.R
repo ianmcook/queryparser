@@ -49,7 +49,7 @@ replace_special_functions <- function(expr_quotes_masked) {
 
 replace_special_keywords <- function(expr_quotes_masked) {
 
-  special_keywords <- c("CAST", "TRY_CAST", "BETWEEN", "CASE")
+  special_keywords <- c("CAST", "TRY_CAST", "TRY_CONVERT", "BETWEEN", "CASE")
 
   if (!grepl(paste0("\\b(", paste(special_keywords, collapse = "|"), ")\\b"), expr_quotes_masked, ignore.case = TRUE)) {
     return(expr_quotes_masked)
@@ -85,6 +85,13 @@ replace_special_keywords <- function(expr_quotes_masked) {
       expr_quotes_masked <- paste(repl_strings, collapse = "")
       iter <- iter + 1L # each iteration changes "as" to "," which shortens the string on the left by 1
     }
+  }
+
+  # replace TRY_CONVERT
+  if (grepl(paste0("\\bTRY_CONVERT\\b"), expr_quotes_masked, ignore.case = TRUE)) {
+    # TRY_CONVERT converts to NULL when attempt fails, just like R's `as.*` functions
+    # So, we can handle it the same as CONVERT
+    expr_quotes_masked <- gsub("(\\b)TRY_CONVERT(\\b)", "\\1CONVERT\\2", expr_quotes_masked, ignore.case = TRUE)
   }
 
   # replace NOT BETWEEN and BETWEEN
