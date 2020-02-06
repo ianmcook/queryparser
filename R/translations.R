@@ -732,6 +732,12 @@ translations_indirect_base_agg <- list(
       stop("Function GROUP_CONCAT() requires one or two parameters", call. = FALSE)
     }
     eval(substitute(quote(paste0(x, collapse = sep))))
+  },
+  string_agg = function(x, sep) {
+    if (!nargs() == 2) {
+      stop("Function STRING_AGG() requires two parameters", call. = FALSE)
+    }
+    eval(substitute(quote(paste0(x, collapse = sep))))
   }
 )
 
@@ -754,6 +760,13 @@ translations_indirect_tidyverse_agg <- list(
   group_concat = function(x, sep = ", ") {
     if (!nargs() %in% c(1,2)) {
       stop("Function GROUP_CONCAT() requires one or two parameters", call. = FALSE)
+    }
+    fun <- str2lang("stringr::str_flatten")
+    eval(substitute(quote(fun(x, collapse = sep))))
+  },
+  string_agg = function(x, sep) {
+    if (!nargs() == 2) {
+      stop("Function STRING_AGG() requires two parameters", call. = FALSE)
     }
     fun <- str2lang("stringr::str_flatten")
     eval(substitute(quote(fun(x, collapse = sep))))
