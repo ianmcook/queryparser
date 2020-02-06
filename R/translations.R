@@ -141,7 +141,10 @@ translations_direct_generic <- list(
 
   # string functions
   substring = quote(substr), # substr is translated below
-  to_hex = quote(as.hexmode)
+  to_hex = quote(as.hexmode),
+
+  # logic functions
+  iif = quote(ifelse)
 )
 
 translations_direct_base <- list(
@@ -150,11 +153,13 @@ translations_direct_base <- list(
   char_length = quote(nchar),
   character_length = quote(nchar),
   concat = quote(paste0),
+  len = quote(nchar),
   length = quote(nchar),
   # consider whether to translate length(x) to nchar(x, type = "bytes")
   # which would be consistent with MySQL but not with PostgreSQL
   lcase = quote(tolower),
   lower = quote(tolower),
+  replicate = quote(strrep),
   ucase = quote(toupper),
   upper = quote(toupper),
   to_date = quote(as.Date),
@@ -175,8 +180,10 @@ translations_direct_tidyverse <- list(
   char_length = str2lang("stringr::str_length"),
   character_length = str2lang("stringr::str_length"),
   concat = str2lang("stringr::str_c"),
+  len = str2lang("stringr::str_length"),
   length = str2lang("stringr::str_length"),
   lower = str2lang("stringr::str_to_lower"),
+  replicate = str2lang("stringr::str_dup"),
   reverse = str2lang("stringi::stri_reverse"),
   upper = str2lang("stringr::str_to_upper"),
   to_date = str2lang("lubridate::as_date"),
@@ -195,7 +202,10 @@ translations_direct_tidyverse <- list(
   dayofweek = str2lang("lubridate::wday"),
   hour = str2lang("lubridate::hour"),
   minute = str2lang("lubridate::minute"),
-  now = str2lang("lubridate::now")
+  now = str2lang("lubridate::now"),
+
+  # logic
+  choose = str2lang("dplyr::recode")
 )
 
 # the return value of these indirect expressions must be in the form:
@@ -492,6 +502,17 @@ translations_indirect_base <- list(
       stop <- pmax(as.integer(len) + start - 1L, 0L)
       eval(substitute(quote(substr(x, start, stop))))
     }
+  },
+  charindex = function(string, substring) {
+    warning("Using CHARINDEX with non-ASCII characters may return incorrect results due to multiple ways to represent the same character")
+    eval(substitute(quote(regexpr(substring, string, fixed = TRUE)[1])))
+  },
+  reverse = function(x) {
+    eval(substitute(quote(sapply(lapply(strsplit(x, ""), rev), paste, collapse = ""))))
+  },
+  replace = function(string, substring, replacement) {
+    warning("Using REPLACE with non-ASCII characters may return incorrect results due to multiple ways to represent the same character")
+    eval(substitute(quote(gsub(substring, replacement, string, fixed = TRUE))))
   }
 )
 
@@ -642,6 +663,16 @@ translations_indirect_tidyverse <- list(
       fun <- str2lang("stringr::str_sub")
       eval(substitute(quote(fun(x, start, stop))))
     }
+  },
+  charindex = function(string, substring) {
+    fun <- str2lang("stringr::str_locate")
+    fun2 <- str2lang("stringr::coll")
+    eval(substitute(quote(fun(string, fun2(substring))[1])))
+  },
+  replace = function(string, substring, replacement) {
+    fun <- str2lang("stringr::str_replace")
+    fun2 <- str2lang("stringr::coll")
+    eval(substitute(quote(fun(string, fun2(substring), replacement))))
   },
   dayname = function(x) {
     fun <- str2lang("lubridate::wday")
