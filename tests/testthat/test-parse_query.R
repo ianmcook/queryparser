@@ -385,14 +385,28 @@ test_that("parse_query() stops when unvalid expression used in a SELECT DISTINCT
 test_that("parse_query() stops on incomplete CAST expression", {
   expect_error(
     parse_query("SELECT CAST(x) FROM y"),
-    "cast"
+    "CAST"
   )
 })
 
 test_that("parse_query() stops on malformed CAST expression", {
   expect_error(
     parse_query("SELECT CAST(x) AS y FROM z"),
-    "cast"
+    "CAST"
+  )
+})
+
+test_that("parse_query() stops on incomplete TRY_CAST expression", {
+  expect_error(
+    parse_query("SELECT TRY_CAST(x) FROM y"),
+    "TRY_CAST"
+  )
+})
+
+test_that("parse_query() stops on malformed TRY_CAST expression", {
+  expect_error(
+    parse_query("SELECT TRY_CAST(x) AS y FROM z"),
+    "TRY_CAST"
   )
 })
 
