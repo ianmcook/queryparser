@@ -49,7 +49,7 @@ replace_special_functions <- function(expr_quotes_masked) {
 
 replace_special_keywords <- function(expr_quotes_masked) {
 
-  special_keywords <- c("CAST", "TRY_CAST", "TRY_CONVERT", "BETWEEN", "CASE")
+  special_keywords <- c("CAST", "TRY_CAST", "BETWEEN", "CASE")
 
   if (!grepl(paste0("\\b(", paste(special_keywords, collapse = "|"), ")\\b"), expr_quotes_masked, ignore.case = TRUE)) {
     return(expr_quotes_masked)
@@ -59,40 +59,11 @@ replace_special_keywords <- function(expr_quotes_masked) {
   Encoding(expr_quotes_masked) <- "bytes"
   nchar_bytes <- nchar(expr_quotes_masked, type = "bytes")
 
-  # replace TRY_CAST
-  if (grepl(paste0("\\bTRY_CAST\\b"), expr_quotes_masked, ignore.case = TRUE)) {
-    # TRY_CAST converts to NULL when attempt fails, just like R's `as.*` functions
-    # So, we can handle it the same as CAST
-    expr_quotes_masked <- gsub("(\\b)TRY_CAST(\\b)", "\\1CAST\\2", expr_quotes_masked, ignore.case = TRUE)
-  }
-
   # replace CAST
-  if (grepl(paste0("\\bCAST\\b"), expr_quotes_masked, ignore.case = TRUE)) {
+  expr_quotes_masked <- replace_cast_as(expr_quotes_masked, "CAST")
 
-    # identify positions of "cast(x as y)"
-    err <- "Found function cast() without the keyword AS inside the parentheses after it"
-    cast_as_pos <-
-      find_keyword_pairs(expr_quotes_masked, "cast", "as", parens_diff = +1, error_message = err)
-
-    # replace "cast(x as y)" with "cast(x,y)"
-    iter <- 0L
-    for (pos in cast_as_pos) {
-      first_pos <- c(0L, pos[1L] + 1L, pos[2L] + 1L, pos[2L] + 3L)
-      first_pos[3L:4L] <- first_pos[3L:4L] - iter
-      last_pos <- c(first_pos[2L:4L] - 1L, nchar_bytes - iter)
-      repl_strings <- substring(expr_quotes_masked, first_pos, last_pos)
-      repl_strings <- c(repl_strings[1], repl_strings[2], ",", repl_strings[4])
-      expr_quotes_masked <- paste(repl_strings, collapse = "")
-      iter <- iter + 1L # each iteration changes "as" to "," which shortens the string on the left by 1
-    }
-  }
-
-  # replace TRY_CONVERT
-  if (grepl(paste0("\\bTRY_CONVERT\\b"), expr_quotes_masked, ignore.case = TRUE)) {
-    # TRY_CONVERT converts to NULL when attempt fails, just like R's `as.*` functions
-    # So, we can handle it the same as CONVERT
-    expr_quotes_masked <- gsub("(\\b)TRY_CONVERT(\\b)", "\\1CONVERT\\2", expr_quotes_masked, ignore.case = TRUE)
-  }
+  # replace TRY_CAST
+  expr_quotes_masked <- replace_cast_as(expr_quotes_masked, "TRY_CAST")
 
   # replace NOT BETWEEN and BETWEEN
   if (grepl(paste0("\\bBETWEEN\\b"), expr_quotes_masked, ignore.case = TRUE)) {
@@ -201,8 +172,8 @@ replace_special_keywords <- function(expr_quotes_masked) {
       if (!is.null(else_end_pos)) {
         final_then_operand_boundary <-
           when_then_pos[[num_when_then]][2L] + 5L + else_end_pos[1L] - 1L
-     } else {
-       final_then_operand_boundary <- nchar(case_expression_in) - 3L
+      } else {
+        final_then_operand_boundary <- nchar(case_expression_in) - 3L
       }
 
       for (i in seq_along(when_then_pos)) {
@@ -355,3 +326,32 @@ replace_qualified_names <- function(expr_quotes_masked) {
   )
   expr_quotes_masked
 }
+
+
+# helpers
+replace_cast_as <- function(expr_quotes_masked, func) {
+  if (!grepl(paste0("\\b", func, "\\b"), expr_quotes_masked, ignore.case = TRUE)) {
+    return(expr_quotes_masked)
+  }
+
+  # identify positions of "func(x as y)"
+  err <- paste0("Found function ", func, "() without the keyword AS inside the parentheses after it")
+  cast_as_pos <-
+    find_keyword_pairs(expr_quotes_masked, func, "as", parens_diff = +1, error_message = err)
+  nchar_bytes <- nchar(expr_quotes_masked, type = "bytes")
+
+  # replace "func(x as y)" with "func(x,y)"
+  iter <- 0L
+  for (pos in cast_as_pos) {
+    first_pos <- c(0L, pos[1L] + 1L, pos[2L] + 1L, pos[2L] + 3L)
+    first_pos[3L:4L] <- first_pos[3L:4L] - iter
+    last_pos <- c(first_pos[2L:4L] - 1L, nchar_bytes - iter)
+    repl_strings <- substring(expr_quotes_masked, first_pos, last_pos)
+    repl_strings <- c(repl_strings[1], repl_strings[2], ",", repl_strings[4])
+    expr_quotes_masked <- paste(repl_strings, collapse = "")
+    iter <- iter + 1L # each iteration changes "as" to "," which shortens the string on the left by 1
+  }
+
+  expr_quotes_masked
+}
+
