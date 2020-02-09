@@ -241,3 +241,9 @@ parse_query("SELECT x FROM y WHERE system('rm -rf /')")
   - Efficiently process large batches of queries
   - Facilitate the analysis of queries (for example, to identify
     patterns)
+
+## Related Work
+
+  - The **sqlparseR** package
+    ([CRAN](https://cran.r-project.org/package=sqlparseR)) provides a
+    wrapper around the Python module **sqlparse**.
