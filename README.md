@@ -136,13 +136,11 @@ parse_query(
 #> 
 #> $order_by
 #> $order_by[[1]]
-#> num_seats
+#> -xtfrm(num_seats)
 #> 
 #> $order_by[[2]]
 #> avg_delay
 #> 
-#> attr(,"decreasing")
-#> [1]  TRUE FALSE
 #> attr(,"aggregate")
 #> [1] FALSE FALSE
 #> 
