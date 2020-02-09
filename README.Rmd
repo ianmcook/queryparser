@@ -113,4 +113,4 @@ parse_query("SELECT x FROM y WHERE system('rm -rf /')")
 
 ## Related Work
 
-- The **sqlparseR** package ([CRAN](https://cran.r-project.org/package=sqlparseR)) provides a wrapper around the Python module **sqlparse**.
+The **sqlparseR** package ([CRAN](https://cran.r-project.org/package=sqlparseR)) provides a wrapper around the Python module **sqlparse**.
