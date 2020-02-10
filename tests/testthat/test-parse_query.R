@@ -356,8 +356,8 @@ test_that("parse_query(tidy = TRUE) works with ASC/DESC and NULLS FIRST/LAST in 
     ),
     list(select = list(quote(w), quote(x), quote(y), quote(z)), from = list(quote(df)),
       order_by = list(quote(!is.na(w)), quote(w), quote(!is.na(x)),
-      quote(dplyr::desc(x)), quote(is.na(y)), quote(y), quote(is.na(z)),
-      quote(dplyr::desc(z))))
+      str2lang("dplyr::desc(x)"), quote(is.na(y)), quote(y), quote(is.na(z)),
+      str2lang("dplyr::desc(z)")))
   )
 })
 
