@@ -1,8 +1,9 @@
 # queryparser (development version)
 
 * `ORDER BY` clause can include `NULLS FIRST` and `NULLS LAST` ([#12](https://github.com/ianmcook/queryparser/issues/12), [\@StevenHibble](https://github.com/StevenHibble))
-* Translations of expressions in the `ORDER BY` clause now use `-xtfrm()` instead of the attribute `decreasing` to indicate descending order
+* Translations of expressions in the `ORDER BY` clause now use `-xtfrm()` instead of the attribute `decreasing` to indicate descending order ([\@StevenHibble](https://github.com/StevenHibble))
 * Parentheses can enclose table names and joins in the `FROM` clause ([#23](https://github.com/ianmcook/queryparser/issues/23))
+* More Microsoft SQL Server functions now translate ([#26](https://github.com/ianmcook/queryparser/issues/26), [\@StevenHibble](https://github.com/StevenHibble))
 * Minor bugfixes and improvements
 
 # queryparser 0.2.0
