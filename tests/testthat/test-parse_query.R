@@ -356,8 +356,8 @@ test_that("parse_query(tidy = TRUE) works with ASC/DESC and NULLS FIRST/LAST in 
     ),
     list(select = list(quote(w), quote(x), quote(y), quote(z)), from = list(quote(df)),
       order_by = list(quote(!is.na(w)), quote(w), quote(!is.na(x)),
-      quote(dplyr::desc(x)), quote(is.na(y)), quote(y), quote(is.na(z)),
-      quote(dplyr::desc(z))))
+      str2lang("dplyr::desc(x)"), quote(is.na(y)), quote(y), quote(is.na(z)),
+      str2lang("dplyr::desc(z)")))
   )
 })
 
@@ -385,14 +385,28 @@ test_that("parse_query() stops when unvalid expression used in a SELECT DISTINCT
 test_that("parse_query() stops on incomplete CAST expression", {
   expect_error(
     parse_query("SELECT CAST(x) FROM y"),
-    "cast"
+    "CAST"
   )
 })
 
 test_that("parse_query() stops on malformed CAST expression", {
   expect_error(
     parse_query("SELECT CAST(x) AS y FROM z"),
-    "cast"
+    "CAST"
+  )
+})
+
+test_that("parse_query() stops on incomplete TRY_CAST expression", {
+  expect_error(
+    parse_query("SELECT TRY_CAST(x) FROM y"),
+    "TRY_CAST"
+  )
+})
+
+test_that("parse_query() stops on malformed TRY_CAST expression", {
+  expect_error(
+    parse_query("SELECT TRY_CAST(x) AS y FROM z"),
+    "TRY_CAST"
   )
 })
 

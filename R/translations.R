@@ -141,7 +141,10 @@ translations_direct_generic <- list(
 
   # string functions
   substring = quote(substr), # substr is translated below
-  to_hex = quote(as.hexmode)
+  to_hex = quote(as.hexmode),
+
+  # logic functions
+  iif = quote(ifelse)
 )
 
 translations_direct_base <- list(
@@ -150,11 +153,13 @@ translations_direct_base <- list(
   char_length = quote(nchar),
   character_length = quote(nchar),
   concat = quote(paste0),
+  len = quote(nchar),
   length = quote(nchar),
   # consider whether to translate length(x) to nchar(x, type = "bytes")
   # which would be consistent with MySQL but not with PostgreSQL
   lcase = quote(tolower),
   lower = quote(tolower),
+  replicate = quote(strrep),
   ucase = quote(toupper),
   upper = quote(toupper),
   to_date = quote(as.Date),
@@ -175,8 +180,10 @@ translations_direct_tidyverse <- list(
   char_length = str2lang("stringr::str_length"),
   character_length = str2lang("stringr::str_length"),
   concat = str2lang("stringr::str_c"),
+  len = str2lang("stringr::str_length"),
   length = str2lang("stringr::str_length"),
   lower = str2lang("stringr::str_to_lower"),
+  replicate = str2lang("stringr::str_dup"),
   reverse = str2lang("stringi::stri_reverse"),
   upper = str2lang("stringr::str_to_upper"),
   to_date = str2lang("lubridate::as_date"),
@@ -195,7 +202,10 @@ translations_direct_tidyverse <- list(
   dayofweek = str2lang("lubridate::wday"),
   hour = str2lang("lubridate::hour"),
   minute = str2lang("lubridate::minute"),
-  now = str2lang("lubridate::now")
+  now = str2lang("lubridate::now"),
+
+  # logic
+  choose = str2lang("dplyr::recode")
 )
 
 # the return value of these indirect expressions must be in the form:
@@ -301,6 +311,26 @@ translations_indirect_generic <- list(
   },
   ifnull = function(x, y) {
     eval(substitute(quote(ifelse(is.na(x), y, x))))
+  },
+  isnull = function(x, y) {
+    if (!nargs() %in% c(1,2)) {
+      stop("Function ISNULL() requires one or two parameters", call. = FALSE)
+    }
+
+    # MySQL/Hive check for NULL-ness
+    if (nargs() == 1) {
+      expr <- eval(substitute(quote(is.na(x))))
+    }
+
+    # SQL Server replace NULL (similar to IFNULL, NVL, COALESCE)
+    if (nargs() == 2) {
+      expr <- eval(substitute(quote(ifelse(is.na(x), y, x))))
+    }
+
+    expr
+  },
+  nvl = function(x, y) {
+    eval(substitute(quote(ifelse(is.na(x), y, x))))
   }
 )
 
@@ -339,6 +369,75 @@ translations_indirect_base <- list(
     }
     func <- str2lang(func_name)
     eval(substitute(quote(func(x))))
+  },
+  try_cast = function(x, y = NULL) {
+    y <- eval(substitute(quote(y)))
+    if (is.call(y) && !is_constant(y)) {
+      stop("Invalid data type in TRY_CAST", call. = FALSE)
+    }
+    if (is.null(y)) stop("Unspecified data type in TRY_CAST", call. = FALSE)
+    if (is.call(y)) {
+      data_type <- data_type_translations_for_base[[tolower(deparse(y[[1]]))]]
+    } else {
+      data_type <- data_type_translations_for_base[[tolower(deparse(y))]]
+    }
+    if (is.null(data_type)) stop("Unrecognized data type in TRY_CAST", call. = FALSE)
+    func_name <- attr(data_type, "function")
+    if (is.null(func_name)) {
+      func_name <- paste0("as.", data_type)
+    }
+    pkg_name <- attr(data_type, "package")
+    if (!is.null(pkg_name)) {
+      func_name <- paste(pkg_name, func_name, sep = "::")
+    }
+    func <- str2lang(func_name)
+    eval(substitute(quote(suppressWarnings(func(x)))))
+  },
+  convert = function(y = NULL, x) {
+    y <- eval(substitute(quote(y)))
+    if (is.call(y) && !is_constant(y)) {
+      stop("Invalid data type in CONVERT", call. = FALSE)
+    }
+    if (is.null(y)) stop("Unspecified data type in CONVERT", call. = FALSE)
+    if (is.call(y)) {
+      data_type <- data_type_translations_for_base[[tolower(deparse(y[[1]]))]]
+    } else {
+      data_type <- data_type_translations_for_base[[tolower(deparse(y))]]
+    }
+    if (is.null(data_type)) stop("Unrecognized data type in CONVERT", call. = FALSE)
+    func_name <- attr(data_type, "function")
+    if (is.null(func_name)) {
+      func_name <- paste0("as.", data_type)
+    }
+    pkg_name <- attr(data_type, "package")
+    if (!is.null(pkg_name)) {
+      func_name <- paste(pkg_name, func_name, sep = "::")
+    }
+    func <- str2lang(func_name)
+    eval(substitute(quote(func(x))))
+  },
+  try_convert = function(y = NULL, x) {
+    y <- eval(substitute(quote(y)))
+    if (is.call(y) && !is_constant(y)) {
+      stop("Invalid data type in TRY_CONVERT", call. = FALSE)
+    }
+    if (is.null(y)) stop("Unspecified data type in TRY_CONVERT", call. = FALSE)
+    if (is.call(y)) {
+      data_type <- data_type_translations_for_base[[tolower(deparse(y[[1]]))]]
+    } else {
+      data_type <- data_type_translations_for_base[[tolower(deparse(y))]]
+    }
+    if (is.null(data_type)) stop("Unrecognized data type in TRY_CONVERT", call. = FALSE)
+    func_name <- attr(data_type, "function")
+    if (is.null(func_name)) {
+      func_name <- paste0("as.", data_type)
+    }
+    pkg_name <- attr(data_type, "package")
+    if (!is.null(pkg_name)) {
+      func_name <- paste(pkg_name, func_name, sep = "::")
+    }
+    func <- str2lang(func_name)
+    eval(substitute(quote(suppressWarnings(func(x)))))
   },
   casewhen = function(... , otherwise) {
     dots <- eval(substitute(alist(...)))
@@ -405,7 +504,7 @@ translations_indirect_base <- list(
     eval(substitute(quote(paste(..., sep = sep))))
   },
   nullif = function(x, y) {
-    eval(substitute(quote(ifelse(is.na(x), x, y))))
+    eval(substitute(quote(ifelse(x==y, NA, x))))
   },
   lpad = function(str, len, pad) {
     if (!is_constant(eval(substitute(quote(len)))) ||
@@ -463,6 +562,17 @@ translations_indirect_base <- list(
       stop <- pmax(as.integer(len) + start - 1L, 0L)
       eval(substitute(quote(substr(x, start, stop))))
     }
+  },
+  charindex = function(string, substring) {
+    warning("Using CHARINDEX with non-ASCII characters may return incorrect results due to multiple ways to represent the same character", call. = FALSE)
+    eval(substitute(quote(regexpr(substring, string, fixed = TRUE)[1])))
+  },
+  reverse = function(x) {
+    eval(substitute(quote(sapply(lapply(strsplit(x, ""), rev), paste, collapse = ""))))
+  },
+  replace = function(string, substring, replacement) {
+    warning("Using REPLACE with non-ASCII characters may return incorrect results due to multiple ways to represent the same character", call. = FALSE)
+    eval(substitute(quote(gsub(substring, replacement, string, fixed = TRUE))))
   }
 )
 
@@ -503,6 +613,75 @@ translations_indirect_tidyverse <- list(
     }
     func <- str2lang(func_name)
     eval(substitute(quote(func(x))))
+  },
+  try_cast = function(x, y = NULL) {
+    y <- eval(substitute(quote(y)))
+    if (is.call(y) && !is_constant(y)) {
+      stop("Invalid data type in TRY_CAST", call. = FALSE)
+    }
+    if (is.null(y)) stop("Unspecified data type in TRY_CAST", call. = FALSE)
+    if (is.call(y)) {
+      data_type <- data_type_translations_for_tidyverse[[tolower(deparse(y[[1]]))]]
+    } else {
+      data_type <- data_type_translations_for_tidyverse[[tolower(deparse(y))]]
+    }
+    if (is.null(data_type)) stop("Unrecognized data type in TRY_CAST", call. = FALSE)
+    func_name <- attr(data_type, "function")
+    if (is.null(func_name)) {
+      func_name <- paste0("as.", data_type)
+    }
+    pkg_name <- attr(data_type, "package")
+    if (!is.null(pkg_name)) {
+      func_name <- paste(pkg_name, func_name, sep = "::")
+    }
+    func <- str2lang(func_name)
+    eval(substitute(quote(suppressWarnings(func(x)))))
+  },
+  convert = function(y = NULL, x) {
+    y <- eval(substitute(quote(y)))
+    if (is.call(y) && !is_constant(y)) {
+      stop("Invalid data type in CONVERT", call. = FALSE)
+    }
+    if (is.null(y)) stop("Unspecified data type in CONVERT", call. = FALSE)
+    if (is.call(y)) {
+      data_type <- data_type_translations_for_tidyverse[[tolower(deparse(y[[1]]))]]
+    } else {
+      data_type <- data_type_translations_for_tidyverse[[tolower(deparse(y))]]
+    }
+    if (is.null(data_type)) stop("Unrecognized data type in CONVERT", call. = FALSE)
+    func_name <- attr(data_type, "function")
+    if (is.null(func_name)) {
+      func_name <- paste0("as.", data_type)
+    }
+    pkg_name <- attr(data_type, "package")
+    if (!is.null(pkg_name)) {
+      func_name <- paste(pkg_name, func_name, sep = "::")
+    }
+    func <- str2lang(func_name)
+    eval(substitute(quote(func(x))))
+  },
+  try_convert = function(y = NULL, x) {
+    y <- eval(substitute(quote(y)))
+    if (is.call(y) && !is_constant(y)) {
+      stop("Invalid data type in TRY_CONVERT", call. = FALSE)
+    }
+    if (is.null(y)) stop("Unspecified data type in TRY_CONVERT", call. = FALSE)
+    if (is.call(y)) {
+      data_type <- data_type_translations_for_tidyverse[[tolower(deparse(y[[1]]))]]
+    } else {
+      data_type <- data_type_translations_for_tidyverse[[tolower(deparse(y))]]
+    }
+    if (is.null(data_type)) stop("Unrecognized data type in TRY_CONVERT", call. = FALSE)
+    func_name <- attr(data_type, "function")
+    if (is.null(func_name)) {
+      func_name <- paste0("as.", data_type)
+    }
+    pkg_name <- attr(data_type, "package")
+    if (!is.null(pkg_name)) {
+      func_name <- paste(pkg_name, func_name, sep = "::")
+    }
+    func <- str2lang(func_name)
+    eval(substitute(quote(suppressWarnings(func(x)))))
   },
   casewhen = function(... , otherwise) {
     dots <- eval(substitute(alist(...)))
@@ -590,6 +769,16 @@ translations_indirect_tidyverse <- list(
       fun <- str2lang("stringr::str_sub")
       eval(substitute(quote(fun(x, start, stop))))
     }
+  },
+  charindex = function(string, substring) {
+    fun <- str2lang("stringr::str_locate")
+    fun2 <- str2lang("stringr::coll")
+    eval(substitute(quote(fun(string, fun2(substring))[1])))
+  },
+  replace = function(string, substring, replacement) {
+    fun <- str2lang("stringr::str_replace")
+    fun2 <- str2lang("stringr::coll")
+    eval(substitute(quote(fun(string, fun2(substring), replacement))))
   },
   dayname = function(x) {
     fun <- str2lang("lubridate::wday")
@@ -680,6 +869,12 @@ translations_indirect_base_agg <- list(
       stop("Function GROUP_CONCAT() requires one or two parameters", call. = FALSE)
     }
     eval(substitute(quote(paste0(x, collapse = sep))))
+  },
+  string_agg = function(x, sep) {
+    if (!nargs() == 2) {
+      stop("Function STRING_AGG() requires two parameters", call. = FALSE)
+    }
+    eval(substitute(quote(paste0(x, collapse = sep))))
   }
 )
 
@@ -702,6 +897,13 @@ translations_indirect_tidyverse_agg <- list(
   group_concat = function(x, sep = ", ") {
     if (!nargs() %in% c(1,2)) {
       stop("Function GROUP_CONCAT() requires one or two parameters", call. = FALSE)
+    }
+    fun <- str2lang("stringr::str_flatten")
+    eval(substitute(quote(fun(x, collapse = sep))))
+  },
+  string_agg = function(x, sep) {
+    if (!nargs() == 2) {
+      stop("Function STRING_AGG() requires two parameters", call. = FALSE)
     }
     fun <- str2lang("stringr::str_flatten")
     eval(substitute(quote(fun(x, collapse = sep))))
