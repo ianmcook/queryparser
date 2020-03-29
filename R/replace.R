@@ -327,8 +327,6 @@ replace_qualified_names <- function(expr_quotes_masked) {
   expr_quotes_masked
 }
 
-
-# helpers
 replace_cast_as <- function(expr_quotes_masked, func) {
   if (!grepl(paste0("\\b", func, "\\b"), expr_quotes_masked, ignore.case = TRUE)) {
     return(expr_quotes_masked)
@@ -354,4 +352,3 @@ replace_cast_as <- function(expr_quotes_masked, func) {
 
   expr_quotes_masked
 }
-
