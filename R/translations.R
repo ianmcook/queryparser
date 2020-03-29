@@ -558,14 +558,14 @@ translations_indirect_base <- list(
     }
   },
   charindex = function(string, substring) {
-    warning("Using CHARINDEX with non-ASCII characters may return incorrect results due to multiple ways to represent the same character", call. = FALSE)
+    warning("Using charindex() with non-ASCII characters may return incorrect results", call. = FALSE)
     eval(substitute(quote(regexpr(substring, string, fixed = TRUE)[1])))
   },
   reverse = function(x) {
     eval(substitute(quote(sapply(lapply(strsplit(x, ""), rev), paste, collapse = ""))))
   },
   replace = function(string, substring, replacement) {
-    warning("Using REPLACE with non-ASCII characters may return incorrect results due to multiple ways to represent the same character", call. = FALSE)
+    warning("Using replace() with non-ASCII characters may return incorrect results", call. = FALSE)
     eval(substitute(quote(gsub(substring, replacement, string, fixed = TRUE))))
   }
 )
