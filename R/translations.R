@@ -313,21 +313,15 @@ translations_indirect_generic <- list(
     eval(substitute(quote(ifelse(is.na(x), y, x))))
   },
   isnull = function(x, y) {
-    if (!nargs() %in% c(1,2)) {
-      stop("Function ISNULL() requires one or two parameters", call. = FALSE)
-    }
-
-    # MySQL/Hive check for NULL-ness
     if (nargs() == 1) {
-      expr <- eval(substitute(quote(is.na(x))))
+      # MySQL/Hive check for NULL-ness
+      return(eval(substitute(quote(is.na(x)))))
+    } else if (nargs() == 2) {
+      # SQL Server replace NULL (similar to ifnull, nvl, coalesce)
+      return(eval(substitute(quote(ifelse(is.na(x), y, x)))))
+    } else {
+      stop("Function isnull() requires one or two parameters", call. = FALSE)
     }
-
-    # SQL Server replace NULL (similar to IFNULL, NVL, COALESCE)
-    if (nargs() == 2) {
-      expr <- eval(substitute(quote(ifelse(is.na(x), y, x))))
-    }
-
-    expr
   },
   nvl = function(x, y) {
     eval(substitute(quote(ifelse(is.na(x), y, x))))
