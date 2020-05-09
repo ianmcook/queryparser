@@ -1,4 +1,4 @@
-# queryparser (development version)
+# queryparser 0.3.0
 
 * `ORDER BY` clause can include `NULLS FIRST` and `NULLS LAST` ([#12](https://github.com/ianmcook/queryparser/issues/12), [\@StevenHibble](https://github.com/StevenHibble))
 * Translations of expressions in the `ORDER BY` clause now use `-xtfrm()` instead of the attribute `decreasing` to indicate descending order ([\@StevenHibble](https://github.com/StevenHibble))

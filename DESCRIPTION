@@ -1,7 +1,7 @@
 Package: queryparser
 Type: Package
 Title: Translate 'SQL' Queries into 'R' Expressions
-Version: 0.2.0.9001
+Version: 0.3.0
 Authors@R: c(
     person("Ian", "Cook", email = "ian@cloudera.com", role = c("aut", "cre")),
     person(family = "Cloudera", role = c("cph"))
