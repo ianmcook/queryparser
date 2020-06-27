@@ -294,6 +294,21 @@ test_that("parse_expression(tidy = TRUE) successfully parses test expression #23
   )
 })
 
+test_that("parse_expression(tidy = TRUE) successfully parses test expression #24 with substring_index()", {
+  expect_equal(
+    parse_expression("substring_index('www.mysql.com', '.', 0)", tidy = TRUE),
+    ""
+  )
+})
+
+test_that("parse_expression(tidy = TRUE) successfully parses test expression #25 with substring_index()", {
+  expect_equal(
+    parse_expression("substring_index('xxxABCyyyABCzzz', 'ABC', -2)", tidy = TRUE),
+    str2lang("dplyr::coalesce(stringi::stri_reverse(stringr::str_extract(stringi::stri_reverse('xxxABCyyyABCzzz'),
+    '^(.*?\\\\QCBA\\\\E.*?){1}(?=\\\\QCBA\\\\E)')), 'xxxABCyyyABCzzz')")
+  )
+})
+
 test_that("parse_expression() stops on malformed CASE expression with no END", {
   expect_error(
     parse_expression(paste(
