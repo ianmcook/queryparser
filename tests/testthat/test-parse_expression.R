@@ -262,6 +262,38 @@ test_that("parse_expression(tidy = TRUE) successfully parses test expression #19
   )
 })
 
+test_that("parse_expression(tidy = TRUE) successfully parses test expression #20 with substring_index()", {
+  expect_equal(
+    parse_expression("substring_index('www.mysql.com', '.', 1)", tidy = TRUE),
+    str2lang("dplyr::coalesce(stringr::str_extract('www.mysql.com', '^.*?(?=\\\\Q.\\\\E)'),
+    'www.mysql.com')")
+  )
+})
+
+test_that("parse_expression(tidy = TRUE) successfully parses test expression #21 with substring_index()", {
+  expect_equal(
+    parse_expression("substring_index('www.mysql.com', '.', 2)", tidy = TRUE),
+    str2lang("dplyr::coalesce(stringr::str_extract('www.mysql.com', '^(.*?\\\\Q.\\\\E.*?){1}(?=\\\\Q.\\\\E)'),
+    'www.mysql.com')")
+  )
+})
+
+test_that("parse_expression(tidy = TRUE) successfully parses test expression #22 with substring_index()", {
+  expect_equal(
+    parse_expression("substring_index('www.mysql.com', '.', -1)", tidy = TRUE),
+    str2lang("dplyr::coalesce(stringi::stri_reverse(stringr::str_extract(stringi::stri_reverse('www.mysql.com'),
+    '^.*?(?=\\\\Q.\\\\E)')), 'www.mysql.com')")
+  )
+})
+
+test_that("parse_expression(tidy = TRUE) successfully parses test expression #23 with substring_index()", {
+  expect_equal(
+    parse_expression("substring_index('www.mysql.com', '.', -2)", tidy = TRUE),
+    str2lang("dplyr::coalesce(stringi::stri_reverse(stringr::str_extract(stringi::stri_reverse('www.mysql.com'),
+    '^(.*?\\\\Q.\\\\E.*?){1}(?=\\\\Q.\\\\E)')), 'www.mysql.com')")
+  )
+})
+
 test_that("parse_expression() stops on malformed CASE expression with no END", {
   expect_error(
     parse_expression(paste(
