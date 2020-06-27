@@ -774,8 +774,8 @@ translations_indirect_tidyverse <- list(
     coa_fun <- str2lang("dplyr::coalesce")
     ext_fun <- str2lang("stringr::str_extract")
     count <- as.integer(round(count))
-    if(count < 0) {
-      delim <- eval(rev_fun)(delim)
+    if(count < 0 && nchar(delim) > 1) {
+      delim <- sapply(lapply(strsplit(delim, ""), rev), paste, collapse = "")
     }
     if (abs(count) == 1L) {
       pattern <- paste0("^.*?(?=\\Q", delim, "\\E)")
