@@ -764,6 +764,32 @@ translations_indirect_tidyverse <- list(
       eval(substitute(quote(fun(x, start, stop))))
     }
   },
+  substring_index = function(string, delim, count) {
+    if (!is_constant(eval(substitute(quote(delim)))) ||
+        !is_constant(eval(substitute(quote(count))))) {
+      stop("The second and third arguments to substring_index() ",
+           "must be constant values", call. = FALSE)
+    }
+    rev_fun <- str2lang("stringi::stri_reverse")
+    coa_fun <- str2lang("dplyr::coalesce")
+    ext_fun <- str2lang("stringr::str_extract")
+    count <- as.integer(round(count))
+    if(count < 0) {
+      delim <- eval(rev_fun)(delim)
+    }
+    if (abs(count) == 1L) {
+      pattern <- paste0("^.*?(?=\\Q", delim, "\\E)")
+    } else if (abs(count) > 1L) {
+      pattern <- paste0("^(.*?\\Q", delim, "\\E.*?){", abs(count) - 1L, "}(?=\\Q", delim, "\\E)")
+    }
+    if (count == 0) {
+      ""
+    } else if (count < 0) {
+      eval(substitute(quote(coa_fun(rev_fun(ext_fun(rev_fun(string), pattern)), string))))
+    } else {
+      eval(substitute(quote(coa_fun(ext_fun(string, pattern), string))))
+    }
+  },
   charindex = function(string, substring) {
     fun <- str2lang("stringr::str_locate")
     fun2 <- str2lang("stringr::coll")
