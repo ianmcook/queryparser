@@ -1,3 +1,7 @@
+# queryparser (development version)
+
+* `substring_index()` translates when `tidyverse = TRUE` ([#29](https://github.com/ianmcook/queryparser/issues/29))
+
 # queryparser 0.3.0
 
 * `ORDER BY` clause can include `NULLS FIRST` and `NULLS LAST` ([#12](https://github.com/ianmcook/queryparser/issues/12), [\@StevenHibble](https://github.com/StevenHibble))
