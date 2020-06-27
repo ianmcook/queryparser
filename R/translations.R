@@ -770,9 +770,6 @@ translations_indirect_tidyverse <- list(
       stop("The second and third arguments to substring_index() ",
            "must be constant values", call. = FALSE)
     }
-    rev_fun <- str2lang("stringi::stri_reverse")
-    coa_fun <- str2lang("dplyr::coalesce")
-    ext_fun <- str2lang("stringr::str_extract")
     count <- as.integer(round(count))
     if(count < 0 && nchar(delim) > 1) {
       delim <- sapply(lapply(strsplit(delim, ""), rev), paste, collapse = "")
@@ -782,6 +779,9 @@ translations_indirect_tidyverse <- list(
     } else if (abs(count) > 1L) {
       pattern <- paste0("^(.*?\\Q", delim, "\\E.*?){", abs(count) - 1L, "}(?=\\Q", delim, "\\E)")
     }
+    rev_fun <- str2lang("stringi::stri_reverse")
+    coa_fun <- str2lang("dplyr::coalesce")
+    ext_fun <- str2lang("stringr::str_extract")
     if (count == 0) {
       ""
     } else if (count < 0) {
