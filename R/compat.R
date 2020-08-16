@@ -23,3 +23,9 @@ if (!exists("str2lang")) {
 deparse <- function(expr, width.cutoff = 500, ...) {
   paste0(trimws(base::deparse(expr, width.cutoff, ...)), collapse = " ")
 }
+
+# to avoid "truncating string with embedded nuls" warnings
+# in R version 4.0.0 and higher
+readChar <- function (con, nchars, useBytes = FALSE) {
+  suppressWarnings(base::readChar(con, nchars, useBytes))
+}
