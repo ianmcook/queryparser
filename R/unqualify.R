@@ -80,7 +80,7 @@ unqualify_expression <- function(expr, prefixes, column_names) {
           "",
           qualified_column_name
         )
-        return(str2lang(unqualified_column_name))
+        return(str2lang(paste0("`", unqualified_column_name, "`")))
       } else {
         return(expr)
       }
