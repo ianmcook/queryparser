@@ -1,6 +1,8 @@
 # queryparser (development version)
 
 * `substring_index()` translates when `tidyverse = TRUE` ([#29](https://github.com/ianmcook/queryparser/issues/29))
+* `embedded nuls` warnings are silenced ([#30](https://github.com/ianmcook/queryparser/issues/30))
+* Syntactically invalid column names are allowed in backticks ([#31](https://github.com/ianmcook/queryparser/issues/31))
 
 # queryparser 0.3.0
 
