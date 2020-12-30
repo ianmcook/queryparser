@@ -329,7 +329,8 @@ is_word_character <- function(char, useBytes = FALSE, allow_colons_in_word = FAL
 }
 
 is_non_word_character <- function(char, useBytes = FALSE) {
-  grepl(non_word_char_regex, char, useBytes = useBytes)
+  #grepl(non_word_char_regex, char, useBytes = useBytes) # do not use; returns true on UTF-8 word characters
+  !grepl(word_char_regex, char, useBytes = useBytes)
 }
 
 keyword_starts_here <- function(rc, keyword, useBytes = FALSE, look_back = TRUE) {
@@ -383,7 +384,7 @@ find_keyword_pairs <- function(expr_quotes_masked, keyword_1, keyword_2, operand
 
   rc <- rawConnection(raw(0L), "r+")
   on.exit(close(rc))
-  writeChar(paste0(expr_quotes_masked, " "), rc)
+  writeChar(paste0(expr_quotes_masked, " "), rc, nchars = nchar(iconv(expr_quotes_masked)) + 1L, useBytes = TRUE)
   len <- seek(rc, 0L) - 1L
 
   in_parens <- 0
@@ -403,7 +404,7 @@ find_keyword_pairs <- function(expr_quotes_masked, keyword_1, keyword_2, operand
       next;
     }
 
-    if (keyword_starts_here(rc, keyword_1)) {
+    if (keyword_starts_here(rc, keyword_1, useBytes = TRUE)) {
       if (operands) {
         left_operand_start <- find_beginning_of_boolean_operand_before(rc, in_parens)
       }
@@ -463,7 +464,7 @@ find_this_keyword_after <- function(rc, len, keyword, in_parens, parens_diff = 0
       }
     }
 
-    if (in_parens == orig_parens + parens_diff && keyword_starts_here(rc, keyword)) {
+    if (in_parens == orig_parens + parens_diff && keyword_starts_here(rc, keyword, useBytes = TRUE)) {
       return(pos);
     }
 
@@ -517,7 +518,7 @@ find_beginning_of_boolean_operand_before <- function(rc, in_parens) {
       if (in_parens < orig_parens) {
         return(pos + 1L)
       }
-    } else if (in_parens == orig_parens &&
+    } else if (in_parens == orig_parens && validEnc(previous_thing) &&
                isTRUE(tolower(previous_thing) %in% c(sql_logical_operand_left_boundary_words, ","))) {
       return(pos)
     }
@@ -538,8 +539,18 @@ get_next_character_word_or_number <- function(rc, len, allow_colons_in_word = FA
   while((pos <- seek(rc, NA)) <= len) {
     char <- readChar(rc, 1L)
 
+    # if it has invalid coding, it might be part of
+    # a Unicode character with more than one byte
+    # so get the whole character
+    bytes <- 2L
+    while (pos + bytes <= len && !validEnc(char)) {
+      seek(rc, pos)
+      char <- readChar(rc, bytes)
+      bytes <- bytes + 1L
+    }
+
     # if it's a space, get the next one
-    if (is_whitespace_character(char)) {
+    if (is_whitespace_character(char, useBytes = TRUE)) {
       next;
     }
 
@@ -551,8 +562,8 @@ get_next_character_word_or_number <- function(rc, len, allow_colons_in_word = FA
     # if it's a word character or digit, keep going
     # until there's a non-word character or non-digit,
     # and return the whole word or number
-    if (is_word_character(char, allow_colons_in_word)) { # this matches digits
-      while(is_word_character(char, allow_colons_in_word)) { # this matches digits
+    if (is_word_character(char, useBytes = TRUE, allow_colons_in_word = allow_colons_in_word)) { # this matches digits
+      while(is_word_character(char, useBytes = TRUE, allow_colons_in_word = allow_colons_in_word)) { # this matches digits
         out_str <- paste0(out_str, char)
         char <- readChar(rc, 1L)
       }
@@ -580,8 +591,19 @@ get_previous_character_word_or_number <- function(rc, allow_colons_in_word = FAL
     seek(rc, -2L, "current")
     char <- readChar(rc, 1L)
 
+    # if the character has invalid coding, it might be part
+    # of a Unicode character with more than one byte
+    # so get the whole character
+    bytes <- 1L
+    while (pos - bytes >= 1L && !validEnc(char)) {
+      seek(rc, pos - bytes - 1L)
+      char <- readChar(rc, bytes, useBytes = TRUE)
+      seek(rc, pos - 1L)
+      bytes <- bytes + 1L
+    }
+
     # if it's a space, get the previous one
-    if (is_whitespace_character(char)) {
+    if (is_whitespace_character(char, useBytes = TRUE)) {
       next;
     }
 
@@ -593,11 +615,18 @@ get_previous_character_word_or_number <- function(rc, allow_colons_in_word = FAL
     # if it's a word character or digit, keep going
     # until there's a non-word character or non-digit,
     # and return the whole word or number
-    if (is_word_character(char, allow_colons_in_word)) { # this matches digits
-      while(is_word_character(char, allow_colons_in_word)) { # this matches digits
-        out_str <- paste0(char, out_str)
+    if (!validEnc(char) || is_word_character(char, useBytes = TRUE, allow_colons_in_word = allow_colons_in_word)) { # this matches digits
+      char_len <- 1L
+      while(char_len > 1L || is_word_character(char, useBytes = TRUE, allow_colons_in_word = allow_colons_in_word)) { # this matches digits
+        if (char_len == 1L) {
+          out_str <- paste0(char, out_str)
+        }
         at_start <- tryCatch({
-          seek(rc, -2L, "current")
+          if (char_len == 1L) {
+            seek(rc, -nchar(char, type = "bytes") - 1L, "current")
+          } else {
+            seek(rc, -char_len, "current")
+          }
           FALSE
         }, error = function(e) {
           TRUE
@@ -605,7 +634,12 @@ get_previous_character_word_or_number <- function(rc, allow_colons_in_word = FAL
         if (at_start) {
           break;
         }
-        char <- readChar(rc, 1L)
+        char <- readChar(rc, char_len, useBytes = TRUE)
+        if (validEnc(char)) {
+          char_len <- 1L
+        } else {
+          char_len <- char_len + 1L
+        }
       }
       break;
     }
@@ -645,6 +679,9 @@ ends_with_operator_expecting_right_operand <- function(expr, except = c()) {
   expr <- trimws(expr)
   expr_length <- nchar(expr, type = "bytes")
   original_encoding <- Encoding(expr)
+  if (original_encoding == "unknown") {
+    original_encoding <- "UTF-8"
+  }
   Encoding(expr) <- "bytes"
   last_char <- substr(expr, expr_length, expr_length)
   Encoding(expr) <- original_encoding

@@ -43,6 +43,9 @@ split_query <- function(query, tidyverse) {
   }
 
   original_encoding <- Encoding(query)
+  if (original_encoding == "unknown") {
+    original_encoding <- "UTF-8"
+  }
 
   query <- trimws(query)
   query <- squish_sql(query)
@@ -112,7 +115,7 @@ split_query <- function(query, tidyverse) {
       escaped <- FALSE
       in_parens <- in_parens - 1
       in_word <- FALSE
-    } else if (is_word_character(char)) {
+    } else if (is_word_character(char, useBytes = TRUE)) {
       escaped <- FALSE
       in_word <- TRUE
     } else {
@@ -326,6 +329,9 @@ split_comma_list <- function(comma_list) {
     trimws(comma_list)
   } else {
     original_encoding <- Encoding(comma_list)
+    if (original_encoding == "unknown") {
+      original_encoding <- "UTF-8"
+    }
     Encoding(comma_list) <- "bytes"
     out <- trimws(
       substring(comma_list, c(1, pos_comma + 1), c(pos_comma - 1, len))

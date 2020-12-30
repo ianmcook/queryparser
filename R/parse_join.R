@@ -68,7 +68,7 @@ parse_join <- function(expr, tidyverse, secure) {
       escaped <- FALSE
       in_parens <- in_parens - 1
       in_word <- FALSE
-    } else if (is_word_character(char, allow_colons_in_word = TRUE)) {
+    } else if (is_word_character(char, allow_colons_in_word = TRUE, useBytes = TRUE)) {
       escaped <- FALSE
       in_word <- TRUE
     } else {
@@ -226,7 +226,7 @@ parse_join <- function(expr, tidyverse, secure) {
           stop("Use the ON or USING clause to specify required join conditions", call. = FALSE)
         }
 
-        if (preceded_by_keyword(rc, "cross")) {
+        if (preceded_by_keyword(rc, "cross", useBytes = TRUE)) {
 
           seek(rc, -6L, "current")
 
@@ -238,7 +238,7 @@ parse_join <- function(expr, tidyverse, secure) {
 
           seek(rc, 6L, "current")
 
-        } else if (preceded_by_keyword(rc, "natural")) {
+        } else if (preceded_by_keyword(rc, "natural", useBytes = TRUE)) {
 
           seek(rc, -8L, "current")
 
@@ -250,11 +250,11 @@ parse_join <- function(expr, tidyverse, secure) {
 
           seek(rc, 8L, "current")
 
-        } else if (preceded_by_keyword(rc, "inner")) {
+        } else if (preceded_by_keyword(rc, "inner", useBytes = TRUE)) {
 
           seek(rc, -6L, "current")
 
-          if (preceded_by_keyword(rc, "natural")) {
+          if (preceded_by_keyword(rc, "natural", useBytes = TRUE)) {
 
             seek(rc, -8L, "current")
 
@@ -266,10 +266,10 @@ parse_join <- function(expr, tidyverse, secure) {
 
             seek(rc, 8L, "current")
 
-            } else if (preceded_by_keyword(rc, "left") ||
-                       preceded_by_keyword(rc, "right") ||
-                       preceded_by_keyword(rc, "full") ||
-                       preceded_by_keyword(rc, "outer")) {
+            } else if (preceded_by_keyword(rc, "left", useBytes = TRUE) ||
+                       preceded_by_keyword(rc, "right", useBytes = TRUE) ||
+                       preceded_by_keyword(rc, "full", useBytes = TRUE) ||
+                       preceded_by_keyword(rc, "outer", useBytes = TRUE)) {
 
               stop("Invalid JOIN type", call. = FALSE)
 
@@ -283,11 +283,11 @@ parse_join <- function(expr, tidyverse, secure) {
           }
           seek(rc, 6L, "current")
 
-        } else if (preceded_by_keyword(rc, "outer")) {
+        } else if (preceded_by_keyword(rc, "outer", useBytes = TRUE)) {
 
           seek(rc, -6L, "current")
 
-          if (preceded_by_keyword(rc, "natural")) {
+          if (preceded_by_keyword(rc, "natural", useBytes = TRUE)) {
 
             seek(rc, -8L, "current")
 
@@ -299,11 +299,11 @@ parse_join <- function(expr, tidyverse, secure) {
 
             seek(rc, 8L, "current")
 
-          } else if (preceded_by_keyword(rc, "left")) {
+          } else if (preceded_by_keyword(rc, "left", useBytes = TRUE)) {
 
             seek(rc, -5L, "current")
 
-            if (preceded_by_keyword(rc, "natural")) {
+            if (preceded_by_keyword(rc, "natural", useBytes = TRUE)) {
 
               seek(rc, -8L, "current")
 
@@ -326,11 +326,11 @@ parse_join <- function(expr, tidyverse, secure) {
 
             seek(rc, 5L, "current")
 
-          } else if (preceded_by_keyword(rc, "right")) {
+          } else if (preceded_by_keyword(rc, "right", useBytes = TRUE)) {
 
             seek(rc, -6L, "current")
 
-            if (preceded_by_keyword(rc, "natural")) {
+            if (preceded_by_keyword(rc, "natural", useBytes = TRUE)) {
 
               seek(rc, -8L, "current")
 
@@ -353,11 +353,11 @@ parse_join <- function(expr, tidyverse, secure) {
 
             seek(rc, 6L, "current")
 
-          } else if (preceded_by_keyword(rc, "full")) {
+          } else if (preceded_by_keyword(rc, "full", useBytes = TRUE)) {
 
             seek(rc, -5L, "current")
 
-            if (preceded_by_keyword(rc, "natural")) {
+            if (preceded_by_keyword(rc, "natural", useBytes = TRUE)) {
 
               seek(rc, -8L, "current")
 
@@ -380,7 +380,7 @@ parse_join <- function(expr, tidyverse, secure) {
 
             seek(rc, 5L, "current")
 
-          } else if (preceded_by_keyword(rc, "inner")) {
+          } else if (preceded_by_keyword(rc, "inner", useBytes = TRUE)) {
 
             stop("Invalid JOIN type", call. = FALSE)
 
@@ -395,15 +395,15 @@ parse_join <- function(expr, tidyverse, secure) {
 
           seek(rc, 6L, "current")
 
-        } else if (preceded_by_keyword(rc, "semi")) {
+        } else if (preceded_by_keyword(rc, "semi", useBytes = TRUE)) {
 
           seek(rc, -5L, "current")
 
-          if (preceded_by_keyword(rc, "left")) {
+          if (preceded_by_keyword(rc, "left", useBytes = TRUE)) {
 
             seek(rc, -5L, "current")
 
-            if (preceded_by_keyword(rc, "natural")) {
+            if (preceded_by_keyword(rc, "natural", useBytes = TRUE)) {
 
               seek(rc, -8L, "current")
 
@@ -426,11 +426,11 @@ parse_join <- function(expr, tidyverse, secure) {
 
             seek(rc, 5L, "current")
 
-          } else if (preceded_by_keyword(rc, "right")) {
+          } else if (preceded_by_keyword(rc, "right", useBytes = TRUE)) {
 
             seek(rc, -6L, "current")
 
-            if (preceded_by_keyword(rc, "natural")) {
+            if (preceded_by_keyword(rc, "natural", useBytes = TRUE)) {
 
               seek(rc, -8L, "current")
 
@@ -459,15 +459,15 @@ parse_join <- function(expr, tidyverse, secure) {
 
           seek(rc, 5L, "current")
 
-        } else if (preceded_by_keyword(rc, "anti")) {
+        } else if (preceded_by_keyword(rc, "anti", useBytes = TRUE)) {
 
           seek(rc, -5L, "current")
 
-          if (preceded_by_keyword(rc, "left")) {
+          if (preceded_by_keyword(rc, "left", useBytes = TRUE)) {
 
             seek(rc, -5L, "current")
 
-            if (preceded_by_keyword(rc, "natural")) {
+            if (preceded_by_keyword(rc, "natural", useBytes = TRUE)) {
 
               seek(rc, -8L, "current")
 
@@ -490,11 +490,11 @@ parse_join <- function(expr, tidyverse, secure) {
 
             seek(rc, 5L, "current")
 
-          } else if (preceded_by_keyword(rc, "right")) {
+          } else if (preceded_by_keyword(rc, "right", useBytes = TRUE)) {
 
             seek(rc, -6L, "current")
 
-            if (preceded_by_keyword(rc, "natural")) {
+            if (preceded_by_keyword(rc, "natural", useBytes = TRUE)) {
 
               seek(rc, -8L, "current")
 
@@ -523,11 +523,11 @@ parse_join <- function(expr, tidyverse, secure) {
 
           seek(rc, 5L, "current")
 
-        } else if (preceded_by_keyword(rc, "left")) {
+        } else if (preceded_by_keyword(rc, "left", useBytes = TRUE)) {
 
           seek(rc, -5L, "current")
 
-          if (preceded_by_keyword(rc, "natural")) {
+          if (preceded_by_keyword(rc, "natural", useBytes = TRUE)) {
 
             seek(rc, -8L, "current")
 
@@ -550,11 +550,11 @@ parse_join <- function(expr, tidyverse, secure) {
 
           seek(rc, 5L, "current")
 
-        } else if (preceded_by_keyword(rc, "right")) {
+        } else if (preceded_by_keyword(rc, "right", useBytes = TRUE)) {
 
           seek(rc, -6L, "current")
 
-          if (preceded_by_keyword(rc, "natural")) {
+          if (preceded_by_keyword(rc, "natural", useBytes = TRUE)) {
 
             seek(rc, -8L, "current")
 
@@ -577,11 +577,11 @@ parse_join <- function(expr, tidyverse, secure) {
 
           seek(rc, 6L, "current")
 
-        } else if (preceded_by_keyword(rc, "full")) {
+        } else if (preceded_by_keyword(rc, "full", useBytes = TRUE)) {
 
           seek(rc, -5L, "current")
 
-          if (preceded_by_keyword(rc, "natural")) {
+          if (preceded_by_keyword(rc, "natural", useBytes = TRUE)) {
 
             seek(rc, -8L, "current")
 

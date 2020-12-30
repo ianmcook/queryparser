@@ -104,7 +104,7 @@ extract_alias <- function(expr) {
       if (quoted_string_at_end && !found_as_before_alias) {
         seek(rc, 0)
         expr_without_alias <- trimws(readChar(rc, pos + 1, useBytes = TRUE))
-      } else if (is_non_word_character(char)) {
+      } else if (is_non_word_character(char, useBytes = TRUE)) {
         seek(rc, 0)
         expr_without_alias <- trimws(readChar(rc, pos + 1, useBytes = TRUE))
       } else if (found_as_before_alias) {
@@ -154,7 +154,7 @@ extract_alias <- function(expr) {
       column_alias <- readChar(rc, len - pos - 2, useBytes = TRUE)
     }
 
-    if (possible_word_at_end && is_non_word_character(char)) {
+    if (possible_word_at_end && is_non_word_character(char, useBytes = TRUE)) {
       next_char <- readChar(rc, 1L)
       if (is_word_start_character(next_char) && !identical(next_char, ".")) {
         seek(rc, -1 * nchar(next_char, type = "bytes"), "current")

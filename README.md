@@ -211,8 +211,6 @@ parse_query("SELECT x FROM y WHERE system('rm -rf /')")
 
 **queryparser** currently has the following known limitations:
 
-  - Errors can occur when SQL queries and expressions contain non-ASCII
-    Unicode characters.
   - Some SQL expressions will translate only when `tidyverse` is set to
     `TRUE`. An example of this is `COUNT(DISTINCT )` expressions with
     multiple arguments.

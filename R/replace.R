@@ -56,6 +56,9 @@ replace_special_keywords <- function(expr_quotes_masked) {
   }
 
   original_encoding <- Encoding(expr_quotes_masked)
+  if (original_encoding == "unknown") {
+    original_encoding <- "UTF-8"
+  }
   Encoding(expr_quotes_masked) <- "bytes"
   nchar_bytes <- nchar(expr_quotes_masked, type = "bytes")
 
@@ -80,6 +83,7 @@ replace_special_keywords <- function(expr_quotes_masked) {
       expr_quotes_masked,
       ignore.case = TRUE
     )
+    Encoding(expr_quotes_masked) <- "bytes"
 
     # identify positions of "x not between y and z"
     err <- "Found operator NOT BETWEEN without the keyword AND following it"
@@ -95,10 +99,10 @@ replace_special_keywords <- function(expr_quotes_masked) {
       last_pos[1L:6L] <- last_pos[1L:6L] - char_offset
       first_pos[2L:6L] <- first_pos[2L:6L] - char_offset
       repl_strings <- substring(expr_quotes_masked, first_pos, last_pos)
-      length_before_replacement <- nchar(expr_quotes_masked)
+      length_before_replacement <- nchar(expr_quotes_masked, type = "bytes")
       repl_strings <- c(repl_strings[1], " notbetween(", repl_strings[2], ",", repl_strings[4], ",", repl_strings[5], ")", repl_strings[6])
       expr_quotes_masked <- paste(repl_strings, collapse = "")
-      length_after_replacement <- nchar(expr_quotes_masked)
+      length_after_replacement <- nchar(expr_quotes_masked, type = "bytes")
       char_offset <-  char_offset + length_before_replacement - length_after_replacement
     }
 
@@ -116,10 +120,10 @@ replace_special_keywords <- function(expr_quotes_masked) {
       last_pos[1L:6L] <- last_pos[1L:6L] - char_offset
       first_pos[2L:6L] <- first_pos[2L:6L] - char_offset
       repl_strings <- substring(expr_quotes_masked, first_pos, last_pos)
-      length_before_replacement <- nchar(expr_quotes_masked)
+      length_before_replacement <- nchar(expr_quotes_masked, type = "bytes")
       repl_strings <- c(repl_strings[1], " yesbetween(", repl_strings[2], ",", repl_strings[4], ",", repl_strings[5], ")", repl_strings[6])
       expr_quotes_masked <- paste(repl_strings, collapse = "")
-      length_after_replacement <- nchar(expr_quotes_masked)
+      length_after_replacement <- nchar(expr_quotes_masked, type = "bytes")
       char_offset <-  char_offset + length_before_replacement - length_after_replacement
     }
   }

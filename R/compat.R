@@ -19,6 +19,13 @@ if (!exists("str2lang")) {
   }
 }
 
+# for compatibility with R versions earlier than 3.3.0
+if (!exists("validEnc")) {
+  validEnc <- function(x) {
+    !is.na(nchar(x, type = "width"))
+  }
+}
+
 # to avoid problems with expressions longer than about 60 characters
 deparse <- function(expr, width.cutoff = 500, ...) {
   paste0(trimws(base::deparse(expr, width.cutoff, ...)), collapse = " ")
