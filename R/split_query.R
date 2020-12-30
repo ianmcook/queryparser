@@ -151,19 +151,19 @@ split_query <- function(query, tidyverse) {
       # identify beginnings of clauses
       if (clause_starts_here(rc, "from")) {
         # don't split on the "from" is "is [not] distinct from"
-        if (!preceded_by_keyword(rc, "distinct")) {
-          pos_from <- append(pos_from, pos)
+        if (!preceded_by_keyword(rc, "distinct", useBytes = TRUE)) {
+          pos_from <- append(pos_from, pos + 1L)
         }
       } else if (clause_starts_here(rc, "where")) {
-        pos_where <- append(pos_where, pos)
+        pos_where <- append(pos_where, pos + 1L)
       } else if (clause_starts_here(rc, "group by")) {
-        pos_group_by <- append(pos_group_by, pos)
+        pos_group_by <- append(pos_group_by, pos + 1L)
       } else if (clause_starts_here(rc, "having")) {
-        pos_having <- append(pos_having, pos)
+        pos_having <- append(pos_having, pos + 1L)
       } else if (clause_starts_here(rc, "order by")) {
-        pos_order_by <- append(pos_order_by, pos)
+        pos_order_by <- append(pos_order_by, pos + 1L)
       } else if (clause_starts_here(rc, "limit")) {
-        pos_limit <- append(pos_limit, pos)
+        pos_limit <- append(pos_limit, pos + 1L)
       }
 
     }

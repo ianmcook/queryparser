@@ -18,3 +18,24 @@ test_that("split_query() stops when query does not begin with SELECT", {
     "begin"
   )
 })
+
+test_that("split_query() works on example query #1 with no whitespace separating keywords", {
+  expect_equal(
+    split_query("SELECT`foo`FROM`bar`;"),
+    list(select = "`foo`", from = "`bar`")
+  )
+})
+
+test_that("split_query() works on example query #2 with no whitespace separating keywords", {
+  expect_equal(
+    split_query("SELECT*FROM table;"),
+    list(select = "*", from = "table")
+  )
+})
+
+test_that("split_query() works on example query #3 with no whitespace separating keywords", {
+  expect_equal(
+    split_query("SELECT'literal'FROM table;"),
+    list(select = "'literal'", from = "table")
+  )
+})
