@@ -1,5 +1,7 @@
 # queryparser (development version)
 
+* Queries can contain multibyte characters ([#21](https://github.com/ianmcook/queryparser/issues/21))
+* Queries can have no whitespace around keywords ([#27](https://github.com/ianmcook/queryparser/issues/27))
 * `substring_index()` translates when `tidyverse = TRUE` ([#29](https://github.com/ianmcook/queryparser/issues/29))
 * `embedded nuls` warnings are silenced ([#30](https://github.com/ianmcook/queryparser/issues/30))
 * Syntactically invalid column names are allowed in backticks ([#31](https://github.com/ianmcook/queryparser/issues/31))
