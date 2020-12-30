@@ -21,6 +21,11 @@ expressions.
 | ⚠️ Most R users should not directly use queryparser. Instead, use it through [tidyquery](https://github.com/ianmcook/tidyquery). |
 | -------------------------------------------------------------------------------------------------------------------------------- |
 
+For an introduction to **tidyquery** and **queryparser**, watch the
+recording of the talk [“Bridging the Gap between SQL and
+R”](https://www.youtube.com/watch?v=JwP5KdWSgqE) from
+rstudio::conf(2020).
+
 ## Installation
 
 Install the released version of **queryparser** from
