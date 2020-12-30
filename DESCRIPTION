@@ -3,10 +3,10 @@ Type: Package
 Title: Translate 'SQL' Queries into 'R' Expressions
 Version: 0.3.0.9002
 Authors@R: c(
-    person("Ian", "Cook", email = "ian@cloudera.com", role = c("aut", "cre")),
+    person("Ian", "Cook", email = "ianmcook@gmail.com", role = c("aut", "cre")),
     person(family = "Cloudera", role = c("cph"))
     )
-Maintainer: Ian Cook <ian@cloudera.com>
+Maintainer: Ian Cook <ianmcook@gmail.com>
 Description: Translate 'SQL' 'SELECT' statements into lists of 'R' expressions.
 URL: https://github.com/ianmcook/queryparser
 BugReports: https://github.com/ianmcook/queryparser/issues
