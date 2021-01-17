@@ -39,8 +39,8 @@ Or install the development version from
 [GitHub](https://github.com/ianmcook/queryparser) with:
 
 ``` r
-# install.packages("devtools")
-devtools::install_github("ianmcook/queryparser")
+# install.packages("remotes")
+remotes::install_github("ianmcook/queryparser")
 ```
 
 ## Usage
