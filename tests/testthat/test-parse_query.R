@@ -655,3 +655,6 @@ test_that("parse_query() succeeds with test query #3 on syntactically invalid co
   )
 })
 
+# generate result objects like this:
+#result <- parse_query("SELECT ...")
+#str2lang(queryparser:::deparse(result, width.cutoff = 500L, control = c("quoteExpressions", "showAttributes", "niceNames")))
