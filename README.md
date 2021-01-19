@@ -3,11 +3,23 @@
 
 # queryparser <img src="man/figures/logo.png" align="right" width="120" />
 
+<!-- badges: start -->
+
+[![CRAN
+status](https://www.r-pkg.org/badges/version/queryparser)](https://cran.r-project.org/package=queryparser)
+[![Travis build
+status](https://travis-ci.org/ianmcook/queryparser.svg?branch=master)](https://travis-ci.org/ianmcook/queryparser)
+[![AppVeyor build
+status](https://ci.appveyor.com/api/projects/status/github/ianmcook/queryparser?branch=master&svg=true)](https://ci.appveyor.com/project/ianmcook/queryparser)
+[![Codecov test
+coverage](https://codecov.io/gh/ianmcook/queryparser/branch/master/graph/badge.svg)](https://codecov.io/gh/ianmcook/queryparser?branch=master)
+<!-- badges: end -->
+
 **queryparser** translates SQL queries into lists of unevaluated R
 expressions.
 
 | ⚠️ Most R users should not directly use queryparser. Instead, use it through [tidyquery](https://github.com/ianmcook/tidyquery). |
-| -------------------------------------------------------------------------------------------------------------------------------- |
+|----------------------------------------------------------------------------------------------------------------------------------|
 
 For an introduction to **tidyquery** and **queryparser**, watch the
 recording of the talk [“Bridging the Gap between SQL and
@@ -195,42 +207,42 @@ parse_query("SELECT x FROM y WHERE system('rm -rf /')")
 
 **queryparser** does not currently support:
 
-  - Subqueries
-  - Unions
-  - SQL-89-style (implicit) join notation
-  - The `WITH` clause (common table expressions)
-  - `OVER` expressions (window or analytic functions)
-  - Some SQL functions and operators
+-   Subqueries
+-   Unions
+-   SQL-89-style (implicit) join notation
+-   The `WITH` clause (common table expressions)
+-   `OVER` expressions (window or analytic functions)
+-   Some SQL functions and operators
 
 **queryparser** currently has the following known limitations:
 
-  - Some SQL expressions will translate only when `tidyverse` is set to
+-   Some SQL expressions will translate only when `tidyverse` is set to
     `TRUE`. An example of this is `COUNT(DISTINCT )` expressions with
     multiple arguments.
-  - When logical operators (such as `IS NULL`) have unparenthesized
+-   When logical operators (such as `IS NULL`) have unparenthesized
     expressions as their operands, R will interpret the resulting code
     using a different order of operations than a SQL engine would. When
     using an expression as the operand to a logical operator, always
     enclose the expression in parentheses.
-  - When `tidyverse` is set to `TRUE`, SQL expressions that use `CASE`
+-   When `tidyverse` is set to `TRUE`, SQL expressions that use `CASE`
     or `coalesce()` with `NULL`s in the arguments can return expressions
     that throw data type errors when evaluated. This is because `NULL`
     translates to `NA`, which is by default a logical constant (not a
     numeric, integer, or character constant). To work around this, cast
     `NULL` to the expected data type in the SQL expression.
-  - The error messages that occur when attempting to parse invalid or
+-   The error messages that occur when attempting to parse invalid or
     unrecognized SQL are often non-informative.
 
 ## Non-Goals
 
 **queryparser** is not intended to:
 
-  - Translate other types of SQL statements (such as `INSERT` or
+-   Translate other types of SQL statements (such as `INSERT` or
     `UPDATE`)
-  - Customize translations for specific SQL dialects
-  - Fully validate the syntax of the `SELECT` statements passed to it
-  - Efficiently process large batches of queries
-  - Facilitate the analysis of queries (for example, to identify
+-   Customize translations for specific SQL dialects
+-   Fully validate the syntax of the `SELECT` statements passed to it
+-   Efficiently process large batches of queries
+-   Facilitate the analysis of queries (for example, to identify
     patterns)
 
 ## Related Work
