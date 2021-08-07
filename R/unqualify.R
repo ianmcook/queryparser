@@ -49,6 +49,8 @@ unqualify_query <- function(tree, prefixes, except = character(0)) {
     stop("Unexpected input to unqualify_query()", call. = FALSE)
   }
 
+  assert_tidyquery_version()
+
   tree$select <- unqualify_clause(tree$select, prefixes, except)
   tree$where <- unqualify_clause(tree$where, prefixes, except)
   tree$group_by <- unqualify_clause(tree$group_by, prefixes, except)

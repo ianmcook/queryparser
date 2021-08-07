@@ -41,6 +41,9 @@ column_references <- function(tree, from = TRUE) {
   if (!is.list(tree) || !("select" %in% names(tree))) {
     stop("Unexpected input to column_references()", call. = FALSE)
   }
+
+  assert_tidyquery_version()
+
   unique(c(
     column_references_in_clause(tree$select),
     if (from) column_references_in_clause(attr(tree$from, "join_conditions")),

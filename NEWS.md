@@ -1,3 +1,7 @@
+# queryparser (development version)
+
+* Throws an error if called from an incompatible version of tidyquery ([#23](https://github.com/ianmcook/tidyquery/issues/23))
+
 # queryparser 0.3.1
 
 * Queries can contain multibyte characters ([#21](https://github.com/ianmcook/queryparser/issues/21))
