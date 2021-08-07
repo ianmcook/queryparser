@@ -1,6 +1,6 @@
 # queryparser (development version)
 
-* Throws an error if called from an incompatible version of tidyquery ([#23](https://github.com/ianmcook/tidyquery/issues/23))
+* Throws an error if called from an incompatible version of tidyquery ([#32](https://github.com/ianmcook/queryparser/issues/32))
 
 # queryparser 0.3.1
 
