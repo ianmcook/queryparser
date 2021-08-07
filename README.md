@@ -8,7 +8,7 @@
 [![CRAN
 status](https://www.r-pkg.org/badges/version/queryparser)](https://cran.r-project.org/package=queryparser)
 [![Travis build
-status](https://travis-ci.org/ianmcook/queryparser.svg?branch=master)](https://travis-ci.org/ianmcook/queryparser)
+status](https://travis-ci.com/ianmcook/queryparser.svg?branch=master)](https://travis-ci.com/ianmcook/queryparser)
 [![AppVeyor build
 status](https://ci.appveyor.com/api/projects/status/github/ianmcook/queryparser?branch=master&svg=true)](https://ci.appveyor.com/project/ianmcook/queryparser)
 [![Codecov test
