@@ -71,7 +71,7 @@ test_that("parse_query(tidy = TRUE) works on 'flights' example query with Unicod
       parse_query(query, tidy = TRUE)
     },
     structure(list(select = structure(list(str2lang("ⓞⓡïgįñ"),str2lang("dèšⓣ"),
-      num_flts = quote(sum(!is.na(flight))), "ⓓîßt" = str2lang("round(mean(ⓓîßtãñçℰ, na.rm = TRUE))"),
+      num_flts = quote(sum(!is.na(flight), na.rm = TRUE)), "ⓓîßt" = str2lang("round(mean(ⓓîßtãñçℰ, na.rm = TRUE))"),
       avg_delay = quote(round(mean(arr_delay,
       na.rm = TRUE)))), aggregate = c(FALSE, FALSE, num_flts = TRUE,
       "ⓓîßt" = TRUE, avg_delay = TRUE)), from = list(quote(utflights)),
