@@ -15,7 +15,7 @@ test_that("parse_query(tidy = TRUE) works on 'flights' example query", {
       parse_query(query, tidy = TRUE)
     },
   structure(list(select = structure(list(quote(origin), quote(dest),
-    num_flts = quote(sum(!is.na(flight))), dist = quote(round(mean(distance,
+    num_flts = quote(sum(!is.na(flight), na.rm = TRUE)), dist = quote(round(mean(distance,
     na.rm = TRUE))), avg_delay = quote(round(mean(arr_delay,
     na.rm = TRUE)))), aggregate = c(FALSE, FALSE, num_flts = TRUE,
     dist = TRUE, avg_delay = TRUE)), from = list(quote(flights)),
@@ -44,7 +44,7 @@ test_that("parse_query(tidy = FALSE) works on 'flights' example query", {
       parse_query(query, tidy = FALSE)
     },
     structure(list(select = structure(list(quote(origin), quote(dest),
-      num_flts = quote(sum(!is.na(flight))), dist = quote(round(mean(distance,
+      num_flts = quote(sum(!is.na(flight), na.rm = TRUE)), dist = quote(round(mean(distance,
       na.rm = TRUE))), avg_delay = quote(round(mean(arr_delay,
       na.rm = TRUE)))), aggregate = c(FALSE, FALSE, num_flts = TRUE,
       dist = TRUE, avg_delay = TRUE)), from = list(quote(flights)),

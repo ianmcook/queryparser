@@ -362,7 +362,7 @@ test_that("parse_expression(tidyverse = TRUE) stops when multiple expressions to
 test_that("parse_expression(tidyverse = FALSE) succeeds when one expression to COUNT DISTINCT", {
   expect_equal(
     parse_expression("COUNT(DISTINCT x)", tidyverse = FALSE),
-    quote(sum(!is.na(unique(x))))
+    quote(sum(!is.na(unique(x)), na.rm = TRUE))
   )
 })
 

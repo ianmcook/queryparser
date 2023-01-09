@@ -95,7 +95,7 @@ parse_query(
 #> dest
 #> 
 #> $select$num_flts
-#> sum(!is.na(flight))
+#> sum(!is.na(flight), na.rm = TRUE)
 #> 
 #> $select$num_seats
 #> round(sum(seats, na.rm = TRUE))

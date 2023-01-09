@@ -829,7 +829,7 @@ translations_indirect_generic_agg <- list(
     if (nargs() != 1) {
       stop("Function COUNT() requires one parameter", call. = FALSE)
     }
-    eval(substitute(quote(sum(!is.na(x)))))
+    eval(substitute(quote(sum(!is.na(x), na.rm = TRUE))))
   },
   max = function(x) {
     if (nargs() != 1) {
