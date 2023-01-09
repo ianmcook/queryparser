@@ -14,14 +14,6 @@ knitr::opts_chunk$set(
 ```
 # queryparser <img src="man/figures/logo.png" align="right" width="120" />
 
-
-<!-- badges: start -->
-[![CRAN status](https://www.r-pkg.org/badges/version/queryparser)](https://cran.r-project.org/package=queryparser)
-[![Travis build status](https://travis-ci.com/ianmcook/queryparser.svg?branch=master)](https://travis-ci.com/ianmcook/queryparser)
-[![AppVeyor build status](https://ci.appveyor.com/api/projects/status/github/ianmcook/queryparser?branch=master&svg=true)](https://ci.appveyor.com/project/ianmcook/queryparser)
-[![Codecov test coverage](https://codecov.io/gh/ianmcook/queryparser/branch/master/graph/badge.svg)](https://codecov.io/gh/ianmcook/queryparser?branch=master)
-<!-- badges: end -->
-
 **queryparser** translates SQL queries into lists of unevaluated R expressions.
 
 | ⚠️ Most R users should not directly use queryparser. Instead, use it through [tidyquery](https://github.com/ianmcook/tidyquery).
