@@ -909,7 +909,7 @@ translations_indirect_tidyverse_agg <- list(
   },
   count_distinct = function(...) {
     if (nargs() < 1) {
-      stop("Function COUNT(DISTINCT ) requires at least one parameter", call. = FALSE)
+      stop("Function COUNT(DISTINCT ...) requires at least one parameter", call. = FALSE)
     }
     fun <- str2lang("dplyr::n_distinct")
     eval(substitute(quote(fun(..., na.rm = TRUE))))

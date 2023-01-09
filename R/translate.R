@@ -52,7 +52,7 @@ translate_distinct_function <- function(expr, func, tidyverse) {
       }
       if (!tidyverse && length(expr) > 2) {
         stop(
-          "Multiple arguments to COUNT(DISTINCT ) ",
+          "Multiple arguments to COUNT(DISTINCT ...) ",
           "is not supported when tidyverse = FALSE",
           call. = FALSE
         )
